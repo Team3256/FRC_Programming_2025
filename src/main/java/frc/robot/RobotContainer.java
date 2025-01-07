@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -29,6 +29,8 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   public final MappedXboxController m_driverController =
       new MappedXboxController(ControllerConstants.kDriverControllerPort, "driver");
+  public final MappedXboxController m_operatorController =
+      new MappedXboxController(ControllerConstants.kOperatorControllerPort, "operator");
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
