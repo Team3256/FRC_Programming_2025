@@ -1,12 +1,15 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
 package frc.robot;
 
+import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,6 +27,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  * the TimedRobot documentation. If you change the name of this class or the package after creating
  * this project, you must also update the Main.java file in the project.
  */
+@Logged
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
@@ -38,7 +42,31 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    configureAdvantageKit();
+    if (Constants.FeatureFlags.kAdvKitEnabled) {
+      configureAdvantageKit();
+    }
+    if (Constants.FeatureFlags.kEpilogueEnabled) {
+      configureEpilogue();
+    }
+  }
+
+  private void configureEpilogue() {
+    // The default is NetworkTables logging,
+    // which is what we want
+    Epilogue.configure(
+        config -> {
+          if (isSimulation()) {
+            // If running in simulation, then we'd want to re-throw any errors that
+            // occur so we can debug and fix them!
+            config.errorHandler = ErrorHandler.crashOnError();
+          }
+
+          // Change the root data path
+          config.root = "Epilogue";
+
+          config.minimumImportance = Constants.Logging.kEpilogueImportance;
+        });
+    // Epilogue.bind(this);
   }
 
   private void configureAdvantageKit() {
@@ -95,11 +123,9 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
     Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
 
-    if (Constants.FeatureFlags.kAdvKitEnabled) {
-      // Start logging! No more data receivers, replay sources, or metadata values may
-      // be added.
-      Logger.start();
-    }
+    // Start logging! No more data receivers, replay sources, or metadata values may
+    // be added.
+    Logger.start();
 
     // The reason why we log build time and other project metadata
     // is so we can easily identify the version of the currently

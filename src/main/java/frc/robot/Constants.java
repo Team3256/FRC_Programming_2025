@@ -1,11 +1,13 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
 package frc.robot;
+
+import edu.wpi.first.epilogue.Logged;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -37,13 +39,12 @@ public final class Constants {
     // do comprehensive logging. Logging to NetworkTables
     // is disabled on field (FMS connected).
     public static final boolean kAdvKitEnabled = true;
-    // Monologue is another logging library that we use for
-    // sending values to our dashboard because we don't want
-    // AdvantageKit (which logs EVERYTHING) to dump to NetworkTables
-    // during competition. So we use Monologue to log the things
+    // We don't want AdvantageKit (which logs EVERYTHING)
+    // to dump to NetworkTables during competition.
+    // So we use Monologue to log the things we deem necessary
     // for our dashboard (it will ALWAYS log to NetworkTables;
-    // AdvantageKit can be configured to log to a file when connected to FMS)
-    public static final boolean kMonologueEnabled = true;
+    // AdvantageKit will be configured to log to a file when connected to FMS)
+    public static final boolean kEpilogueEnabled = true;
     // If true, the LoggedTunableNumber will work and do TunableNumber things
     public static final boolean kTuningModeEnabled = false;
     // Toggle whether or not the controller map should dump
@@ -56,8 +57,8 @@ public final class Constants {
   public static class Logging {
     public static final boolean kLogToUSB = true;
     public static final boolean kAdvkitUseReplayLogs = false;
-    // Defaults from Monologue docs
-    public static final boolean kMonologueFileOnly = false;
-    public static final boolean kMonologueLazyLogging = false;
+    // DEBUG: Everything (which will be useful for debugging)
+    // INFO: Everything except DEBUG
+    public static final Logged.Importance kEpilogueImportance = Logged.Importance.DEBUG;
   }
 }
