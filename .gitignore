@@ -187,3 +187,4 @@ compile_commands.json
 .factorypath
 src/main/java/frc/robot/BuildConstants.java
 scripts/map.json
+scripts/map.json
