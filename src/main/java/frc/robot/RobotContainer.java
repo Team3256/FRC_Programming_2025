@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 
@@ -67,6 +68,11 @@ public class RobotContainer {
 
     // Add options to the chooser
     autoChooser.addRoutine("Example Routine", m_autoRoutines::simplePathAuto);
+    autoChooser.addCmd(
+        "Wheel Radius Change",
+        () ->
+            drivetrain.wheelRadiusCharacterization(
+                SwerveConstants.wheelRadiusMaxVelocity, SwerveConstants.wheelRadiusMaxRampRate));
 
     // Put the auto chooser on the dashboard
     SmartDashboard.putData(autoChooser);
