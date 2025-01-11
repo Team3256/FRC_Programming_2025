@@ -29,6 +29,7 @@ public class RollerIOTalonFX implements RollerIO {
 
   private final StatusSignal<Voltage> motorVoltage;
   private final StatusSignal<Angle> motorPosition;
+  private final StatusSignal<AngularVelocity> motorVelocity;
   private final StatusSignal<Current> motorStatorCurrent;
   private final StatusSignal<Current> motorSupplyCurrent;
   // private final StatusSignal<Double> motorTemperature;
@@ -40,6 +41,7 @@ public class RollerIOTalonFX implements RollerIO {
     motorPosition = motor.getPosition();
     motorStatorCurrent = motor.getStatorCurrent();
     motorSupplyCurrent = motor.getSupplyCurrent();
+    motorVelocity = motor.getVelocity();
     // motorTemperature = motor.getDeviceTemp();
     motorReferenceSlope = motor.getClosedLoopReferenceSlope();
 
@@ -52,6 +54,7 @@ public class RollerIOTalonFX implements RollerIO {
         motorPosition,
         motorStatorCurrent,
         motorSupplyCurrent,
+        motorVelocity,
         // motorTemperature,
         motorReferenceSlope);
     motor.optimizeBusUtilization();
