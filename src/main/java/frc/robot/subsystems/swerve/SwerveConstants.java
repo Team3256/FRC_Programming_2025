@@ -26,5 +26,4 @@ public final class SwerveConstants {
   public static final Rotation2d reefGH = new Rotation2d(180);
   public static final Rotation2d reefIJ = new Rotation2d(-reefCD.getDegrees());
   public static final Rotation2d reefKL = new Rotation2d(-reefEF.getDegrees());
-
 }
