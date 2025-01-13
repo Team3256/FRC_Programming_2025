@@ -108,7 +108,7 @@ public class RobotContainer {
   private void configureChoreoAutoChooser() {
 
     // Add options to the chooser
-    autoChooser.addRoutine("Example Routine", m_autoRoutines::simplePathAuto);
+    autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd(
         "Wheel Radius Change",
         () ->
@@ -141,9 +141,9 @@ public class RobotContainer {
         () -> drivetrain.sysIdRotationQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addCmd("Start Signal Logger", () -> Commands.runOnce(SignalLogger::start));
     autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
-
+//    SmartDashboard.updateValues();
     // Put the auto chooser on the dashboard
-    SmartDashboard.putData(autoChooser);
+    SmartDashboard.putData("auto chooser", autoChooser);
 
     // Schedule the selected auto during the autonomous period
     RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
