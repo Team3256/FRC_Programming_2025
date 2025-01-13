@@ -26,17 +26,4 @@ public final class SwerveConstants {
   public static final Rotation2d reefGH = new Rotation2d(180);
   public static final Rotation2d reefIJ = new Rotation2d(-reefCD.getDegrees());
   public static final Rotation2d reefKL = new Rotation2d(-reefEF.getDegrees());
-
-  public static final double AB1 = -0.5;
-  public static final double AB2 = 0.5;
-  public static final double CD1 = 0.0;
-  public static final double CD2 = 0.0;
-  public static final double EF1 = 0.0;
-  public static final double EF2 = 0.0;
-  public static final double GH1 = 0.0;
-  public static final double GH2 = 0.0;
-  public static final double IJ1 = 0.0;
-  public static final double IJ2 = 0.0;
-  public static final double KL1 = 0.0;
-  public static final double KL2 = 0.0;
 }
