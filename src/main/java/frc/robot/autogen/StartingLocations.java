@@ -8,7 +8,7 @@
 package frc.robot.autogen;
 
 public enum StartingLocations {
-  B1,
+  MID,
   B2,
   B3, // random bs for now
 }

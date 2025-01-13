@@ -34,8 +34,8 @@ public class NodeManager {
     AutoTrajectory preloadTraj =
         routine.trajectory(preload.startLocation().name() + "-" + preload.scoringLocation().name());
     routine.active().onTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
-    rollers.setRollerVoltage(3);
-    Trigger nextTrajTrigger = preloadTraj.done().debounce(3);
+    preloadTraj.done().onTrue(rollers.setRollerVoltage(3));
+    Trigger nextTrajTrigger = preloadTraj.done();
     ScoringLocations lastScoringLocation = preload.scoringLocation();
     for (Node node : nodes) {
 
@@ -50,12 +50,12 @@ public class NodeManager {
       AutoTrajectory scoringTraj =
           routine.trajectory(node.intakeLocation().name() + "-" + node.scoringLocation().name());
       // Wait for intake traj to be done then trigger scoring traj
-      intakeTraj.done().debounce(2).onTrue(scoringTraj.cmd());
+      intakeTraj.done().onTrue(scoringTraj.cmd());
       scoringTraj.done().onTrue(rollers.setRollerVoltage(-3));
 
       // Update last scoring location and trigger for next traj
       lastScoringLocation = node.scoringLocation();
-      nextTrajTrigger = scoringTraj.done().debounce(2);
+      nextTrajTrigger = scoringTraj.done();
     }
     return routine;
   }

@@ -13,5 +13,11 @@ public enum ScoringLocations {
   C,
   D,
   E,
-  F
+  F,
+  G,
+  H,
+  I,
+  J,
+  K,
+  L
 }

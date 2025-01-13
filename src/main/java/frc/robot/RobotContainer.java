@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
+import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
@@ -31,6 +32,8 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+
+import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -143,6 +146,15 @@ public class RobotContainer {
     autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
     //    SmartDashboard.updateValues();
     // Put the auto chooser on the dashboard
+    NodeManager nodeManager = new NodeManager(drivetrain, roller, drivetrain.createAutoFactory(drivetrain::trajLogger));
+    ArrayList<Node> nodes = new ArrayList<>();
+    nodes.add(new Node(IntakeLocations.Source2, ScoringLocations.A, ScoringTypes.L1));
+    nodes.add(new Node(IntakeLocations.Source2, ScoringLocations.B, ScoringTypes.L1));
+    autoChooser.addRoutine("test", ()->nodeManager.createAuto(new PreloadNode(StartingLocations.MID, ScoringLocations.H, ScoringTypes.L2), nodes));
+
+
+
+
     SmartDashboard.putData("auto chooser", autoChooser);
 
     // Schedule the selected auto during the autonomous period
