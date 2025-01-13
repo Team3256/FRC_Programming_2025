@@ -1,4 +1,11 @@
+// Copyright (c) 2025 FRC 3256
+// https://github.com/Team3256
+//
+// Use of this source code is governed by a 
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.autogen;
 
-public record PreloadNode(StartingLocations startLocation, ScoringLocations scoringLocation, ScoringTypes scoringType) {
-}
+public record PreloadNode(
+    StartingLocations startLocation, ScoringLocations scoringLocation, ScoringTypes scoringType) {}

@@ -24,8 +24,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -75,7 +73,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   /** Swerve request to apply during field-centric path following */
   private final SwerveRequest.ApplyFieldSpeeds m_pathApplyFieldSpeeds =
-      new SwerveRequest.ApplyFieldSpeeds().withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
+      new SwerveRequest.ApplyFieldSpeeds()
+          .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
   private final PIDController m_pathXController = new PIDController(10, 0, 0);
   private final PIDController m_pathYController = new PIDController(10, 0, 0);
@@ -160,7 +159,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-//    resetPose(new Pose2d());
+    //    resetPose(new Pose2d());
   }
 
   /**
@@ -182,7 +181,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-//    resetPose(new Pose2d());
+    //    resetPose(new Pose2d());
   }
 
   /**
@@ -215,7 +214,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-//    resetPose(new Pose2d());
+    //    resetPose(new Pose2d());
   }
 
   public Pose2d targetPose() {
@@ -266,7 +265,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   @Override
   public void resetPose(Pose2d pose) {
-//    super.resetPose(pose);
+    //    super.resetPose(pose);
     questNav.zeroPosition();
   }
 
@@ -378,9 +377,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               });
     }
     if (!Utils.isSimulation() && questNav.connected()) {
-//      this.addVisionMeasurement(
-//          questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
-//          Utils.getCurrentTimeSeconds());
+      //      this.addVisionMeasurement(
+      //          questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
+      //          Utils.getCurrentTimeSeconds());
       Logger.recordOutput("QuestNav/pose", questNav.getPose());
       Logger.recordOutput("QuestNav/quaternion", questNav.getQuaternion());
       Logger.recordOutput("QuestNav/batteryPercent", questNav.getBatteryPercent());
@@ -388,8 +387,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     Logger.recordOutput("Swerve/pose", this.getState().Pose);
   }
-
-
 
   private void startSimThread() {
     m_lastSimTime = Utils.getCurrentTimeSeconds();
