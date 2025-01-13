@@ -7,5 +7,7 @@
 
 package frc.robot.autogen;
 
-public record PreloadNode(
-    StartingLocations startLocation, ScoringLocations scoringLocation, ScoringTypes scoringType) {}
+public enum NodeType {
+  SCORE_AND_INTAKE,
+  PRELOAD,
+}

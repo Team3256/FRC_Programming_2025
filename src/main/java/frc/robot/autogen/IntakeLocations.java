@@ -8,6 +8,7 @@
 package frc.robot.autogen;
 
 public enum IntakeLocations {
+  Mid,
   Source1,
   Source2
 }

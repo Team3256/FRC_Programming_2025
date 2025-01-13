@@ -32,7 +32,6 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
-
 import java.util.ArrayList;
 
 /**
@@ -146,14 +145,23 @@ public class RobotContainer {
     autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
     //    SmartDashboard.updateValues();
     // Put the auto chooser on the dashboard
-    NodeManager nodeManager = new NodeManager(drivetrain, roller, drivetrain.createAutoFactory(drivetrain::trajLogger));
+    NodeManager nodeManager =
+        new NodeManager(drivetrain, roller, drivetrain.createAutoFactory(drivetrain::trajLogger));
     ArrayList<Node> nodes = new ArrayList<>();
-    nodes.add(new Node(IntakeLocations.Source2, ScoringLocations.A, ScoringTypes.L1));
-    nodes.add(new Node(IntakeLocations.Source2, ScoringLocations.B, ScoringTypes.L1));
-    autoChooser.addRoutine("test", ()->nodeManager.createAuto(new PreloadNode(StartingLocations.MID, ScoringLocations.H, ScoringTypes.L2), nodes));
-
-
-
+    nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H, ScoringTypes.L1));
+    nodes.add(
+        new Node(
+            NodeType.SCORE_AND_INTAKE,
+            IntakeLocations.Source2,
+            ScoringLocations.A,
+            ScoringTypes.L1));
+    nodes.add(
+        new Node(
+            NodeType.SCORE_AND_INTAKE,
+            IntakeLocations.Source2,
+            ScoringLocations.B,
+            ScoringTypes.L1));
+    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
 
     SmartDashboard.putData("auto chooser", autoChooser);
 

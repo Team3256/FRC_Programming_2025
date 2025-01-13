@@ -28,34 +28,43 @@ public class NodeManager {
     this.factory = factory;
   }
 
-  public AutoRoutine createAuto(PreloadNode preload, ArrayList<Node> nodes) {
+  public AutoRoutine createAuto(ArrayList<Node> nodes) {
     AutoRoutine routine = factory.newRoutine("Auto");
-
-    AutoTrajectory preloadTraj =
-        routine.trajectory(preload.startLocation().name() + "-" + preload.scoringLocation().name());
-    routine.active().onTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
-    preloadTraj.done().onTrue(rollers.setRollerVoltage(3));
-    Trigger nextTrajTrigger = preloadTraj.done();
-    ScoringLocations lastScoringLocation = preload.scoringLocation();
+    Trigger nextTrajTrigger = routine.active();
+    ScoringLocations lastScoringLocation = null;
     for (Node node : nodes) {
 
-      // Load intake traj
-      AutoTrajectory intakeTraj =
-          routine.trajectory(lastScoringLocation.name() + "-" + node.intakeLocation().name());
-      // Wait for whatever finished last to be done then trigger next traj
-      nextTrajTrigger.onTrue(intakeTraj.cmd());
-      intakeTraj.done().onTrue(rollers.setRollerVoltage(3));
+      switch (node.nodeType()) {
+        case PRELOAD -> {
+          AutoTrajectory preloadTraj =
+              routine.trajectory(
+                  node.intakeLocation().name() + "-" + node.scoringLocation().name());
+          nextTrajTrigger.onTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
+          preloadTraj.done().onTrue(rollers.setRollerVoltage(3));
+          nextTrajTrigger = preloadTraj.done(60);
+          lastScoringLocation = node.scoringLocation();
+        }
+        case SCORE_AND_INTAKE -> {
+          // Load intake traj
+          AutoTrajectory intakeTraj =
+              routine.trajectory(lastScoringLocation.name() + "-" + node.intakeLocation().name());
+          // Wait for whatever finished last to be done then trigger next traj
+          nextTrajTrigger.onTrue(intakeTraj.cmd());
+          intakeTraj.done().onTrue(rollers.setRollerVoltage(3));
 
-      // Load scoring traj
-      AutoTrajectory scoringTraj =
-          routine.trajectory(node.intakeLocation().name() + "-" + node.scoringLocation().name());
-      // Wait for intake traj to be done then trigger scoring traj
-      intakeTraj.done().onTrue(scoringTraj.cmd());
-      scoringTraj.done().onTrue(rollers.setRollerVoltage(-3));
+          // Load scoring traj
+          AutoTrajectory scoringTraj =
+              routine.trajectory(
+                  node.intakeLocation().name() + "-" + node.scoringLocation().name());
+          // Wait for intake traj to be done then trigger scoring traj
+          intakeTraj.done().onTrue(scoringTraj.cmd());
+          scoringTraj.done().onTrue(rollers.setRollerVoltage(-3));
 
-      // Update last scoring location and trigger for next traj
-      lastScoringLocation = node.scoringLocation();
-      nextTrajTrigger = scoringTraj.done();
+          // Update last scoring location and trigger for next traj
+          lastScoringLocation = node.scoringLocation();
+          nextTrajTrigger = scoringTraj.done();
+        }
+      }
     }
     return routine;
   }
