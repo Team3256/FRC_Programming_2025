@@ -236,7 +236,8 @@ public class RobotContainer {
                                 * SlowMaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(
                             -m_driverController.getRightX()
-                                * SlowMaxAngular) // Drive counterclockwise with negative X (left)
+                                * SlowMaxAngular) // Drive counterclockwise with negative X
+                // (left)
                 ));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
