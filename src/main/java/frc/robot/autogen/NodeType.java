@@ -10,4 +10,6 @@ package frc.robot.autogen;
 public enum NodeType {
   SCORE_AND_INTAKE,
   PRELOAD,
+  WAIT,
+  DRIVE_AND_WAIT
 }

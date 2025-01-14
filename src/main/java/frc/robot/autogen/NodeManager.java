@@ -10,6 +10,8 @@ package frc.robot.autogen;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -32,6 +34,7 @@ public class NodeManager {
     AutoRoutine routine = factory.newRoutine("Auto");
     Trigger nextTrajTrigger = routine.active();
     ScoringLocations lastScoringLocation = null;
+
     for (Node node : nodes) {
 
       switch (node.nodeType()) {
@@ -39,8 +42,8 @@ public class NodeManager {
           AutoTrajectory preloadTraj =
               routine.trajectory(
                   node.intakeLocation().name() + "-" + node.scoringLocation().name());
-          nextTrajTrigger.onTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
-          preloadTraj.done().onTrue(rollers.setRollerVoltage(3));
+          nextTrajTrigger.toggleOnTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
+          preloadTraj.done().toggleOnTrue(rollers.setRollerVoltage(3));
           nextTrajTrigger = preloadTraj.done(60);
           lastScoringLocation = node.scoringLocation();
         }
@@ -49,20 +52,36 @@ public class NodeManager {
           AutoTrajectory intakeTraj =
               routine.trajectory(lastScoringLocation.name() + "-" + node.intakeLocation().name());
           // Wait for whatever finished last to be done then trigger next traj
-          nextTrajTrigger.onTrue(intakeTraj.cmd());
-          intakeTraj.done().onTrue(rollers.setRollerVoltage(3));
+          nextTrajTrigger.toggleOnTrue(intakeTraj.cmd());
+          intakeTraj.done().toggleOnTrue(rollers.setRollerVoltage(3));
 
           // Load scoring traj
           AutoTrajectory scoringTraj =
               routine.trajectory(
                   node.intakeLocation().name() + "-" + node.scoringLocation().name());
           // Wait for intake traj to be done then trigger scoring traj
-          intakeTraj.done().onTrue(scoringTraj.cmd());
-          scoringTraj.done().onTrue(rollers.setRollerVoltage(-3));
+          intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
+          scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
 
           // Update last scoring location and trigger for next traj
           lastScoringLocation = node.scoringLocation();
           nextTrajTrigger = scoringTraj.done();
+        }
+        case WAIT -> {
+          Command waitCmd = Commands.waitTime(node.waitTime());
+          nextTrajTrigger.onTrue(waitCmd);
+          nextTrajTrigger = routine.observe(waitCmd::isFinished);
+        }
+
+        case DRIVE_AND_WAIT -> {
+          AutoTrajectory driveTraj =
+              routine.trajectory(
+                  node.intakeLocation().name() + "-" + node.scoringLocation().name());
+          nextTrajTrigger.toggleOnTrue(driveTraj.cmd());
+          Command waitCmd = Commands.waitTime(node.waitTime());
+          driveTraj.done().onTrue(waitCmd);
+          nextTrajTrigger = routine.observe(waitCmd::isFinished);
+          lastScoringLocation = node.scoringLocation();
         }
       }
     }

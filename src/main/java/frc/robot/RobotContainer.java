@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -155,6 +156,7 @@ public class RobotContainer {
             IntakeLocations.Source2,
             ScoringLocations.A,
             ScoringTypes.L1));
+    nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
     nodes.add(
         new Node(
             NodeType.SCORE_AND_INTAKE,
