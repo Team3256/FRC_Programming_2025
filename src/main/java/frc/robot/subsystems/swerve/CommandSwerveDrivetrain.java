@@ -27,6 +27,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
@@ -86,7 +88,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
 
-  /* SysId routine for characterizing translation. This is used to find PID gains for the drive motors. */
+  /*
+   * SysId routine for characterizing translation. This is used to find PID gains
+   * for the drive motors.
+   */
   private final SysIdRoutine m_sysIdRoutineTranslation =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -98,7 +103,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           new SysIdRoutine.Mechanism(
               output -> setControl(m_translationCharacterization.withVolts(output)), null, this));
 
-  /* SysId routine for characterizing steer. This is used to find PID gains for the steer motors. */
+  /*
+   * SysId routine for characterizing steer. This is used to find PID gains for
+   * the steer motors.
+   */
   private final SysIdRoutine m_sysIdRoutineSteer =
       new SysIdRoutine(
           new SysIdRoutine.Config(
@@ -112,8 +120,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   /*
    * SysId routine for characterizing rotation.
-   * This is used to find PID gains for the FieldCentricFacingAngle HeadingController.
-   * See the documentation of SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
+   * This is used to find PID gains for the FieldCentricFacingAngle
+   * HeadingController.
+   * See the documentation of SwerveRequest.SysIdSwerveRotation for info on
+   * importing the log to SysId.
    */
   private final SysIdRoutine m_sysIdRoutineRotation =
       new SysIdRoutine(
@@ -142,6 +152,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   public RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
 
+  /* WPILib Alerts start */
+
+  private final Alert a_questNavNotConnected =
+      new Alert("QuestNav failure (no data within 250ms)", AlertType.kError);
+
+  /* WPILib Alerts end */
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
    *
@@ -157,7 +173,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    //    resetPose(new Pose2d());
+    // resetPose(new Pose2d());
   }
 
   /**
@@ -179,7 +195,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    //    resetPose(new Pose2d());
+    // resetPose(new Pose2d());
   }
 
   /**
@@ -212,7 +228,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    //    resetPose(new Pose2d());
+    // resetPose(new Pose2d());
   }
 
   public Pose2d targetPose() {
@@ -263,7 +279,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   @Override
   public void resetPose(Pose2d pose) {
-    //    super.resetPose(pose);
+    // super.resetPose(pose);
     questNav.zeroPosition();
   }
 
@@ -358,10 +374,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public void periodic() {
     /*
      * Periodically try to apply the operator perspective.
-     * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
-     * This allows us to correct the perspective in case the robot code restarts mid-match.
-     * Otherwise, only check and apply the operator perspective if the DS is disabled.
-     * This ensures driving behavior doesn't change until an explicit disable event occurs during testing.
+     * If we haven't applied the operator perspective before, then we should apply
+     * it regardless of DS state.
+     * This allows us to correct the perspective in case the robot code restarts
+     * mid-match.
+     * Otherwise, only check and apply the operator perspective if the DS is
+     * disabled.
+     * This ensures driving behavior doesn't change until an explicit disable event
+     * occurs during testing.
      */
     if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
       DriverStation.getAlliance()
@@ -375,12 +395,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               });
     }
     if (!Utils.isSimulation() && questNav.connected()) {
-      //      this.addVisionMeasurement(
-      //          questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
-      //          Utils.getCurrentTimeSeconds());
+      // this.addVisionMeasurement(
+      // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
+      // Utils.getCurrentTimeSeconds());
       Logger.recordOutput("QuestNav/pose", questNav.getPose());
       Logger.recordOutput("QuestNav/quaternion", questNav.getQuaternion());
       Logger.recordOutput("QuestNav/batteryPercent", questNav.getBatteryPercent());
+    } else {
+      a_questNavNotConnected.set(true);
     }
 
     Logger.recordOutput("Swerve/pose", this.getState().Pose);

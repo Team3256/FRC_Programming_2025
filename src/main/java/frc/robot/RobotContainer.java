@@ -144,7 +144,7 @@ public class RobotContainer {
     autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
 
     // Put the auto chooser on the dashboard
-    SmartDashboard.putData(autoChooser);
+    SmartDashboard.putData("auto chooser", autoChooser);
 
     // Schedule the selected auto during the autonomous period
     RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
@@ -247,7 +247,8 @@ public class RobotContainer {
                                 * SlowMaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(
                             -m_driverController.getRightX()
-                                * SlowMaxAngular) // Drive counterclockwise with negative X (left)
+                                * SlowMaxAngular) // Drive counterclockwise with negative X
+                // (left)
                 ));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
