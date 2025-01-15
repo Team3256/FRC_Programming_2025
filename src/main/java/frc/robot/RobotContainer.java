@@ -49,9 +49,6 @@ public class RobotContainer {
   public final MappedXboxController m_operatorController =
       new MappedXboxController(ControllerConstants.kOperatorControllerPort, "operator");
 
-  private final Telemetry logger =
-      new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
-
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final Roller roller = new Roller(false, new RollerIOTalonFX());
@@ -77,6 +74,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
+    Telemetry.init(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
     m_autoRoutines = new AutoRoutines(drivetrain.createAutoFactory(drivetrain::trajLogger), roller);
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
@@ -232,6 +230,6 @@ public class RobotContainer {
         .b()
         .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(sourceRight2)));
     m_driverController.a().onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(hang)));
-    drivetrain.registerTelemetry(logger::telemeterize);
+    drivetrain.registerTelemetry(Telemetry.getInstance()::updateSwerveModules);
   }
 }

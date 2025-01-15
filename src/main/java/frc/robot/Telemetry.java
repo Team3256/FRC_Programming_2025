@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meters;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -20,23 +22,41 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 
 public class Telemetry {
   private final double MaxSpeed;
+  private static Telemetry instance = null;
 
   /**
    * Construct a telemetry object, with the specified max speed of the robot
    *
    * @param maxSpeed Maximum speed in meters per second
    */
-  public Telemetry(double maxSpeed) {
+  private Telemetry(double maxSpeed) {
     MaxSpeed = maxSpeed;
     SignalLogger.start();
+  }
+
+  public static Telemetry init(double maxSpeed) {
+    if (instance == null) {
+      instance = new Telemetry(maxSpeed);
+    }
+    return instance;
+  }
+
+  public static Telemetry getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Telemetry not initialized");
+    }
+    return instance;
   }
 
   /* What to publish over networktables for telemetry */
@@ -106,8 +126,18 @@ public class Telemetry {
   private final double[] m_moduleStatesArray = new double[8];
   private final double[] m_moduleTargetsArray = new double[8];
 
+  // See https://docs.wpilib.org/en/stable/docs/software/dashboards/glass/mech2d-widget.html
+  // The main mechanism object, the "window" or "canvas" if you will
+  private final Mechanism2d robotMechanisms = new Mechanism2d(3, 3);
+  private final MechanismRoot2d elevator = robotMechanisms.getRoot("RootElevator", 2, 0);
+  // the mechanism root node
+  private final MechanismLigament2d elevatorShaft =
+      elevator.append(
+          new MechanismLigament2d(
+              "shaft", ElevatorConstants.SimulationConstants.kMinHeight.in(Meters), 90));
+
   /** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
-  public void telemeterize(SwerveDriveState state) {
+  public void updateSwerveModules(SwerveDriveState state) {
     /* Telemeterize the swerve drive state */
     drivePose.set(state.Pose);
     driveSpeeds.set(state.Speeds);
@@ -145,5 +175,11 @@ public class Telemetry {
 
       SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
     }
+  }
+
+  public void updateElevatorHeight(Distance height) {
+    elevatorShaft.setLength(
+        ElevatorConstants.SimulationConstants.kMinHeight.plus(height).in(Meters));
+    SmartDashboard.putData("RobotMechanisms", robotMechanisms);
   }
 }
