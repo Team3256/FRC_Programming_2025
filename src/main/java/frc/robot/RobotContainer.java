@@ -175,9 +175,8 @@ public class RobotContainer {
                           swerveVelXRateLimiter.calculate(
                               m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
                       .withVelocityY(
-                          swerveVelYRateLimiter.calculate(
-                              m_driverController.getLeftX() * MaxSpeed)).withRotationalRate(m_driverController.getTriggerAxes())
-              ));
+                          swerveVelYRateLimiter.calculate(m_driverController.getLeftX() * MaxSpeed))
+                      .withRotationalRate(m_driverController.getTriggerAxes())));
 
     } else {
       drivetrain.setDefaultCommand(
@@ -188,10 +187,8 @@ public class RobotContainer {
                       .withVelocityX(
                           -m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
-                      .withVelocityY(
-                          -m_driverController.getLeftX()
-                              * MaxSpeed).withRotationalRate(m_driverController.getTriggerAxes())
-              ));
+                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                      .withRotationalRate(m_driverController.getTriggerAxes())));
     }
 
     // AB
@@ -200,32 +197,27 @@ public class RobotContainer {
                 (getStickAngle(m_driverController).getDegrees() > 240
                     && getStickAngle(m_driverController).getDegrees() < 300))
         .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefAB)));
-
     // CD
     new Trigger(() -> (getStickAngle(m_driverController).getDegrees() > 300))
         .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
-
     // EF
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 0
                     && getStickAngle(m_driverController).getDegrees() < 60))
         .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
-
     // GH
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 60
                     && getStickAngle(m_driverController).getDegrees() < 120))
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefGH)));
-
+        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefGH)))
     // IJ
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 120
                     && getStickAngle(m_driverController).getDegrees() < 180))
         .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefIJ)));
-
     // KL
     new Trigger(
             () ->

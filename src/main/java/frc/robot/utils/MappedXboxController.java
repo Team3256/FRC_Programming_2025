@@ -98,16 +98,19 @@ public class MappedXboxController extends CommandXboxController {
   public Trigger rightTrigger(String commandDescription) {
     return this.rightTrigger(0.5, commandDescription);
   }
-  
-	public double getTriggerAxes() {
-		if (this.getLeftTriggerAxis() != 0 && this.getRightTriggerAxis() == 0){
-			return getLeftTriggerAxis();
-		}
-		if (this.getRightTriggerAxis() != 0 && this.getLeftTriggerAxis() == 0){
-			return getRightTriggerAxis();
-		} else if (this.getLeftTriggerAxis() != 0 && this.getRightTriggerAxis() != 0){
-			return 0.0;
-		} else {return 0.0;}}
+
+  public double getTriggerAxes() {
+    if (this.getLeftTriggerAxis() != 0 && this.getRightTriggerAxis() == 0) {
+      return getLeftTriggerAxis();
+    }
+    if (this.getRightTriggerAxis() != 0 && this.getLeftTriggerAxis() == 0) {
+      return getRightTriggerAxis();
+    } else if (this.getLeftTriggerAxis() != 0 && this.getRightTriggerAxis() != 0) {
+      return 0.0;
+    } else {
+      return 0.0;
+    }
+  }
 
   public Trigger povRight(String commandDescription) {
     labelButton("povRight", commandDescription);
