@@ -17,8 +17,8 @@ public class Roller extends DisableSubsystem {
 
   private final RollerIOInputsAutoLogged rollerIOInputsAutoLogged = new RollerIOInputsAutoLogged();
 
-  public Roller(boolean disabled, RollerIO rollerIO) {
-    super(disabled);
+  public Roller(boolean enabled, RollerIO rollerIO) {
+    super(enabled);
     this.rollerIO = rollerIO;
   }
 
