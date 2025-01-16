@@ -14,7 +14,6 @@ import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public final class ArmConstants {
   public static final int armMotorId = 38;
@@ -30,51 +29,50 @@ public final class ArmConstants {
   public static final int flashConfigRetries = 5;
 
   public static final TalonFXConfiguration motorConfigs =
-          new TalonFXConfiguration()
-                  .withSlot0(
-                          new Slot0Configs()
-                                  .withKS(0)
-                                  .withKV(3)
-                                  .withKP(100)
-                                  .withKI(0)
-                                  .withKD(0)
-                                  .withKG(10)
-                                  .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
-                  )
-                  .withMotorOutput(
-                          new MotorOutputConfigs()
-                                  .withNeutralMode(NeutralModeValue.Brake)
-                                  .withInverted(InvertedValue.Clockwise_Positive))
-                  .withMotionMagic(
-                          new MotionMagicConfigs()
-                                  .withMotionMagicAcceleration(400)
-                                  .withMotionMagicCruiseVelocity(50))
-                  .withCurrentLimits(
-                          new CurrentLimitsConfigs()
-                                  .withStatorCurrentLimitEnable(true)
-                                  .withStatorCurrentLimit(120))
-                  .withFeedback(
-                          new FeedbackConfigs()
-                                  .withFeedbackRemoteSensorID(39)
-                                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                                  .withSensorToMechanismRatio(1)
-                                  .withRotorToSensorRatio(168));
+      new TalonFXConfiguration()
+          .withSlot0(
+              new Slot0Configs()
+                  .withKS(0)
+                  .withKV(3)
+                  .withKP(100)
+                  .withKI(0)
+                  .withKD(0)
+                  .withKG(10)
+                  .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
+              )
+          .withMotorOutput(
+              new MotorOutputConfigs()
+                  .withNeutralMode(NeutralModeValue.Brake)
+                  .withInverted(InvertedValue.Clockwise_Positive))
+          .withMotionMagic(
+              new MotionMagicConfigs()
+                  .withMotionMagicAcceleration(400)
+                  .withMotionMagicCruiseVelocity(50))
+          .withCurrentLimits(
+              new CurrentLimitsConfigs()
+                  .withStatorCurrentLimitEnable(true)
+                  .withStatorCurrentLimit(120))
+          .withFeedback(
+              new FeedbackConfigs()
+                  .withFeedbackRemoteSensorID(39)
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  .withSensorToMechanismRatio(1)
+                  .withRotorToSensorRatio(168));
 
   public static final CANcoderConfiguration cancoderConfiguration =
-          new CANcoderConfiguration()
-                  .withMagnetSensor(
-                          new MagnetSensorConfigs()
-                                  .withMagnetOffset(Rotations.of(0))
-                                  .withSensorDirection(SensorDirectionValue.Clockwise_Positive
-                                  )
-                                  .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
+      new CANcoderConfiguration()
+          .withMagnetSensor(
+              new MagnetSensorConfigs()
+                  .withMagnetOffset(Rotations.of(0))
+                  .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                  .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
 
   public static final class Sim {
     public static final double simGearing = 168;
 
     public static final Distance armLength = Inches.of(22);
     public static final Mass armMass = Kilograms.of(2);
-    public static final double jkGMetersSquared =1.2922967095;
+    public static final double jkGMetersSquared = 1.2922967095;
 
     public static final Rotation2d minAngle = Rotation2d.fromDegrees(0);
     public static final Rotation2d maxAngle = Rotation2d.fromDegrees(270);
