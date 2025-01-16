@@ -8,8 +8,10 @@
 package frc.robot.sim;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -19,17 +21,36 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public final class SimMechs {
 
-  public static final Mechanism2d mech = new Mechanism2d(5, 5);
+  public final Mechanism2d mech = new Mechanism2d(5, 5);
 
-  private static final MechanismRoot2d armRoot = mech.getRoot("Arm", 3.5, 0.2);
-  private static final MechanismLigament2d armViz =
-      armRoot.append(new MechanismLigament2d("Arm", 1, 0.0, 5.0, new Color8Bit(Color.kGreen)));
+  private final MechanismRoot2d elevatorRoot = mech.getRoot("Elevator", 3.5, 0.2);
 
-  public static void updateArm(Angle angle) {
+  private final MechanismLigament2d elevatorViz =
+      elevatorRoot.append(new MechanismLigament2d("Elevator", 2, 90));
+
+  private final MechanismLigament2d armViz =
+      elevatorViz.append(new MechanismLigament2d("Arm", 1, 0.0, 5.0, new Color8Bit(Color.kGreen)));
+
+  private static SimMechs instance = null;
+
+  private SimMechs() {}
+
+  public static SimMechs getInstance() {
+    if (instance == null) {
+      instance = new SimMechs();
+    }
+    return instance;
+  }
+
+  public void updateArm(Angle angle) {
     armViz.setAngle(angle.in(Degrees));
   }
 
-  public static void init() {
+  public void updateElevator(Distance height) {
+    elevatorViz.setLength(height.in(Meters));
+  }
+
+  public void publishToNT() {
     SmartDashboard.putData("RobotSim", mech);
   }
 }

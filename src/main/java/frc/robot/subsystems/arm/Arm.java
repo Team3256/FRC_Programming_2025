@@ -18,8 +18,8 @@ public class Arm extends DisableSubsystem {
   private final ArmIO armIO;
   private final ArmIOInputsAutoLogged armIOAutoLogged = new ArmIOInputsAutoLogged();
 
-  public Arm(boolean disabled, ArmIO armIO) {
-    super(disabled);
+  public Arm(boolean enabled, ArmIO armIO) {
+    super(enabled);
 
     this.armIO = armIO;
   }

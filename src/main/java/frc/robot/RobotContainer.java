@@ -54,7 +54,7 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final Roller roller = new Roller(false, new RollerIOTalonFX());
+  private final Roller roller = new Roller(true, new RollerIOTalonFX());
 
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
@@ -82,7 +82,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
     configureSwerve();
     if (Utils.isSimulation()) {
-      SimMechs.init();
+      SimMechs.getInstance().publishToNT();
     }
   }
 

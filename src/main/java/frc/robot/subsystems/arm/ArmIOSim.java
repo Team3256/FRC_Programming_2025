@@ -28,7 +28,7 @@ public class ArmIOSim extends ArmIOTalonFX {
           DCMotor.getKrakenX60(1),
           ArmConstants.Sim.simGearing,
           ArmConstants.Sim.jkGMetersSquared,
-          ArmConstants.Sim.armLength,
+          ArmConstants.Sim.armLength.in(Meters),
           ArmConstants.Sim.minAngle.getRadians(),
           ArmConstants.Sim.maxAngle.getRadians(),
           true,
@@ -65,6 +65,6 @@ public class ArmIOSim extends ArmIOTalonFX {
     armSimState.setRotorVelocity(
         RadiansPerSecond.of(armSimModel.getVelocityRadPerSec()).in(RotationsPerSecond));
     super.updateInputs(inputs);
-    SimMechs.updateArm(Radians.of(armSimModel.getAngleRads()));
+    SimMechs.getInstance().updateArm(Radians.of(armSimModel.getAngleRads()));
   }
 }
