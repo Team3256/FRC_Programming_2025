@@ -196,6 +196,25 @@ public class RobotContainer {
                       .withRotationalRate(m_driverController.getTriggerAxes())));
     }
 
+    m_driverController
+        .leftBumper()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    drive
+                        .withVelocityX(
+                            -m_driverController.getLeftY()
+                                * SlowMaxSpeed) // Drive forward with negative Y (forward)
+                        .withVelocityY(
+                            -m_driverController.getLeftX()
+                                * SlowMaxSpeed) // Drive left with negative X (left)
+                        .withRotationalRate(
+                            -m_driverController.getRightX()
+                                * SlowMaxAngular) // Drive counterclockwise with negative X
+                // (left)
+                ));
+
+    
     // AB
     new Trigger(
             () ->
@@ -234,24 +253,6 @@ public class RobotContainer {
                 (getStickAngle(m_driverController).getDegrees() > 180
                     && getStickAngle(m_driverController).getDegrees() < 240))
         .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefKL)));
-
-    m_driverController
-        .leftBumper()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    drive
-                        .withVelocityX(
-                            -m_driverController.getLeftY()
-                                * SlowMaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(
-                            -m_driverController.getLeftX()
-                                * SlowMaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(
-                            -m_driverController.getRightX()
-                                * SlowMaxAngular) // Drive counterclockwise with negative X
-                // (left)
-                ));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
