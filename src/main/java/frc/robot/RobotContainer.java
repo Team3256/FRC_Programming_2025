@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
+import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.rollers.Roller;
@@ -33,6 +35,7 @@ import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -113,7 +116,7 @@ public class RobotContainer {
   private void configureChoreoAutoChooser() {
 
     // Add options to the chooser
-    autoChooser.addRoutine("Example Routine", m_autoRoutines::simplePathAuto);
+    autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd(
         "Wheel Radius Change",
         () ->
@@ -146,8 +149,27 @@ public class RobotContainer {
         () -> drivetrain.sysIdRotationQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addCmd("Start Signal Logger", () -> Commands.runOnce(SignalLogger::start));
     autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
-
+    //    SmartDashboard.updateValues();
     // Put the auto chooser on the dashboard
+    NodeManager nodeManager =
+        new NodeManager(drivetrain, roller, drivetrain.createAutoFactory(drivetrain::trajLogger));
+    ArrayList<Node> nodes = new ArrayList<>();
+    nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H, ScoringTypes.L1));
+    nodes.add(
+        new Node(
+            NodeType.SCORE_AND_INTAKE,
+            IntakeLocations.Source2,
+            ScoringLocations.A,
+            ScoringTypes.L1));
+    nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
+    nodes.add(
+        new Node(
+            NodeType.SCORE_AND_INTAKE,
+            IntakeLocations.Source2,
+            ScoringLocations.B,
+            ScoringTypes.L1));
+    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
+
     SmartDashboard.putData("auto chooser", autoChooser);
 
     // Schedule the selected auto during the autonomous period
