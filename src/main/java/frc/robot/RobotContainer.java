@@ -213,45 +213,45 @@ public class RobotContainer {
                                 * SlowMaxAngular) // Drive counterclockwise with negative X
                 // (left)
                 ));
-
+    
     // AB
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 240
                     && getStickAngle(m_driverController).getDegrees() < 300))
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefAB)));
+        .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefAB)));
 
     // CD
     new Trigger(() -> (getStickAngle(m_driverController).getDegrees() > 300))
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
+        .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
 
     // EF
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 0
                     && getStickAngle(m_driverController).getDegrees() < 60))
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
+        .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
 
     // GH
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 60
                     && getStickAngle(m_driverController).getDegrees() < 120))
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefGH)));
+        .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefGH)));
 
     // IJ
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 120
                     && getStickAngle(m_driverController).getDegrees() < 180))
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefIJ)));
+        .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefIJ)));
 
     // KL
     new Trigger(
             () ->
                 (getStickAngle(m_driverController).getDegrees() > 180
                     && getStickAngle(m_driverController).getDegrees() < 240))
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefKL)));
+        .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefKL)));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
