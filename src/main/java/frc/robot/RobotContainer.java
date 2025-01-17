@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -177,15 +178,10 @@ public class RobotContainer {
                   drive
                       .withVelocityX(
                           swerveVelXRateLimiter.calculate(
-                              m_driverController.getLeftY() * MaxSpeed)) // Drive -y is
-                      // forward
+                              m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
                       .withVelocityY(
-                          swerveVelYRateLimiter.calculate(
-                              m_driverController.getLeftX() * MaxSpeed)) // Drive -x is
-                      // left
-                      .withRotationalRate(
-                          swerveAngVelRateLimiter.calculate(
-                              -m_driverController.getRightX() * MaxAngularRate))));
+                          swerveVelYRateLimiter.calculate(m_driverController.getLeftX() * MaxSpeed))
+                      .withRotationalRate(m_driverController.getTriggerAxes())));
 
     } else {
       drivetrain.setDefaultCommand(
@@ -196,14 +192,48 @@ public class RobotContainer {
                       .withVelocityX(
                           -m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
-                      .withVelocityY(
-                          -m_driverController.getLeftX()
-                              * MaxSpeed) // Drive left with negative X (left)
-                      .withRotationalRate(
-                          -m_driverController.getRightX()
-                              * MaxAngularRate) // Drive counterclockwise with negative X (left)
-              ));
+                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                      .withRotationalRate(m_driverController.getTriggerAxes())));
     }
+
+    // AB
+    new Trigger(
+            () ->
+                (getStickAngle(m_driverController).getDegrees() > 240
+                    && getStickAngle(m_driverController).getDegrees() < 300))
+        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefAB)));
+
+    // CD
+    new Trigger(() -> (getStickAngle(m_driverController).getDegrees() > 300))
+        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
+
+    // EF
+    new Trigger(
+            () ->
+                (getStickAngle(m_driverController).getDegrees() > 0
+                    && getStickAngle(m_driverController).getDegrees() < 60))
+        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefCD)));
+
+    // GH
+    new Trigger(
+            () ->
+                (getStickAngle(m_driverController).getDegrees() > 60
+                    && getStickAngle(m_driverController).getDegrees() < 120))
+        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefGH)));
+
+    // IJ
+    new Trigger(
+            () ->
+                (getStickAngle(m_driverController).getDegrees() > 120
+                    && getStickAngle(m_driverController).getDegrees() < 180))
+        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefIJ)));
+
+    // KL
+    new Trigger(
+            () ->
+                (getStickAngle(m_driverController).getDegrees() > 180
+                    && getStickAngle(m_driverController).getDegrees() < 240))
+        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefKL)));
 
     m_driverController
         .leftBumper()
