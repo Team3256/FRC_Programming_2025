@@ -24,15 +24,13 @@ public final class PhotonConstants {
   public static final Transform3d kRobotToCam1 =
       new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
 
-
   public static final Matrix<N3, N1> kSingleTagStdDevsCam1 = VecBuilder.fill(4, 4, 8);
   public static final Matrix<N3, N1> kMultiTagStdDevsCam1 = VecBuilder.fill(0.5, 0.5, 1);
-
 
   public static final String cameraName2 = "YOUR CAMERA NAME";
   // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
   public static final Transform3d kRobotToCam2 =
-          new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+      new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
 
   // The layout of the AprilTags on the field
   public static final AprilTagFieldLayout kTagLayout =

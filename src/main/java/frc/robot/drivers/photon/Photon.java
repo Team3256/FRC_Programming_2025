@@ -7,10 +7,12 @@
 
 package frc.robot.drivers.photon;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -27,67 +29,61 @@ import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Photon {
-  private final PhotonCamera camera1;
-  private final PhotonPoseEstimator photonEstimator1;
-
-
-  private final PhotonCamera camera2;
-  private final PhotonPoseEstimator photonEstimator2;
-
-
-  private Matrix<N3, N1> curStdDevsCam1;
-  private Matrix<N3, N1> curStdDevsCam2;
+  private final PhotonCamera camera;
+  private final PhotonPoseEstimator photonEstimator;
+  private Matrix<N3, N1> curStdDevs;
 
   // Simulation
-  private PhotonCameraSim cameraSim1;
-  private PhotonCameraSim cameraSim2;
-
-
+  private PhotonCameraSim cameraSim;
   private VisionSystemSim visionSim;
 
-  public Photon() {
-    camera1 = new PhotonCamera(PhotonConstants.cameraName1);
+  private String kCameraName;
 
-    photonEstimator1 =
-        new PhotonPoseEstimator(
-            PhotonConstants.kTagLayout,
-            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-            PhotonConstants.kRobotToCam1);
-    photonEstimator1.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+  private AprilTagFieldLayout kTagLayout;
+  private Transform3d kRobotToCam;
 
-    camera2 = new PhotonCamera(PhotonConstants.cameraName2);
+  private Matrix<N3, N1> kSingleTagStdDevs;
+  private Matrix<N3, N1> kMultiTagStdDevs;
 
-    photonEstimator2 =
-            new PhotonPoseEstimator(
-                    PhotonConstants.kTagLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    PhotonConstants.kRobotToCam2);
-    photonEstimator1.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+  public Photon(
+      String kCameraName,
+      AprilTagFieldLayout kTagLayout,
+      Transform3d kRobotToCam,
+      Matrix<N3, N1> kSingleTagStdDevs,
+      Matrix<N3, N1> kMultiTagStdDevs) {
+    this.kCameraName = kCameraName;
+    this.kTagLayout = kTagLayout;
+    this.kRobotToCam = kRobotToCam;
 
+    this.kSingleTagStdDevs = kSingleTagStdDevs;
+    this.kMultiTagStdDevs = kMultiTagStdDevs;
+
+    camera = new PhotonCamera(kCameraName);
+
+    photonEstimator =
+        new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, kRobotToCam);
+    photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
     // ----- Simulation
     if (Robot.isSimulation()) {
       // Create the vision system simulation which handles cameras and targets on the field.
       visionSim = new VisionSystemSim("main");
       // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
-      visionSim.addAprilTags(PhotonConstants.kTagLayout);
+      visionSim.addAprilTags(kTagLayout);
       // Create simulated camera properties. These can be set to mimic your actual camera.
       var cameraProp = new SimCameraProperties();
-      cameraProp.setCalibration(1280, 800, Rotation2d.fromDegrees(90));
+      cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
       cameraProp.setCalibError(0.35, 0.10);
       cameraProp.setFPS(15);
       cameraProp.setAvgLatencyMs(50);
       cameraProp.setLatencyStdDevMs(15);
       // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
       // targets.
-      cameraSim1 = new PhotonCameraSim(camera1, cameraProp);
-      cameraSim2 = new PhotonCameraSim(camera2, cameraProp);
+      cameraSim = new PhotonCameraSim(camera, cameraProp);
       // Add the simulated camera to view the targets on this simulated field.
-      visionSim.addCamera(cameraSim1, PhotonConstants.kRobotToCam1);
-      visionSim.addCamera(cameraSim2, PhotonConstants.kRobotToCam2);
+      visionSim.addCamera(cameraSim, kRobotToCam);
 
-      cameraSim1.enableDrawWireframe(true);
-      cameraSim2.enableDrawWireframe(true);
+      cameraSim.enableDrawWireframe(true);
     }
   }
 
@@ -101,11 +97,11 @@ public class Photon {
    * @return An {@link EstimatedRobotPose} with an estimated pose, estimate timestamp, and targets
    *     used for estimation.
    */
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam1() {
+  public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
     Optional<EstimatedRobotPose> visionEst = Optional.empty();
-    for (var change : camera1.getAllUnreadResults()) {
-      visionEst = photonEstimator1.update(change);
-      updateEstimationStdDevsCam1(visionEst, change.getTargets());
+    for (var change : camera.getAllUnreadResults()) {
+      visionEst = photonEstimator.update(change);
+      updateEstimationStdDevs(visionEst, change.getTargets());
 
       if (Robot.isSimulation()) {
         visionEst.ifPresentOrElse(
@@ -121,27 +117,6 @@ public class Photon {
     return visionEst;
   }
 
-
-  public Optional<EstimatedRobotPose> getEstimatedGlobalPoseCam2() {
-    Optional<EstimatedRobotPose> visionEst = Optional.empty();
-    for (var change : camera2.getAllUnreadResults()) {
-      visionEst = photonEstimator2.update(change);
-      updateEstimationStdDevsCam2(visionEst, change.getTargets());
-
-      if (Robot.isSimulation()) {
-        visionEst.ifPresentOrElse(
-                est ->
-                        getSimDebugField()
-                                .getObject("VisionEstimation")
-                                .setPose(est.estimatedPose.toPose2d()),
-                () -> {
-                  getSimDebugField().getObject("VisionEstimation").setPoses();
-                });
-      }
-    }
-    return visionEst;
-  }
-
   /**
    * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard
    * deviations based on number of tags, estimation strategy, and distance from the tags.
@@ -149,21 +124,21 @@ public class Photon {
    * @param estimatedPose The estimated pose to guess standard deviations for.
    * @param targets All targets in this camera frame
    */
-  private void updateEstimationStdDevsCam1(
+  private void updateEstimationStdDevs(
       Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
     if (estimatedPose.isEmpty()) {
       // No pose input. Default to single-tag std devs
-      curStdDevsCam1 = PhotonConstants.kSingleTagStdDevsCam1;
+      curStdDevs = kSingleTagStdDevs;
 
     } else {
       // Pose present. Start running Heuristic
-      var estStdDevs = PhotonConstants.kSingleTagStdDevsCam1;
+      var estStdDevs = kSingleTagStdDevs;
       int numTags = 0;
       double avgDist = 0;
 
       // Precalculation - see how many tags we found, and calculate an average-distance metric
       for (var tgt : targets) {
-        var tagPose = photonEstimator1.getFieldTags().getTagPose(tgt.getFiducialId());
+        var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
         if (tagPose.isEmpty()) continue;
         numTags++;
         avgDist +=
@@ -176,59 +151,17 @@ public class Photon {
 
       if (numTags == 0) {
         // No tags visible. Default to single-tag std devs
-        curStdDevsCam1 = PhotonConstants.kSingleTagStdDevsCam1;
+        curStdDevs = kSingleTagStdDevs;
       } else {
         // One or more tags visible, run the full heuristic.
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
-        if (numTags > 1) estStdDevs = PhotonConstants.kMultiTagStdDevsCam1;
+        if (numTags > 1) estStdDevs = kMultiTagStdDevs;
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4)
           estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
         else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-        curStdDevsCam1 = estStdDevs;
-      }
-    }
-  }
-
-  private void updateEstimationStdDevsCam2(
-          Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
-    if (estimatedPose.isEmpty()) {
-      // No pose input. Default to single-tag std devs
-      curStdDevsCam2 = PhotonConstants.kSingleTagStdDevsCam2;
-
-    } else {
-      // Pose present. Start running Heuristic
-      var estStdDevs = PhotonConstants.kSingleTagStdDevsCam2;
-      int numTags = 0;
-      double avgDist = 0;
-
-      // Precalculation - see how many tags we found, and calculate an average-distance metric
-      for (var tgt : targets) {
-        var tagPose = photonEstimator2.getFieldTags().getTagPose(tgt.getFiducialId());
-        if (tagPose.isEmpty()) continue;
-        numTags++;
-        avgDist +=
-                tagPose
-                        .get()
-                        .toPose2d()
-                        .getTranslation()
-                        .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
-      }
-
-      if (numTags == 0) {
-        // No tags visible. Default to single-tag std devs
-        curStdDevsCam2 = PhotonConstants.kSingleTagStdDevsCam2;
-      } else {
-        // One or more tags visible, run the full heuristic.
-        avgDist /= numTags;
-        // Decrease std devs if multiple targets are visible
-        if (numTags > 1) estStdDevs = PhotonConstants.kMultiTagStdDevsCam2;
-        // Increase std devs based on (average) distance
-        if (numTags == 1 && avgDist > 4)
-          estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
-        curStdDevsCam2 = estStdDevs;
+        curStdDevs = estStdDevs;
       }
     }
   }
@@ -239,11 +172,8 @@ public class Photon {
    * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}. This should
    * only be used when there are targets visible.
    */
-  public Matrix<N3, N1> getEstimationStdDevsCam1() {
-    return curStdDevsCam1;
-  }
-  public Matrix<N3, N1> getEstimationStdDevsCam2() {
-    return curStdDevsCam2;
+  public Matrix<N3, N1> getEstimationStdDevs() {
+    return curStdDevs;
   }
 
   // ----- Simulation
