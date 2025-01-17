@@ -14,8 +14,6 @@ import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -61,7 +59,8 @@ public class RobotContainer {
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
   private final Arm arm = new Arm(FeatureFlags.kArmEnabled, new ArmIOSim());
-  private final Elevator elevator = new Elevator(FeatureFlags.kElevatorEnabled, new ElevatorIOSim());
+  private final Elevator elevator =
+      new Elevator(FeatureFlags.kElevatorEnabled, new ElevatorIOSim());
 
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
@@ -110,10 +109,14 @@ public class RobotContainer {
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
     m_operatorController.a("Pivot left").whileTrue(arm.setVoltage(Volts.of(1)).andThen(arm.off()));
-    m_operatorController.b("Pivot right").whileTrue(arm.setVoltage(Volts.of(-1)).andThen(arm.off()));
+    m_operatorController
+        .b("Pivot right")
+        .whileTrue(arm.setVoltage(Volts.of(-1)).andThen(arm.off()));
 
     m_operatorController.x("Elevator up").whileTrue(elevator.setVoltage(1).andThen(elevator.off()));
-    m_operatorController.y("Elevator up").whileTrue(elevator.setVoltage(-1).andThen(elevator.off()));
+    m_operatorController
+        .y("Elevator up")
+        .whileTrue(elevator.setVoltage(-1).andThen(elevator.off()));
   }
 
   private void configureChoreoAutoChooser() {

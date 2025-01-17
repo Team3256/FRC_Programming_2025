@@ -49,7 +49,8 @@ public final class ElevatorConstants {
       Inches.of(31.875 - 3).minus(kStartingHeight),
       Inches.of(72 - 7.07).minus(kStartingHeight)
     };
-    // See https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/device-specific/talonfx/closed-loop-requests.html#converting-from-meters
+    // See
+    // https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/device-specific/talonfx/closed-loop-requests.html#converting-from-meters
     public static final Distance kWheelRadius = kDrumRadius;
   }
 }
