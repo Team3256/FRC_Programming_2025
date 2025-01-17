@@ -175,8 +175,9 @@ public class RobotContainer {
                           swerveVelXRateLimiter.calculate(
                               m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
                       .withVelocityY(
-                          swerveVelYRateLimiter.calculate(m_driverController.getLeftX() * MaxSpeed))
-                      .withRotationalRate(m_driverController.getTriggerAxes())));
+                          swerveVelYRateLimiter.calculate(
+                              m_driverController.getLeftX() * MaxSpeed)).withRotationalRate(m_driverController.getTriggerAxes())
+              ));
 
     } else {
       drivetrain.setDefaultCommand(
@@ -187,8 +188,10 @@ public class RobotContainer {
                       .withVelocityX(
                           -m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
-                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                      .withRotationalRate(m_driverController.getTriggerAxes())));
+                      .withVelocityY(
+                          -m_driverController.getLeftX()
+                              * MaxSpeed).withRotationalRate(m_driverController.getTriggerAxes())
+              ));
     }
 
     // AB
