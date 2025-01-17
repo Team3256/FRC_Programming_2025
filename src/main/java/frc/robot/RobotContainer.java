@@ -7,7 +7,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -15,6 +15,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -26,6 +27,10 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -55,6 +60,8 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
+  private final Arm arm = new Arm(FeatureFlags.kArmEnabled, new ArmIOSim());
+  private final Elevator elevator = new Elevator(FeatureFlags.kElevatorEnabled, new ElevatorIOSim());
 
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
@@ -102,18 +109,17 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
-    m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
-    m_operatorController.y("off").onTrue(roller.off());
-    m_operatorController
-        .rightBumper("s")
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+    m_operatorController.a("Pivot left").whileTrue(arm.setVoltage(Volts.of(1)).andThen(arm.off()));
+    m_operatorController.b("Pivot right").whileTrue(arm.setVoltage(Volts.of(-1)).andThen(arm.off()));
+
+    m_operatorController.x("Elevator up").whileTrue(elevator.setVoltage(1).andThen(elevator.off()));
+    m_operatorController.y("Elevator up").whileTrue(elevator.setVoltage(-1).andThen(elevator.off()));
   }
 
   private void configureChoreoAutoChooser() {
 
     // Add options to the chooser
-    autoChooser.addRoutine("Example Routine", m_autoRoutines::simplePathAuto);
+    autoChooser.addRoutine("Examplex Routine", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd(
         "Wheel Radius Change",
         () ->
