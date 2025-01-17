@@ -214,7 +214,6 @@ public class RobotContainer {
                 // (left)
                 ));
 
-    
     // AB
     new Trigger(
             () ->
