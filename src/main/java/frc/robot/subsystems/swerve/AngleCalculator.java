@@ -11,8 +11,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.utils.MappedXboxController;
 
 public class AngleCalculator {
-  private MappedXboxController controller;
-
   public static Rotation2d getStickAngle(MappedXboxController control) {
     return new Rotation2d(Math.atan2(control.getRightY(), control.getRightX()));
   }
