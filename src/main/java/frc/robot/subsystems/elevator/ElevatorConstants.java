@@ -28,6 +28,8 @@ public final class ElevatorConstants {
   public static final Angle[] kReefPositions = {
     Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
   };
+  public static final Angle kSourcePosition = Rotations.of(0.0);
+  public static final Angle kGroundPosition = Rotations.of(0.0);
 
   public static class SimulationConstants {
     public static final Mass kCarriageMass = Kilograms.of(10);

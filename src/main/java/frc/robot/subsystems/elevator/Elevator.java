@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
@@ -51,9 +52,11 @@ public class Elevator extends DisableSubsystem {
     Logger.processInputs(this.getClass().getSimpleName(), motorIOAutoLogged);
   }
 
-  public Command setPosition(double position) {
+  public Command setPosition(Angle position) {
     return this.run(
-        () -> motorIO.setPosition(position * ElevatorConstants.SimulationConstants.kGearRatio));
+        () ->
+            motorIO.setPosition(
+                position.in(Rotations) * ElevatorConstants.SimulationConstants.kGearRatio));
   }
 
   public Command setVoltage(double voltage) {
@@ -71,15 +74,23 @@ public class Elevator extends DisableSubsystem {
   // Level must be between 0 to 3
   public Command toReefLevel(int level) {
     if (Robot.isReal()) {
-      return this.setPosition(ElevatorConstants.kReefPositions[level].in(Rotations));
+      return this.setPosition(ElevatorConstants.kReefPositions[level]);
     } else {
       return this.setPosition(
-          ElevatorConstants.SimulationConstants.kReefPositions[level]
-                  .div(ElevatorConstants.SimulationConstants.kWheelRadius)
-                  .magnitude()
-              / (2 * Math.PI)
-              * ElevatorConstants.SimulationConstants.kGearRatio);
+          Rotations.of(
+              ElevatorConstants.SimulationConstants.kReefPositions[level]
+                      .div(ElevatorConstants.SimulationConstants.kWheelRadius)
+                      .magnitude()
+                  / (2 * Math.PI)));
     }
+  }
+
+  public Command toSource() {
+    return this.setPosition(ElevatorConstants.kSourcePosition);
+  }
+
+  public Command toGround() {
+    return this.setPosition(ElevatorConstants.kGroundPosition);
   }
 
   // TODO: Grab coral level from NT/selector

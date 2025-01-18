@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
@@ -66,6 +67,12 @@ public final class ArmConstants {
                   .withMagnetOffset(Rotations.of(0))
                   .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
+  public static final Angle kSourceAngle = Degrees.of(0); // TODO: get from game manual
+  public static final Angle kL2L3Angle = Degrees.of(0); // TODO: get from game manual
+  public static final Angle kL4Angle = Degrees.of(0); // TODO: get from game manual
+  public static final Angle kTroughAngle = Degrees.of(0); // TODO: get from game manual
+  public static final Angle kAlgaeAAngle = Degrees.of(0); // TODO: get from game manual
+  public static final Angle kAlgaeBAngle = Degrees.of(0); // TODO: get from game manual
 
   public static final class Sim {
     public static final double simGearing = 168;
