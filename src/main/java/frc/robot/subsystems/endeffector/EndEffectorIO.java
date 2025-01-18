@@ -9,6 +9,7 @@ package frc.robot.subsystems.endeffector;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -27,6 +28,10 @@ public interface EndEffectorIO {
     public AngularVelocity coralMotorVelocity = RotationsPerSecond.of(0);
     public Current coralMotorStatorCurrent = Amps.of(0);
     public Current coralMotorSupplyCurrent = Amps.of(0);
+
+
+    public boolean leftBeamBreak = false;
+    public boolean rightBeamBreak = false;
   }
 
   public default void updateInputs(EndEffectorIOInputs inputs) {}
@@ -45,6 +50,10 @@ public interface EndEffectorIO {
 
   public default TalonFX getCoralMotor() {
     return new TalonFX(0);
+  }
+
+  public default CANdi getCandi() {
+    return new CANdi(0);
   }
 
   public default void off() {}

@@ -10,6 +10,8 @@ package frc.robot.subsystems.endeffector;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.S1CloseStateValue;
+import com.ctre.phoenix6.signals.S2CloseStateValue;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
@@ -50,7 +52,13 @@ public final class EndEffectorConstants {
 
 
 
-  private static final CANdiConfiguration
+  public static final CANdiConfiguration canDiConfigs = new CANdiConfiguration().withDigitalInputs(
+          new DigitalInputsConfigs()
+                  .withS1CloseState(S1CloseStateValue.CloseWhenHigh)
+                  .withS2CloseState(S2CloseStateValue.CloseWhenLow)
+  );
+
+  public static final int candiID = 21;
 
 
 

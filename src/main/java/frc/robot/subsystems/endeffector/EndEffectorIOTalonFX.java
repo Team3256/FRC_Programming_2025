@@ -10,6 +10,7 @@ package frc.robot.subsystems.endeffector;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -37,6 +38,11 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<Current> coralMotorSupplyCurrent = coralMotor.getSupplyCurrent();
 
 
+  private final CANdi candi = new CANdi(EndEffectorConstants.candiID);
+
+  private final StatusSignal<Boolean> leftBeamBreak = candi.getS1Closed();
+  private final StatusSignal<Boolean> rightBeamBreak = candi.getS2Closed();
+
   public EndEffectorIOTalonFX() {
     PhoenixUtil.applyMotorConfigs(
         algaeMotor,
@@ -48,6 +54,11 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         EndEffectorConstants.coralMotorConfigs,
         EndEffectorConstants.flashConfigRetries);
 
+    PhoenixUtil.applyCANdiConfigs(
+            candi,
+            EndEffectorConstants.canDiConfigs,
+            EndEffectorConstants.flashConfigRetries);
+
     BaseStatusSignal.setUpdateFrequencyForAll(
         EndEffectorConstants.updateFrequency,
         algaeMotorVoltage,
@@ -57,7 +68,9 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         coralMotorVoltage,
         coralMotorVelocity,
         coralMotorStatorCurrent,
-        coralMotorSupplyCurrent);
+        coralMotorSupplyCurrent,
+            leftBeamBreak,
+            rightBeamBreak);
     algaeMotor.optimizeBusUtilization();
     coralMotor.optimizeBusUtilization();
   }
@@ -72,7 +85,9 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         coralMotorVoltage,
         coralMotorVelocity,
         coralMotorStatorCurrent,
-        coralMotorSupplyCurrent);
+        coralMotorSupplyCurrent,
+            leftBeamBreak,
+            rightBeamBreak);
     inputs.algaeMotorVoltage = algaeMotorVoltage.getValue();
     inputs.algaeMotorVelocity = algaeMotorVelocity.getValue();
     inputs.algaeMotorStatorCurrent = algaeMotorStatorCurrent.getValue();
@@ -81,6 +96,9 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
     inputs.coralMotorVelocity = coralMotorVelocity.getValue();
     inputs.coralMotorStatorCurrent = coralMotorStatorCurrent.getValue();
     inputs.coralMotorSupplyCurrent = coralMotorSupplyCurrent.getValue();
+
+    inputs.leftBeamBreak = leftBeamBreak.getValue();
+    inputs.rightBeamBreak = rightBeamBreak.getValue();
   }
 
   @Override
@@ -117,5 +135,10 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   @Override
   public TalonFX getCoralMotor() {
     return coralMotor;
+  }
+
+  @Override
+  public CANdi getCandi() {
+    return candi;
   }
 }
