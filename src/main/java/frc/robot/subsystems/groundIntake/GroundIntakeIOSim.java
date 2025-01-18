@@ -11,54 +11,55 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
+
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
 
 public class GroundIntakeIOSim extends GroundIntakeIOTalonFX {
 
-  private final SingleJointedArmSim groundIntakeSimModel =
-      new SingleJointedArmSim(
-          DCMotor.getKrakenX60(1),
-          GroundIntakeConstants.Sim.simGearing,
-          GroundIntakeConstants.Sim.jkGMetersSquared,
-          GroundIntakeConstants.Sim.armLength.in(Meters),
-          GroundIntakeConstants.Sim.minAngle.getRadians(),
-          GroundIntakeConstants.Sim.maxAngle.getRadians(),
-          true,
-          GroundIntakeConstants.Sim.startingAngle.getRadians()); //Change this model later to be Ground Intake
+  private TalonFXSimState motorSim;
 
+  private final ElevatorSim groundIntakeSim = 
+    new ElevatorSim(
+      GroundIntakeConstants.Sim.groundIntakekV, //kV constant
+      GroundIntakeConstants.Sim.groundIntakekA,
+      DCMotor.getKrakenX60(0), 
+      GroundIntakeConstants.Sim.minHeightMeters,
+      GroundIntakeConstants.Sim.maxHeightMeters, 
+      GroundIntakeConstants.Sim.simulateGravity, 
+      GroundIntakeConstants.Sim.startingHeightMeters, 
+      GroundIntakeConstants.Sim.measurementStdDevs
+    );
 
-  private TalonFXSimState groundIntakeSimState;
-  private CANcoderSimState cancoderSimState;
 
   public GroundIntakeIOSim() {
     super();
-    groundIntakeSimState = super.getMotor().getSimState();
-    cancoderSimState = super.getEncoder().getSimState();
-    cancoderSimState.Orientation = ChassisReference.Clockwise_Positive;
-    groundIntakeSimState.Orientation = ChassisReference.Clockwise_Positive;
+    this.motorSim = super.getMotor().getSimState();
   }
 
   @Override
   public void updateInputs(GroundIntakeIOInputs inputs) {
-
-    groundIntakeSimState = super.getMotor().getSimState();
-    groundIntakeSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    groundIntakeSimModel.setInputVoltage(groundIntakeSimState.getMotorVoltage());
-    groundIntakeSimModel.update(LoggedRobot.defaultPeriodSecs);
-    groundIntakeSimState.setRawRotorPosition(
-        Units.radiansToRotations(groundIntakeSimModel.getAngleRads()) * GroundIntakeConstants.Sim.simGearing);
-        groundIntakeSimState.setRotorVelocity(
-        Units.radiansToRotations(groundIntakeSimModel.getVelocityRadPerSec()) * GroundIntakeConstants.Sim.simGearing);
+    motorSim = super.getMotor().getSimState();
+    motorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    groundIntakeSim.setInputVoltage(motorSim.getMotorVoltage());
+    groundIntakeSim.update(LoggedRobot.defaultPeriodSecs);
+    motorSim.setRawRotorPosition(
+        groundIntakeSim.getPositionMeters() * GroundIntakeConstants.Sim.kGearRatio);
+    motorSim.setRotorVelocity(
+        groundIntakeSim.getVelocityMetersPerSecond()
+            * ElevatorConstants.SimulationConstants.kGearRatio);
     RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(groundIntakeSimModel.getCurrentDrawAmps()));
-
-    cancoderSimState = super.getEncoder().getSimState();
-    cancoderSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    cancoderSimState.setRawPosition(Radians.of(groundIntakeSimModel.getAngleRads()).in(Rotations));
-    groundIntakeSimState.setRotorVelocity(
-        RadiansPerSecond.of(groundIntakeSimModel.getVelocityRadPerSec()).in(RotationsPerSecond));
+        BatterySim.calculateDefaultBatteryLoadedVoltage(groundIntakeSim.getCurrentDrawAmps()));
     super.updateInputs(inputs);
-    SimMechs.getInstance().updateArm(Radians.of(groundIntakeSimModel.getAngleRads()));
+
+    Logger.recordOutput("/GroundIntakeSim/positionMeters", groundIntakeSim.getPositionMeters());
+    Logger.recordOutput(
+        "/GroundIntakeSim/velocityMetersPerSecond", groundIntakeSim.getVelocityMetersPerSecond());
+    SimMechs.getInstance().updateElevator(Meters.of(groundIntakeSim.getPositionMeters()));
   }
 }

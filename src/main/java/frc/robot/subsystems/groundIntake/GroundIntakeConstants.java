@@ -66,14 +66,16 @@ public final class GroundIntakeConstants {
 
   public static final class Sim {
     public static final double simGearing = 168;
+    public static final double kGearRatio = 50;
 
-    public static final Distance armLength = Inches.of(22);
-    public static final Mass armMass = Kilograms.of(2);
-    public static final double jkGMetersSquared = 1.2922967095;
-
-    public static final Rotation2d minAngle = Rotation2d.fromDegrees(0);
-    public static final Rotation2d maxAngle = Rotation2d.fromDegrees(270);
-    public static final Rotation2d startingAngle = Rotation2d.fromDegrees(0);
+    
+    public static final double groundIntakekV = 5;
+    public static final double groundIntakekA = 1;
+    public static final double minHeightMeters = 0.5;
+    public static final double maxHeightMeters = 3;
+    public static final boolean simulateGravity = false;
+    public static final double startingHeightMeters = 0.5;
+    public static final double measurementStdDevs = 0.1;
   }
 
 }

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
+import frc.robot.sim.SimMechs;
 import frc.robot.utils.DisableSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -46,7 +47,7 @@ public class GroundIntake extends DisableSubsystem {
 
     public Command setPosition(double position) 
     {
-        return this.run(() -> groundIntakeIO.setPosition(position * GroundIntakeConstants.SimulationConstants.kGearRatio));
+        return this.run(() -> groundIntakeIO.setPosition(position * GroundIntakeConstants.Sim.kGearRatio));
     }
 
     public Command off() 
