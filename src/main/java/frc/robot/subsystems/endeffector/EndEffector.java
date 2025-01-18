@@ -54,6 +54,22 @@ public class EndEffector extends DisableSubsystem {
         .finallyDo(endEffectorIO::off);
   }
 
+  public Command outtakeCoral() {
+    return this.setVelocity(
+        EndEffectorConstants.kCoralOuttakeVelocity[0],
+        EndEffectorConstants.kCoralOuttakeVelocity[1]);
+  }
+
+  public Command intakeCoral() {
+    return this.setVelocity(
+        EndEffectorConstants.kCoralIntakeVelocity[0], EndEffectorConstants.kCoralIntakeVelocity[1]);
+  }
+
+  public Command intakeAlgae() {
+    return this.setVelocity(
+        EndEffectorConstants.kCoralIntakeVelocity[0], EndEffectorConstants.kCoralIntakeVelocity[1]);
+  }
+
   public Command off() {
     return this.runOnce(endEffectorIO::off);
   }

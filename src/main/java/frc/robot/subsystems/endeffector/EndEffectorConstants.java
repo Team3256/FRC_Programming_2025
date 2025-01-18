@@ -9,6 +9,8 @@ package frc.robot.subsystems.endeffector;
 
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
@@ -61,6 +63,16 @@ public final class EndEffectorConstants {
                   .withS2CloseState(S2CloseStateValue.CloseWhenLow));
 
   public static final int candiID = 21;
+
+  public static final AngularVelocity[] kCoralOuttakeVelocity = {
+    Units.RotationsPerSecond.of(0.0), Units.RotationsPerSecond.of(0.0)
+  };
+  public static final AngularVelocity[] kCoralIntakeVelocity = {
+    Units.RotationsPerSecond.of(0.0), Units.RotationsPerSecond.of(0.0)
+  };
+  public static final AngularVelocity[] kAlgaeIntakeVelocity = {
+    Units.RotationsPerSecond.of(0.0), Units.RotationsPerSecond.of(0.0)
+  };
 
   public static final class SimulationConstants {
     public static double coralGearingRatio = 1.0;
