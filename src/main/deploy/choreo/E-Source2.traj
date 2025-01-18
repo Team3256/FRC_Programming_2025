@@ -18,7 +18,7 @@
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
-    {"from":"first", "to":"last", "data":{"type":"KeepOutCircle", "props":{"x":{"exp":"4.451519977301359 m", "val":4.451519977301359}, "y":{"exp":"4.039342276751995 m", "val":4.039342276751995}, "r":{"exp":".88 m", "val":0.88}}}, "enabled":true}],
+    {"from":"first", "to":"last", "data":{"type":"KeepOutCircle", "props":{"x":{"exp":"4.451519977301359 m", "val":4.451519977301359}, "y":{"exp":"4.039342276751995 m", "val":4.039342276751995}, "r":{"exp":"0.88 m", "val":0.88}}}, "enabled":true}],
   "targetDt":{
    "exp":"0.05 s",
    "val":0.05
