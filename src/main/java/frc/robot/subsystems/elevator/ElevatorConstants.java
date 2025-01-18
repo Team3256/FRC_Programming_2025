@@ -29,6 +29,16 @@ public final class ElevatorConstants {
     Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
   };
 
+  public static final Angle[] kDealgaePositions = {
+    Rotations.of(0.0), Rotations.of(0.0)
+  };
+
+
+  public static final Angle sourcePosition = Rotations.of(0.0);
+  public static final Angle bargePosition = Rotations.of(0.0);
+
+  public static final Angle homePosition = Rotations.of(0.0);
+
   public static class SimulationConstants {
     public static final Mass kCarriageMass = Kilograms.of(10);
     public static final double kGearRatio = 50;

@@ -12,10 +12,13 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.utils.DisableSubsystem;
+import frc.robot.utils.Util;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends DisableSubsystem {
@@ -23,6 +26,10 @@ public class Elevator extends DisableSubsystem {
   private final ElevatorIO motorIO;
   private final ElevatorIOInputsAutoLogged motorIOAutoLogged = new ElevatorIOInputsAutoLogged();
   private final SysIdRoutine m_sysIdRoutine;
+
+  private double requestedPosition = 0;
+
+  public final Trigger reachedPosition = new Trigger(() -> isAtPosition());
 
   public Elevator(boolean enabled, ElevatorIO motorIO) {
     super(enabled);
@@ -53,7 +60,10 @@ public class Elevator extends DisableSubsystem {
 
   public Command setPosition(double position) {
     return this.run(
-        () -> motorIO.setPosition(position * ElevatorConstants.SimulationConstants.kGearRatio));
+        () -> {
+          requestedPosition = position*ElevatorConstants.SimulationConstants.kGearRatio;
+          motorIO.setPosition(position * ElevatorConstants.SimulationConstants.kGearRatio);
+        });
   }
 
   public Command setVoltage(double voltage) {
@@ -80,6 +90,26 @@ public class Elevator extends DisableSubsystem {
               / (2 * Math.PI)
               * ElevatorConstants.SimulationConstants.kGearRatio);
     }
+  }
+  public Command toDealgaeLevel(int level) {
+    if (Robot.isReal()) {
+      return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations));
+    } else {
+      return this.setPosition(
+          ElevatorConstants.SimulationConstants.kReefPositions[level]
+                  .div(ElevatorConstants.SimulationConstants.kWheelRadius)
+                  .magnitude()
+              / (2 * Math.PI)
+              * ElevatorConstants.SimulationConstants.kGearRatio);
+    }
+  }
+
+  public boolean isAtPosition() {
+    return Util.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.05);
+  }
+
+  public Command toHome() {
+    return this.setPosition(ElevatorConstants.homePosition.in(Rotations));
   }
 
   // TODO: Grab coral level from NT/selector
