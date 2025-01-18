@@ -9,6 +9,7 @@ package frc.robot.subsystems.endeffector;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import com.ctre.phoenix6.sim.CANdiSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -41,17 +42,22 @@ public class EndEffectorIOSim extends EndEffectorIOTalonFX {
   private final TalonFXSimState algaeMotorSim;
   private final TalonFXSimState coralMotorSim;
 
+  private final CANdiSimState candiSim;
+
   public EndEffectorIOSim() {
     super();
     algaeMotorSim = super.getAlgaeMotor().getSimState();
     coralMotorSim = super.getCoralMotor().getSimState();
+    candiSim = super.getCandi().getSimState();
   }
 
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
+
     // Update battery voltage
     algaeMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     coralMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
+    candiSim.setSupplyVoltage(RobotController.getBatteryVoltage());
     // Update physics models
     algaeSimModel.setInput(algaeMotorSim.getMotorVoltage());
     algaeSimModel.update(LoggedRobot.defaultPeriodSecs);
