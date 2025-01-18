@@ -48,6 +48,12 @@ public final class EndEffectorConstants {
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(60));
 
+
+
+  private static final CANdiConfiguration
+
+
+
   public static final class SimulationConstants {
     public static double coralGearingRatio = 1.0;
     public static double coralMomentOfInertia = 0.0001;

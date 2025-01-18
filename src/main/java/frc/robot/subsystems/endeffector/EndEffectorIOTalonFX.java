@@ -18,7 +18,8 @@ import frc.robot.utils.PhoenixUtil;
 
 public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final TalonFX algaeMotor = new TalonFX(EndEffectorConstants.algaeMotorID);
-  final VelocityVoltage algaeVelocityRequest =
+
+  private final VelocityVoltage algaeVelocityRequest =
       new VelocityVoltage(0).withSlot(0).withEnableFOC(EndEffectorConstants.kUseFOC);
 
   private final StatusSignal<Voltage> algaeMotorVoltage = algaeMotor.getMotorVoltage();
@@ -34,6 +35,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<AngularVelocity> coralMotorVelocity = coralMotor.getVelocity();
   private final StatusSignal<Current> coralMotorStatorCurrent = coralMotor.getStatorCurrent();
   private final StatusSignal<Current> coralMotorSupplyCurrent = coralMotor.getSupplyCurrent();
+
 
   public EndEffectorIOTalonFX() {
     PhoenixUtil.applyMotorConfigs(
