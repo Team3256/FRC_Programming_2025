@@ -7,21 +7,19 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.HashMap;
-import java.util.Map;
-
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmConstants;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.endeffector.EndEffector;
+import java.util.HashMap;
+import java.util.Map;
 import org.littletonrobotics.junction.Logger;
-
-import static edu.wpi.first.units.Units.Rotations;
 
 public class Superstructure {
   public static enum StructureState {
@@ -42,7 +40,6 @@ public class Superstructure {
     HOME
   }
 
-
   public static enum ManipulatorSide {
     LEFT,
     RIGHT
@@ -57,10 +54,11 @@ public class Superstructure {
 
   private Map<StructureState, Trigger> prevStateTriggers = new HashMap<StructureState, Trigger>();
 
-  private final Trigger leftManipulatorSide = new Trigger(() -> this.manipulatorSide == ManipulatorSide.LEFT);
+  private final Trigger leftManipulatorSide =
+      new Trigger(() -> this.manipulatorSide == ManipulatorSide.LEFT);
 
-  private final Trigger rightManipulatorSide = new Trigger(() -> this.manipulatorSide == ManipulatorSide.RIGHT);
-
+  private final Trigger rightManipulatorSide =
+      new Trigger(() -> this.manipulatorSide == ManipulatorSide.RIGHT);
 
   private Timer stateTimer = new Timer();
 
@@ -88,81 +86,80 @@ public class Superstructure {
   public void configStateTransitions() {
     stateTriggers.get(StructureState.IDLE);
 
-    stateTriggers.get(StructureState.L1)
-            .onTrue(elevator.toReefLevel(0));
-    stateTriggers.get(StructureState.L1)
-            .and(leftManipulatorSide)
-            .onTrue(arm.toLeftReefLevel(0));
-    stateTriggers.get(StructureState.L1)
-            .and(rightManipulatorSide)
-            .onTrue(arm.toRightReefLevel(0));
+    stateTriggers.get(StructureState.L1).onTrue(elevator.toReefLevel(0));
+    stateTriggers.get(StructureState.L1).and(leftManipulatorSide).onTrue(arm.toLeftReefLevel(0));
+    stateTriggers.get(StructureState.L1).and(rightManipulatorSide).onTrue(arm.toRightReefLevel(0));
 
-    stateTriggers.get(StructureState.L2)
-            .onTrue(elevator.toReefLevel(1));
-    stateTriggers.get(StructureState.L2)
-                    .onTrue(elevator.toReefLevel(3));
-    stateTriggers.get(StructureState.L2).or(stateTriggers.get(StructureState.L3))
-            .and(leftManipulatorSide)
-            .onTrue(arm.toLeftReefLevel(1));
-    stateTriggers.get(StructureState.L2).or(stateTriggers.get(StructureState.L3))
-            .and(rightManipulatorSide)
-            .onTrue(arm.toRightReefLevel(1));
+    stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(1));
+    stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(3));
+    stateTriggers
+        .get(StructureState.L2)
+        .or(stateTriggers.get(StructureState.L3))
+        .and(leftManipulatorSide)
+        .onTrue(arm.toLeftReefLevel(1));
+    stateTriggers
+        .get(StructureState.L2)
+        .or(stateTriggers.get(StructureState.L3))
+        .and(rightManipulatorSide)
+        .onTrue(arm.toRightReefLevel(1));
 
+    stateTriggers
+        .get(StructureState.SCORE_CORAL)
+        .and(prevStateTriggers.get(StructureState.L1))
+        .onTrue(endEffector.setL1Velocity());
+    stateTriggers
+        .get(StructureState.SCORE_CORAL)
+        .and(prevStateTriggers.get(StructureState.L2).or(prevStateTriggers.get(StructureState.L3)))
+        .onTrue(endEffector.setL2L3Velocity());
+    stateTriggers
+        .get(StructureState.SCORE_CORAL)
+        .and(prevStateTriggers.get(StructureState.L4))
+        .onTrue(endEffector.setL4Velocity());
 
+    stateTriggers.get(StructureState.DEALGAE_L2).onTrue(elevator.toDealgaeLevel(0));
+    stateTriggers
+        .get(StructureState.DEALGAE_L2)
+        .or(stateTriggers.get(StructureState.DEALGAE_L3))
+        .and(leftManipulatorSide)
+        .onTrue(arm.toLeftDealgaeLevel(0));
+    stateTriggers
+        .get(StructureState.DEALGAE_L2)
+        .or(stateTriggers.get(StructureState.DEALGAE_L3))
+        .and(rightManipulatorSide)
+        .onTrue(arm.toRightDealgaeLevel());
 
+    stateTriggers.get(StructureState.DEALGAE_L3).onTrue(elevator.toDealgaeLevel(1));
 
+    stateTriggers
+        .get(StructureState.PRESOURCE)
+        .onTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)))
+        .and(elevator.reachedPosition)
+        .onTrue(this.setState(StructureState.SOURCE));
+    stateTriggers
+        .get(StructureState.SOURCE)
+        .and(leftManipulatorSide)
+        .onTrue(arm.toLeftSourceLevel());
+    stateTriggers
+        .get(StructureState.SOURCE)
+        .and(rightManipulatorSide)
+        .onTrue(arm.toRightSourceLevel());
 
-    stateTriggers.get(StructureState.SCORE_CORAL)
-            .and(prevStateTriggers.get(StructureState.L1))
-            .onTrue(endEffector.setL1Velocity());
-    stateTriggers.get(StructureState.SCORE_CORAL)
-            .and(prevStateTriggers.get(StructureState.L2).or(prevStateTriggers.get(StructureState.L3)))
-            .onTrue(endEffector.setL2L3Velocity());
-    stateTriggers.get(StructureState.SCORE_CORAL)
-            .and(prevStateTriggers.get(StructureState.L4))
-            .onTrue(endEffector.setL4Velocity());
+    stateTriggers
+        .get(StructureState.SOURCE)
+        .onTrue(endEffector.setSourceVelocity())
+        .and(endEffector.leftBeamBreak.or(endEffector.rightBeamBreak))
+        .onTrue(this.setState(StructureState.PREHOME));
 
-
-    stateTriggers.get(StructureState.DEALGAE_L2)
-            .onTrue(elevator.toDealgaeLevel(0));
-    stateTriggers.get(StructureState.DEALGAE_L2).or(stateTriggers.get(StructureState.DEALGAE_L3))
-            .and(leftManipulatorSide)
-            .onTrue(arm.toLeftDealgaeLevel(0));
-    stateTriggers.get(StructureState.DEALGAE_L2).or(stateTriggers.get(StructureState.DEALGAE_L3))
-            .and(rightManipulatorSide)
-            .onTrue(arm.toRightDealgaeLevel());
-
-    stateTriggers.get(StructureState.DEALGAE_L3)
-            .onTrue(elevator.toDealgaeLevel(1));
-
-    stateTriggers.get(StructureState.PRESOURCE)
-            .onTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)))
-            .and(elevator.reachedPosition)
-            .onTrue(this.setState(StructureState.SOURCE));
-    stateTriggers.get(StructureState.SOURCE)
-            .and(leftManipulatorSide)
-            .onTrue(arm.toLeftSourceLevel());
-    stateTriggers.get(StructureState.SOURCE)
-            .and(rightManipulatorSide)
-            .onTrue(arm.toRightSourceLevel());
-
-    stateTriggers.get(StructureState.SOURCE)
-            .onTrue(endEffector.setSourceVelocity())
-            .and(endEffector.leftBeamBreak.or(endEffector.rightBeamBreak))
-            .onTrue(this.setState(StructureState.PREHOME));
-
-    stateTriggers.get(StructureState.PREHOME)
-            .onTrue(arm.toHome())
-            .and(arm.reachedPosition)
-            .onTrue(this.setState(StructureState.HOME));
-    stateTriggers.get(StructureState.HOME)
-            .onTrue(arm.toHome())
-            .onTrue(elevator.toHome())
-            .onTrue(endEffector.off());
-
-
-
-
+    stateTriggers
+        .get(StructureState.PREHOME)
+        .onTrue(arm.toHome())
+        .and(arm.reachedPosition)
+        .onTrue(this.setState(StructureState.HOME));
+    stateTriggers
+        .get(StructureState.HOME)
+        .onTrue(arm.toHome())
+        .onTrue(elevator.toHome())
+        .onTrue(endEffector.off());
   }
 
   // call manually

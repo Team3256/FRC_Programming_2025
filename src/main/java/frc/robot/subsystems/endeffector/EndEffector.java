@@ -7,13 +7,13 @@
 
 package frc.robot.subsystems.endeffector;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
 import org.littletonrobotics.junction.Logger;
-
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 public class EndEffector extends DisableSubsystem {
 
@@ -56,21 +56,22 @@ public class EndEffector extends DisableSubsystem {
         .finallyDo(endEffectorIO::off);
   }
 
-
-
   public Command setL1Velocity() {
-      return setVelocity(RotationsPerSecond.of(1), EndEffectorConstants.l1Velocity);
-  }
-  public Command setL2L3Velocity() {
-      return setVelocity(RotationsPerSecond.of(1), EndEffectorConstants.l2l3Velocity);
-  }
-  public Command setL4Velocity() {
-      return setVelocity(RotationsPerSecond.of(1), EndEffectorConstants.l4Velocity);
+    return setVelocity(RotationsPerSecond.of(1), EndEffectorConstants.l1Velocity);
   }
 
-    public Command setSourceVelocity() {
-        return setVelocity(EndEffectorConstants.sourceVelocity[0], EndEffectorConstants.sourceVelocity[1]);
-    }
+  public Command setL2L3Velocity() {
+    return setVelocity(RotationsPerSecond.of(1), EndEffectorConstants.l2l3Velocity);
+  }
+
+  public Command setL4Velocity() {
+    return setVelocity(RotationsPerSecond.of(1), EndEffectorConstants.l4Velocity);
+  }
+
+  public Command setSourceVelocity() {
+    return setVelocity(
+        EndEffectorConstants.sourceVelocity[0], EndEffectorConstants.sourceVelocity[1]);
+  }
 
   public Command off() {
     return this.runOnce(endEffectorIO::off);

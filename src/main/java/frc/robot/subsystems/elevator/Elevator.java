@@ -12,7 +12,6 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -61,7 +60,7 @@ public class Elevator extends DisableSubsystem {
   public Command setPosition(double position) {
     return this.run(
         () -> {
-          requestedPosition = position*ElevatorConstants.SimulationConstants.kGearRatio;
+          requestedPosition = position * ElevatorConstants.SimulationConstants.kGearRatio;
           motorIO.setPosition(position * ElevatorConstants.SimulationConstants.kGearRatio);
         });
   }
@@ -91,6 +90,7 @@ public class Elevator extends DisableSubsystem {
               * ElevatorConstants.SimulationConstants.kGearRatio);
     }
   }
+
   public Command toDealgaeLevel(int level) {
     if (Robot.isReal()) {
       return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations));

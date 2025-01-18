@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems.arm;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,13 +17,10 @@ import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.Util;
 import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.units.Units.Rotations;
-
 public class Arm extends DisableSubsystem {
 
   private final ArmIO armIO;
   private final ArmIOInputsAutoLogged armIOAutoLogged = new ArmIOInputsAutoLogged();
-
 
   public final Trigger reachedPosition = new Trigger(() -> isAtPosition());
   private Angle requestedPosition = Rotations.of(0.0);
@@ -40,7 +39,11 @@ public class Arm extends DisableSubsystem {
   }
 
   public Command setPosition(Angle position) {
-    return this.run(() -> {armIO.setPosition(position); requestedPosition = position;});
+    return this.run(
+        () -> {
+          armIO.setPosition(position);
+          requestedPosition = position;
+        });
   }
 
   public Command setVoltage(Voltage voltage) {
@@ -55,28 +58,30 @@ public class Arm extends DisableSubsystem {
     return this.setPosition(ArmConstants.reefLeftPositions[level]);
   }
 
-    public Command toRightDealgaeLevel() {
-        return this.setPosition(ArmConstants.dealgaeRightPosition);
-    }
+  public Command toRightDealgaeLevel() {
+    return this.setPosition(ArmConstants.dealgaeRightPosition);
+  }
 
-    public Command toLeftDealgaeLevel(int level) {
-        return this.setPosition(ArmConstants.dealgaeLeftPosition);
-    }
+  public Command toLeftDealgaeLevel(int level) {
+    return this.setPosition(ArmConstants.dealgaeLeftPosition);
+  }
 
-    public Command toRightSourceLevel() {
-        return this.setPosition(ArmConstants.sourceRightPositions);
-    }
+  public Command toRightSourceLevel() {
+    return this.setPosition(ArmConstants.sourceRightPositions);
+  }
 
-    public Command toLeftSourceLevel() {
-        return this.setPosition(ArmConstants.sourceLeftPositions);
-    }
-    public boolean isAtPosition() {
-        return Util.epsilonEquals(armIOAutoLogged.armEncoderAbsolutePosition, requestedPosition.in(Rotations), 0.01);
-    }
+  public Command toLeftSourceLevel() {
+    return this.setPosition(ArmConstants.sourceLeftPositions);
+  }
 
-    public Command toHome() {
-        return this.setPosition(ArmConstants.homePosition);
-    }
+  public boolean isAtPosition() {
+    return Util.epsilonEquals(
+        armIOAutoLogged.armEncoderAbsolutePosition, requestedPosition.in(Rotations), 0.01);
+  }
+
+  public Command toHome() {
+    return this.setPosition(ArmConstants.homePosition);
+  }
 
   public Command off() {
 

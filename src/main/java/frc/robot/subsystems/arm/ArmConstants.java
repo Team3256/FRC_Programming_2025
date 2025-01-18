@@ -29,25 +29,21 @@ public final class ArmConstants {
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
-
   public static final Angle[] reefLeftPositions = {
-          Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
+    Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
   };
 
   public static final Angle[] reefRightPositions = {
-          Rotations.of(0.0),  Rotations.of(0.0), Rotations.of(0.0)
+    Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
   };
 
-
   public static final Angle dealgaeRightPosition = Rotations.of(0.0);
-    public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
+  public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
 
-    public static final Angle sourceLeftPositions = Rotations.of(0.0);
-    public static final Angle sourceRightPositions = Rotations.of(0.0);
+  public static final Angle sourceLeftPositions = Rotations.of(0.0);
+  public static final Angle sourceRightPositions = Rotations.of(0.0);
 
-    public static final Angle homePosition = Rotations.of(0.0);
-
-
+  public static final Angle homePosition = Rotations.of(0.0);
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
