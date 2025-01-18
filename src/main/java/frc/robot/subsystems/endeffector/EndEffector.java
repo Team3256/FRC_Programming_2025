@@ -9,6 +9,7 @@ package frc.robot.subsystems.endeffector;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -17,6 +18,11 @@ public class EndEffector extends DisableSubsystem {
   private final EndEffectorIO endEffectorIO;
   private final EndEffectorIOInputsAutoLogged endEffectorIOInputsAutoLogged =
       new EndEffectorIOInputsAutoLogged();
+
+  public final Trigger leftBeamBreak =
+      new Trigger(() -> endEffectorIOInputsAutoLogged.leftBeamBreak);
+  public final Trigger rightBeamBreak =
+      new Trigger(() -> endEffectorIOInputsAutoLogged.rightBeamBreak);
 
   public EndEffector(boolean enabled, EndEffectorIO endEffectorIO) {
     super(enabled);
