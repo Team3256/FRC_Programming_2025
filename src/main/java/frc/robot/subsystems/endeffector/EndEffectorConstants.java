@@ -8,10 +8,7 @@
 package frc.robot.subsystems.endeffector;
 
 import com.ctre.phoenix6.configs.*;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.S1CloseStateValue;
-import com.ctre.phoenix6.signals.S2CloseStateValue;
+import com.ctre.phoenix6.signals.*;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
@@ -48,7 +45,13 @@ public final class EndEffectorConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(60));
+                  .withStatorCurrentLimit(60))
+          .withHardwareLimitSwitch(
+              new HardwareLimitSwitchConfigs()
+                  .withForwardLimitSource(ForwardLimitSourceValue.RemoteCANdiS1)
+                  .withReverseLimitSource(ReverseLimitSourceValue.RemoteCANdiS2)
+                  .withForwardLimitEnable(true)
+                  .withReverseLimitEnable(true));
 
   public static final CANdiConfiguration canDiConfigs =
       new CANdiConfiguration()

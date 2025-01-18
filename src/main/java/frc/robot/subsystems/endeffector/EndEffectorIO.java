@@ -43,6 +43,14 @@ public interface EndEffectorIO {
 
   public default void setCoralVelocity(AngularVelocity velocity) {}
 
+  public default void setAlgaeVoltage(double voltage, boolean override) {}
+
+  public default void setAlgaeVelocity(AngularVelocity velocity, boolean override) {}
+
+  public default void setCoralVoltage(double voltage, boolean override) {}
+
+  public default void setCoralVelocity(AngularVelocity velocity, boolean override) {}
+
   public default TalonFX getAlgaeMotor() {
     return new TalonFX(0);
   }

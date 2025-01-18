@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems.endeffector;
 
+import static edu.wpi.first.units.Units.Volts;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.controls.*;
@@ -23,14 +25,20 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final VelocityVoltage algaeVelocityRequest =
       new VelocityVoltage(0).withSlot(0).withEnableFOC(EndEffectorConstants.kUseFOC);
 
+  private final VoltageOut algaeVoltageRequest =
+      new VoltageOut(0).withEnableFOC(EndEffectorConstants.kUseFOC);
+
   private final StatusSignal<Voltage> algaeMotorVoltage = algaeMotor.getMotorVoltage();
   private final StatusSignal<AngularVelocity> algaeMotorVelocity = algaeMotor.getVelocity();
   private final StatusSignal<Current> algaeMotorStatorCurrent = algaeMotor.getStatorCurrent();
   private final StatusSignal<Current> algaeMotorSupplyCurrent = algaeMotor.getSupplyCurrent();
 
   private final TalonFX coralMotor = new TalonFX(EndEffectorConstants.coralMotorID);
-  final VelocityVoltage velocityRequestFollower =
+  final VelocityVoltage coralVelocityRequest =
       new VelocityVoltage(0).withSlot(0).withEnableFOC(EndEffectorConstants.kUseFOC);
+
+  private final VoltageOut coralVoltageRequest =
+      new VoltageOut(0).withEnableFOC(EndEffectorConstants.kUseFOC);
 
   private final StatusSignal<Voltage> coralMotorVoltage = coralMotor.getMotorVoltage();
   private final StatusSignal<AngularVelocity> coralMotorVelocity = coralMotor.getVelocity();
@@ -100,22 +108,46 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   @Override
   public void setAlgaeVoltage(double voltage) {
-    algaeMotor.setVoltage(voltage);
+    setAlgaeVoltage(voltage, false);
   }
 
   @Override
   public void setAlgaeVelocity(AngularVelocity velocity) {
-    algaeMotor.setControl(algaeVelocityRequest.withVelocity(velocity));
+    setAlgaeVelocity(velocity, false);
   }
 
   @Override
   public void setCoralVoltage(double voltage) {
-    coralMotor.setVoltage(voltage);
+    setCoralVoltage(voltage, false);
   }
 
   @Override
   public void setCoralVelocity(AngularVelocity velocity) {
-    coralMotor.setControl(velocityRequestFollower.withVelocity(velocity));
+    setCoralVelocity(velocity, false);
+  }
+
+  @Override
+  public void setAlgaeVoltage(double voltage, boolean override) {
+    algaeMotor.setControl(
+        algaeVoltageRequest.withOutput(Volts.of(voltage)).withIgnoreHardwareLimits(override));
+  }
+
+  @Override
+  public void setAlgaeVelocity(AngularVelocity velocity, boolean override) {
+    algaeMotor.setControl(
+        algaeVelocityRequest.withVelocity(velocity).withIgnoreHardwareLimits(override));
+  }
+
+  @Override
+  public void setCoralVoltage(double voltage, boolean override) {
+    coralMotor.setControl(
+        coralVoltageRequest.withOutput(Volts.of(voltage)).withIgnoreHardwareLimits(override));
+  }
+
+  @Override
+  public void setCoralVelocity(AngularVelocity velocity, boolean override) {
+    coralMotor.setControl(
+        coralVelocityRequest.withVelocity(velocity).withIgnoreHardwareLimits(override));
   }
 
   @Override
