@@ -13,9 +13,9 @@ import edu.wpi.first.units.measure.Mass;
 public final class GroundIntakeConstants {
 
     
-  public static final int kMotorID = 38;
+  public static final int kMotorID = 0; //Change constants later
   public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration();
-  public static final int groundIntakeMotorEncoderId = 39;
+  public static final int groundIntakeMotorEncoderId = 0; //Change constants later
 
   // max value is 8, min is 0
 
