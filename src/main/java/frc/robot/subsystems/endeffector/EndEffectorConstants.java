@@ -50,17 +50,14 @@ public final class EndEffectorConstants {
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(60));
 
-
-
-  public static final CANdiConfiguration canDiConfigs = new CANdiConfiguration().withDigitalInputs(
-          new DigitalInputsConfigs()
+  public static final CANdiConfiguration canDiConfigs =
+      new CANdiConfiguration()
+          .withDigitalInputs(
+              new DigitalInputsConfigs()
                   .withS1CloseState(S1CloseStateValue.CloseWhenHigh)
-                  .withS2CloseState(S2CloseStateValue.CloseWhenLow)
-  );
+                  .withS2CloseState(S2CloseStateValue.CloseWhenLow));
 
   public static final int candiID = 21;
-
-
 
   public static final class SimulationConstants {
     public static double coralGearingRatio = 1.0;

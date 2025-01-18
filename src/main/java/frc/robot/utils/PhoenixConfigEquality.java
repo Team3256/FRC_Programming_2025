@@ -49,28 +49,38 @@ public class PhoenixConfigEquality {
         && isEqual(a.MotionMagic, b.MotionMagic);
   }
 
-
-
   public static boolean isEqual(CANdiConfiguration a, CANdiConfiguration b) {
-    return isEqual(a.DigitalInputs, b.DigitalInputs)&&isEqual(a.PWM1, b.PWM1)&&isEqual(a.PWM2, b.PWM2)&&isEqual(a.Quadrature, b.Quadrature);
-  }
-  public static boolean isEqual(PWM1Configs a, PWM1Configs b) {
-    return a.SensorDirection==b.SensorDirection &&
-            epsilonEquals(a.AbsoluteSensorOffset, b.AbsoluteSensorOffset, CANDI_CONFIG_EPSILON)
-            && epsilonEquals(a.AbsoluteSensorDiscontinuityPoint,b.AbsoluteSensorDiscontinuityPoint, CANDI_CONFIG_EPSILON);
-  }
-  public static boolean isEqual(PWM2Configs a, PWM2Configs b) {
-    return a.SensorDirection==b.SensorDirection &&
-            epsilonEquals(a.AbsoluteSensorOffset, b.AbsoluteSensorOffset, CANDI_CONFIG_EPSILON)
-            && epsilonEquals(a.AbsoluteSensorDiscontinuityPoint,b.AbsoluteSensorDiscontinuityPoint, CANDI_CONFIG_EPSILON);
-  }
-  public static boolean isEqual(QuadratureConfigs a, QuadratureConfigs b) {
-    return a.SensorDirection==b.SensorDirection && a.QuadratureEdgesPerRotation==b.QuadratureEdgesPerRotation;
+    return isEqual(a.DigitalInputs, b.DigitalInputs)
+        && isEqual(a.PWM1, b.PWM1)
+        && isEqual(a.PWM2, b.PWM2)
+        && isEqual(a.Quadrature, b.Quadrature);
   }
 
+  public static boolean isEqual(PWM1Configs a, PWM1Configs b) {
+    return a.SensorDirection == b.SensorDirection
+        && epsilonEquals(a.AbsoluteSensorOffset, b.AbsoluteSensorOffset, CANDI_CONFIG_EPSILON)
+        && epsilonEquals(
+            a.AbsoluteSensorDiscontinuityPoint,
+            b.AbsoluteSensorDiscontinuityPoint,
+            CANDI_CONFIG_EPSILON);
+  }
+
+  public static boolean isEqual(PWM2Configs a, PWM2Configs b) {
+    return a.SensorDirection == b.SensorDirection
+        && epsilonEquals(a.AbsoluteSensorOffset, b.AbsoluteSensorOffset, CANDI_CONFIG_EPSILON)
+        && epsilonEquals(
+            a.AbsoluteSensorDiscontinuityPoint,
+            b.AbsoluteSensorDiscontinuityPoint,
+            CANDI_CONFIG_EPSILON);
+  }
+
+  public static boolean isEqual(QuadratureConfigs a, QuadratureConfigs b) {
+    return a.SensorDirection == b.SensorDirection
+        && a.QuadratureEdgesPerRotation == b.QuadratureEdgesPerRotation;
+  }
 
   public static boolean isEqual(DigitalInputsConfigs a, DigitalInputsConfigs b) {
-    return a.S1CloseState==b.S1CloseState && a.S2CloseState==b.S2CloseState;
+    return a.S1CloseState == b.S1CloseState && a.S2CloseState == b.S2CloseState;
   }
 
   public static boolean isEqual(CANcoderConfiguration a, CANcoderConfiguration b) {

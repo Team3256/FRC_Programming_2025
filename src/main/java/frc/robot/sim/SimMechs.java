@@ -31,6 +31,15 @@ public final class SimMechs {
   private final MechanismLigament2d armViz =
       elevatorViz.append(new MechanismLigament2d("Arm", 1, 0.0, 5.0, new Color8Bit(Color.kGreen)));
 
+  private final MechanismLigament2d algaeEndEffectorViz =
+      armViz.append(
+          new MechanismLigament2d(
+              "Algae End Effector Flywheel", 0.35, 90, 2.5, new Color8Bit(Color.kRed)));
+  private final MechanismLigament2d coralEndEffectorViz =
+      armViz.append(
+          new MechanismLigament2d(
+              "Coral End Effector Flywheel", .25, 0.0, 2.5, new Color8Bit(Color.kYellow)));
+
   private static SimMechs instance = null;
 
   private SimMechs() {}
@@ -52,5 +61,10 @@ public final class SimMechs {
 
   public void publishToNT() {
     SmartDashboard.putData("RobotSim", mech);
+  }
+
+  public void updateEndEffector(Angle algae, Angle coral) {
+    algaeEndEffectorViz.setAngle(algaeEndEffectorViz.getAngle() + algae.in(Degrees));
+    coralEndEffectorViz.setAngle(coralEndEffectorViz.getAngle() + coral.in(Degrees));
   }
 }

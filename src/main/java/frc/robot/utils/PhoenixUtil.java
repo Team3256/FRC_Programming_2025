@@ -78,18 +78,18 @@ public class PhoenixUtil {
       return true;
     }
   }
-  public static boolean readAndVerifyConfiguration(
-          CANdi canDi, CANdiConfiguration config) {
+
+  public static boolean readAndVerifyConfiguration(CANdi canDi, CANdiConfiguration config) {
     CANdiConfiguration readConfig = new CANdiConfiguration();
     if (!spamGetStatusCode(() -> canDi.getConfigurator().refresh(readConfig))) {
       // could not get config!
       DriverStation.reportWarning(
-              "Failed to read config for CANdi [" + canDi.getDeviceID() + "]", false);
+          "Failed to read config for CANdi [" + canDi.getDeviceID() + "]", false);
       return false;
     } else if (!PhoenixConfigEquality.isEqual(config, readConfig)) {
       // configs did not match
       DriverStation.reportWarning(
-              "Configuration verification failed for CANdi [" + canDi.getDeviceID() + "]", false);
+          "Configuration verification failed for CANdi [" + canDi.getDeviceID() + "]", false);
       return false;
     } else {
       // configs read and match, Talon OK
@@ -175,7 +175,7 @@ public class PhoenixUtil {
   }
 
   public static boolean applyCANdiConfigs(
-          CANdi candi, CANdiConfiguration candiConfig, int numTries) {
+      CANdi candi, CANdiConfiguration candiConfig, int numTries) {
     for (int i = 0; i < numTries; i++) {
       if (RobotBase.isSimulation()) {
         return candi.getConfigurator().apply(candiConfig).isOK();
@@ -186,29 +186,29 @@ public class PhoenixUtil {
           return true;
         } else {
           DriverStation.reportWarning(
-                  "Failed to verify config for candi ["
-                          + candi.getDeviceID()
-                          + "] (attempt "
-                          + (i + 1)
-                          + " of "
-                          + numTries
-                          + ")",
-                  false);
+              "Failed to verify config for candi ["
+                  + candi.getDeviceID()
+                  + "] (attempt "
+                  + (i + 1)
+                  + " of "
+                  + numTries
+                  + ")",
+              false);
         }
       } else {
         DriverStation.reportWarning(
-                "Failed to apply config for candi ["
-                        + candi.getDeviceID()
-                        + "] (attempt "
-                        + (i + 1)
-                        + " of "
-                        + numTries
-                        + ")",
-                false);
+            "Failed to apply config for candi ["
+                + candi.getDeviceID()
+                + "] (attempt "
+                + (i + 1)
+                + " of "
+                + numTries
+                + ")",
+            false);
       }
     }
     DriverStation.reportError(
-            "Failed to apply config for candi after " + numTries + " attempts", false);
+        "Failed to apply config for candi after " + numTries + " attempts", false);
     return false;
   }
 }
