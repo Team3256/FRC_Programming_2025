@@ -5,29 +5,30 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.subsystems.swerve.commands;
+package frc.robot.subsystems.swerve;
 
-import static frc.robot.Constants.stickDeadband;
-import static frc.robot.subsystems.swerve.SwerveConstants.*;
-import static frc.robot.subsystems.swerve.SwerveConstants.aziDrivekP;
-
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
-import frc.robot.helpers.DebugCommandBase;
-import frc.robot.subsystems.swerve.SwerveDrive;
-import java.util.function.BooleanSupplier;
+import frc.robot.Constants;
+import frc.robot.utils.DebugCommand;
+import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
+
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
-public class Azimuth extends DebugCommandBase {
-  private SwerveDrive swerveSubsystem;
+public class Azimuth extends DebugCommand {
+  private CommandSwerveDrivetrain swerveSubsystem;
+  private final AdaptiveSlewRateLimiter yLimiter;
+  private final AdaptiveSlewRateLimiter xLimiter;
+  private final DoubleSupplier leftY;
+  private final DoubleSupplier leftX;
+  private final DoubleSupplier triggerInput;
   private DoubleSupplier setpointAngle;
   private PIDController azimuthController;
   
-  private SwerveRequest.FieldCentric driveWithAzimuth = 
+  private SwerveRequest.FieldCentric driveWithAzimuth =
   new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed)
       .withRotationalRate(MaxAngularRate);
@@ -35,6 +36,8 @@ public class Azimuth extends DebugCommandBase {
   /** Driver control */
   public Azimuth(
       CommandSwerveDrivetrain swerve,
+      AdaptiveSlewRateLimiter yLimiter,
+      AdaptiveSlewRateLimiter xLimiter,
       DoubleSupplier leftY,
       DoubleSupplier leftX,
       DoubleSupplier triggerInput,
@@ -43,6 +46,8 @@ public class Azimuth extends DebugCommandBase {
       this.swerveSubsystem = swerveSubsystem;
     addRequirements(swerveSubsystem);
 
+    this.yLimiter = yLimiter;
+    this.xLimiter = xLimiter;
     this.leftY = leftY;
     this.leftX = leftX;
     this.triggerInput = triggerInput;
@@ -57,31 +62,31 @@ public class Azimuth extends DebugCommandBase {
 
     double rotationPIDOutput =
         azimuthController.calculate(
-          swerveSubsystem.getHeading().getDegrees(), setpointAngle.getAsDouble());
+          swerveSubsystem.getPigeon2().getRotation2d().getDegrees(), setpointAngle.getAsDouble());
 
-    rotationPIDOutput = MathUtil.clamp(rotationPIDOutput, -1.5 * Math.PI, 1.5 * Math.PI);
+    double finalRotationPIDOutput = MathUtil.clamp(rotationPIDOutput, -1.5 * Math.PI, 1.5 * Math.PI);
 
-    if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
+    if (Constants.FeatureFlags.kSwerveAccelerationLimitingEnabled) {
       this.swerveSubsystem.applyRequest(
               () ->
                   driveWithAzimuth
-                      .withVelocityX(swerveVelXRateLimiter.calculate(-leftY) * MaxSpeed)
-                      .withVelocityY(swerveVelYRateLimiter.calculate(-leftX) * MaxSpeed)
-                      .withRotationalRate(rotationPIDOutput));
+                      .withVelocityX(xLimiter.calculate(-leftY.getAsDouble()) * MaxSpeed)
+                      .withVelocityY(yLimiter.calculate(-leftX.getAsDouble()) * MaxSpeed)
+                      .withRotationalRate(finalRotationPIDOutput));
 
     } else {
       this.swerveSubsystem.applyRequest(
               () ->
                   driveWithAzimuth
-                      .withVelocityX(-leftY * MaxSpeed)
-                      .withVelocityY(-leftX * MaxSpeed)
-                      .withRotationalRate(rotationPIDOutput));
+                      .withVelocityX(-leftY.getAsDouble() * MaxSpeed)
+                      .withVelocityY(-leftX.getAsDouble() * MaxSpeed)
+                      .withRotationalRate(finalRotationPIDOutput));
     }
   }
 
   @Override
   public boolean isFinished() {
     // return manualRotating.getAsBoolean() || azimuthController.atSetpoint();
-    return (triggerInput != 0 || azimuthController.atSetpoint)
+    return (triggerInput.getAsDouble() != 0.0 || azimuthController.atSetpoint());
   }
 }
