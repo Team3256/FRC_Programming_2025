@@ -8,7 +8,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -19,7 +18,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -190,7 +188,7 @@ public class RobotContainer {
                       .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                       .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
-    
+
     m_driverController
         .leftBumper()
         .whileTrue(
@@ -249,7 +247,7 @@ public class RobotContainer {
     //     .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefKL)));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-    
+
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 }
