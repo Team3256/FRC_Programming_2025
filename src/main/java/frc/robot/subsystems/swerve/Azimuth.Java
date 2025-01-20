@@ -20,17 +20,17 @@ import frc.robot.subsystems.swerve.SwerveDrive;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
+import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 public class Azimuth extends DebugCommandBase {
-  private Translation2d translation;
-  private boolean fieldRelative;
-  private boolean openLoop;
-
   private SwerveDrive swerveSubsystem;
-  private DoubleSupplier translationAxis;
-  private DoubleSupplier strafeAxis;
   private DoubleSupplier setpointAngle;
   private PIDController azimuthController;
+  
+  private SwerveRequest.FieldCentric driveWithAzimuth = 
+  new SwerveRequest.FieldCentric()
+      .withDeadband(MaxSpeed)
+      .withRotationalRate(MaxAngularRate);
 
   /** Driver control */
   public Azimuth(
@@ -39,11 +39,12 @@ public class Azimuth extends DebugCommandBase {
       DoubleSupplier leftX,
       DoubleSupplier triggerInput,
       DoubleSupplier setpointAngle) {
-    this.swerveSubsystem = swerveSubsystem;
+    
+      this.swerveSubsystem = swerveSubsystem;
     addRequirements(swerveSubsystem);
 
     this.leftY = leftY;
-    this.leftX = leftY;
+    this.leftX = leftX;
     this.triggerInput = triggerInput;
     this.setpointAngle = setpointAngle;
     this.azimuthController = new PIDController(aziDrivekP, aziDrivekI, aziDrivekD);
@@ -53,42 +54,34 @@ public class Azimuth extends DebugCommandBase {
 
   @Override
   public void execute() {
-    // Obtains axis values for x and y for translation command
-    double yAxis = -translationAxis.getAsDouble();
-    double xAxis = -strafeAxis.getAsDouble();
-
-    // Safety area, insures that joystick movement will not be tracked within a
-    // certain area,
-    // prevents unintentional drifting
-    yAxis = (Math.abs(yAxis) < stickDeadband) ? 0 : yAxis;
-    xAxis = (Math.abs(xAxis) < stickDeadband) ? 0 : xAxis;
-
-    translation = new Translation2d(yAxis, xAxis).times(maxTranslationalVelocity);
-
-    // Converts from coordinates to angle, sets joystick forward input as 0,
-    // converts angle to
-    // degrees
-    double azimuthAngle = setpointAngle.getAsDouble();
-
-    // PID controller takes current robot position (getYaw) and compares to the
-    // azimuth angle to
-    // calculate error
 
     double rotationPIDOutput =
-        azimuthController.calculate(swerveSubsystem.getHeading().getDegrees(), azimuthAngle);
+        azimuthController.calculate(
+          swerveSubsystem.getHeading().getDegrees(), setpointAngle.getAsDouble());
 
-    Logger.recordOutput("rotationOutput", rotationPIDOutput);
-    Logger.recordOutput("rotationOutputDeg", Units.radiansToDegrees(rotationPIDOutput));
-    Logger.recordOutput("rotationSetpoint", azimuthAngle);
+    rotationPIDOutput = MathUtil.clamp(rotationPIDOutput, -1.5 * Math.PI, 1.5 * Math.PI);
 
-    translation = new Translation2d(yAxis, xAxis).times(maxTranslationalVelocity);
-    rotationPIDOutput = MathUtil.clamp(rotationPIDOutput, -maxAngularVelocity, maxAngularVelocity);
+    if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
+      this.swerveSubsystem.applyRequest(
+              () ->
+                  driveWithAzimuth
+                      .withVelocityX(swerveVelXRateLimiter.calculate(-leftY) * MaxSpeed)
+                      .withVelocityY(swerveVelYRateLimiter.calculate(-leftX) * MaxSpeed)
+                      .withRotationalRate(rotationPIDOutput));
 
-    swerveSubsystem.drive(translation, rotationPIDOutput, fieldRelative, openLoop);
+    } else {
+      this.swerveSubsystem.applyRequest(
+              () ->
+                  driveWithAzimuth
+                      .withVelocityX(-leftY * MaxSpeed)
+                      .withVelocityY(-leftX * MaxSpeed)
+                      .withRotationalRate(rotationPIDOutput));
+    }
   }
 
   @Override
   public boolean isFinished() {
     // return manualRotating.getAsBoolean() || azimuthController.atSetpoint();
+    return (triggerInput != 0 || azimuthController.atSetpoint)
   }
 }

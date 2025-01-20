@@ -8,6 +8,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -18,6 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -156,10 +158,6 @@ public class RobotContainer {
 
   private void configureSwerve() {
     // LinearVelocity is a vector, so we need to get the magnitude
-    double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
-    double MaxAngularRate = 1.5 * Math.PI; // My drivetrain
-    double SlowMaxSpeed = MaxSpeed * 0.3;
-    double SlowMaxAngular = MaxAngularRate * 0.3;
 
     SwerveRequest.FieldCentric drive =
         new SwerveRequest.FieldCentric()
@@ -167,8 +165,6 @@ public class RobotContainer {
             .withRotationalRate(0.15 * MaxAngularRate);
 
     SwerveRequest.ApplyRobotSpeeds driveAlt = new SwerveRequest.ApplyRobotSpeeds();
-
-    SwerveRequest.FieldCentricFacingAngle azimuth = new SwerveRequest.FieldCentricFacingAngle();
 
     if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
       drivetrain.setDefaultCommand(
@@ -194,6 +190,24 @@ public class RobotContainer {
                       .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                       .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
+    
+    m_driverController
+        .leftBumper()
+        .whileTrue(
+            drivetrain.applyRequest(
+                () ->
+                    drive
+                        .withVelocityX(
+                            -m_driverController.getLeftY()
+                                * SlowMaxSpeed) // Drive forward with negative Y (forward)
+                        .withVelocityY(
+                            -m_driverController.getLeftX()
+                                * SlowMaxSpeed) // Drive left with negative X (left)
+                        .withRotationalRate(
+                            m_driverController.getTriggerAxes()
+                                * SlowMaxAngular) // Drive counterclockwise with negative X
+                // (left)
+                ));
 
     // // AB
     // new Trigger(
@@ -234,33 +248,8 @@ public class RobotContainer {
     //                 && getStickAngle(m_driverController).getDegrees() < 240))
     //     .whileTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(reefKL)));
 
-    m_driverController
-        .leftBumper()
-        .whileTrue(
-            drivetrain.applyRequest(
-                () ->
-                    drive
-                        .withVelocityX(
-                            -m_driverController.getLeftY()
-                                * SlowMaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(
-                            -m_driverController.getLeftX()
-                                * SlowMaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(
-                            m_driverController.getTriggerAxes()
-                                * SlowMaxAngular) // Drive counterclockwise with negative X
-                // (left)
-                ));
-
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-    m_driverController
-        .x()
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(sourceLeft1)));
-    m_driverController
-        .b()
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(sourceRight2)));
-    m_driverController.a().onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(hang)));
+    
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 }
