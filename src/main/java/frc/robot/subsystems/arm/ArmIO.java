@@ -27,6 +27,9 @@ public interface ArmIO {
     public double armEncoderVelocity = 0.0;
   }
 
+  public default void loadPath() {}
+  public default void goLoadedTraj() {}
+
   public default void updateInputs(ArmIOInputs inputs) {}
 
   public default void setPosition(Angle position) {}

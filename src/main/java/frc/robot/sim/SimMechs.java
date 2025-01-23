@@ -29,7 +29,7 @@ public final class SimMechs {
       elevatorRoot.append(new MechanismLigament2d("Elevator", 2, 90));
 
   private final MechanismLigament2d armViz =
-      elevatorViz.append(new MechanismLigament2d("Arm", 1, 0.0, 5.0, new Color8Bit(Color.kGreen)));
+      elevatorViz.append(new MechanismLigament2d("Arm", 1, -90, 5.0, new Color8Bit(Color.kGreen)));
 
   private final MechanismLigament2d algaeEndEffectorViz =
       armViz.append(
@@ -52,7 +52,7 @@ public final class SimMechs {
   }
 
   public void updateArm(Angle angle) {
-    armViz.setAngle(angle.in(Degrees));
+    armViz.setAngle(angle.minus(Degrees.of(90)).in(Degrees));
   }
 
   public void updateElevator(Distance height) {

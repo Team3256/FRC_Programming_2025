@@ -75,7 +75,7 @@ public final class ArmConstants {
     public static final double jkGMetersSquared = 1.2922967095;
 
     public static final Rotation2d minAngle = Rotation2d.fromDegrees(0);
-    public static final Rotation2d maxAngle = Rotation2d.fromDegrees(270);
+    public static final Rotation2d maxAngle = Rotation2d.fromDegrees(360);
     public static final Rotation2d startingAngle = Rotation2d.fromDegrees(0);
   }
 }

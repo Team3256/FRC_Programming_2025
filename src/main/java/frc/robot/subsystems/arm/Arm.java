@@ -22,6 +22,7 @@ public class Arm extends DisableSubsystem {
     super(enabled);
 
     this.armIO = armIO;
+    armIO.loadPath();
   }
 
   @Override
@@ -29,6 +30,7 @@ public class Arm extends DisableSubsystem {
     super.periodic();
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
+
   }
 
   public Command setPosition(Angle position) {
@@ -37,6 +39,10 @@ public class Arm extends DisableSubsystem {
 
   public Command setVoltage(Voltage voltage) {
     return this.run(() -> armIO.setVoltage(voltage));
+  }
+
+  public Command goLoadedTraj() {
+    return this.run(armIO::goLoadedTraj);
   }
 
   public Command off() {
