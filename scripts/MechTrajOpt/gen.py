@@ -22,6 +22,8 @@ def main():
 
     END_EFFECTOR_MIN_HEIGHT = 0.44704 + 0.1  # m
 
+    END_EFFECTOR_WIDTH = 0.15  # m
+
     TOTAL_TIME = 7.0  # s
 
     problem = ca.Opti()
@@ -89,6 +91,14 @@ def main():
     problem.subject_to(
        elevator[:1, :] + ARM_LENGTH * np.sin(arm[:1, :])
        >= END_EFFECTOR_MIN_HEIGHT
+    )
+    problem.subject_to(
+        elevator[:1, :] + ARM_LENGTH * np.sin(arm[:1, :]) + END_EFFECTOR_WIDTH *np.sin(arm[:1, :]-(math.pi/2))
+        >= END_EFFECTOR_MIN_HEIGHT
+    )
+    problem.subject_to(
+        elevator[:1, :] + ARM_LENGTH * np.sin(arm[:1, :]) + END_EFFECTOR_WIDTH *np.sin(arm[:1, :]+(math.pi/2))
+        >= END_EFFECTOR_MIN_HEIGHT
     )
 
     # Cost function
