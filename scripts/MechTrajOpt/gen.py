@@ -7,22 +7,22 @@ import numpy as np
 
 
 def main():
-    N = 350
+    N = 700
 
     ELEVATOR_START_HEIGHT = 3  # m
-    ELEVATOR_END_HEIGHT = .7  # m
+    ELEVATOR_END_HEIGHT = .25  #  min height from cad
     ELEVATOR_MAX_VELOCITY = 1  # m/s
     ELEVATOR_MAX_ACCELERATION = 2.0  # m/s²
 
-    ARM_LENGTH = 0.59055  # m
+    ARM_LENGTH = 0.59055  # m from cad
     ARM_START_ANGLE = -math.pi / 2  # rad
-    ARM_END_ANGLE = 0  # rad
+    ARM_END_ANGLE = math.pi / 2  # rad
     ARM_MAX_VELOCITY = 2.0 * math.pi  # rad/s
     ARM_MAX_ACCELERATION = 4.0 * math.pi  # rad/s²
 
-    END_EFFECTOR_MIN_HEIGHT = 0.44704 + 0.1  # m
+    END_EFFECTOR_MIN_HEIGHT = 0.44704 + 0.1  # m from cad
 
-    END_EFFECTOR_WIDTH = 0.15  # m
+    END_EFFECTOR_WIDTH = 0.508 / 2  # m from cad
 
     TOTAL_TIME = 7.0  # s
 
