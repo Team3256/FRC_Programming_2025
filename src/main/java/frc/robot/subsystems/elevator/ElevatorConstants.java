@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -30,6 +30,8 @@ public final class ElevatorConstants {
   };
   public static final Angle kSourcePosition = Rotations.of(0.0);
   public static final Angle kGroundPosition = Rotations.of(0.0);
+  public static final Angle kAlgaeLowPostion = Rotations.of(0.0);
+  public static final Angle kAlgaeHighPostion = Rotations.of(0.0);
 
   public static class SimulationConstants {
     public static final Mass kCarriageMass = Kilograms.of(10);

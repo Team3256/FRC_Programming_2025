@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -42,6 +42,12 @@ public class Superstructure {
     EMPTY
   }
 
+  public enum ElevatorHeights {
+      AlgaeHigh,
+      AlgaeLow,
+      L1,L2,L3,L4
+  }
+
   private StructureState state = StructureState.IDLE;
   private StructureState prevState = StructureState.IDLE;
 
@@ -78,6 +84,9 @@ public class Superstructure {
     this.elevator = elevator;
     this.arm = arm;
     this.endeffector = endeffector;
+    if (frontHasPreload && backHasPreload) {
+      DriverStation.reportWarning("Both sides have preloads", false);
+    }
     if (frontHasPreload) {
       this.endeffectorStates[0] = Gamepiece.CORAL;
     }
@@ -257,7 +266,7 @@ public class Superstructure {
         //                    .get(StructureState.REEF))
         .onTrue(
             prepareFor(Gamepiece.ALGAE)
-                .andThen(arm.setPosition(ArmConstants.kAlgaeAAngle))
+                .andThen(arm.setPosition(ArmConstants.kAlgaeHighAngle))
                 .alongWith(endeffector.intakeAlgae()))
         // See line 138
         .and(hasAlgae)

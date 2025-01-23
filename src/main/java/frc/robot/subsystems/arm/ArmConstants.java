@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -71,8 +71,8 @@ public final class ArmConstants {
   public static final Angle kL2L3Angle = Degrees.of(0); // TODO: get from game manual
   public static final Angle kL4Angle = Degrees.of(0); // TODO: get from game manual
   public static final Angle kTroughAngle = Degrees.of(0); // TODO: get from game manual
-  public static final Angle kAlgaeAAngle = Degrees.of(0); // TODO: get from game manual
-  public static final Angle kAlgaeBAngle = Degrees.of(0); // TODO: get from game manual
+  public static final Angle kAlgaeHighAngle = Degrees.of(0); // TODO: get from game manual
+  public static final Angle kAlgaeLowAngle = Degrees.of(0); // TODO: get from game manual
 
   public static final class Sim {
     public static final double simGearing = 168;
