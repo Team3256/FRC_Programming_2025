@@ -25,17 +25,13 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.utils.PhoenixUtil;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import org.json.simple.JSONObject;
 
 public class ArmIOTalonFX implements ArmIO {
 
@@ -113,7 +109,6 @@ public class ArmIOTalonFX implements ArmIO {
 
   public void loadPath() {
 
-
     String trajPath = Filesystem.getDeployDirectory().toPath().resolve("data.json").toString();
     File file = new File(Filesystem.getDeployDirectory(), "data.json");
     try {
@@ -126,18 +121,19 @@ public class ArmIOTalonFX implements ArmIO {
       e.printStackTrace();
     }
 
-//    System.out.println(o.toString());
+    //    System.out.println(o.toString());
   }
-
 
   public void goLoadedTraj() {
     if (trajIterator.hasNext()) {
       Map<String, Double> point = trajIterator.next();
-      armMotor.setControl(positionRequest.withPosition(Radians.of(point.get("position"))).withVelocity(RadiansPerSecond.of(point.get("velocity"))));
+      armMotor.setControl(
+          positionRequest
+              .withPosition(Radians.of(point.get("position")))
+              .withVelocity(RadiansPerSecond.of(point.get("velocity"))));
     } else {
       trajIterator = loadedTraj.iterator();
     }
-
   }
 
   @Override

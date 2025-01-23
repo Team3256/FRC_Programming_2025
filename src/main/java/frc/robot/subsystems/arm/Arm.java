@@ -30,7 +30,6 @@ public class Arm extends DisableSubsystem {
     super.periodic();
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
-
   }
 
   public Command setPosition(Angle position) {

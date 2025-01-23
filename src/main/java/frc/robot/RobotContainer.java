@@ -61,7 +61,6 @@ public class RobotContainer {
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
 
-
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
@@ -109,13 +108,8 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverController
-        .a()
-        .onTrue(arm.setPosition(Degrees.of(90)));
-    m_driverController
-            .b()
-            .onTrue(arm.goLoadedTraj());
-
+    m_driverController.a().onTrue(arm.setPosition(Degrees.of(90)));
+    m_driverController.b().onTrue(arm.goLoadedTraj());
 
     m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
