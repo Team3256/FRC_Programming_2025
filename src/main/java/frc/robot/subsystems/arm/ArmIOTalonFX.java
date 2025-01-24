@@ -23,15 +23,10 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.utils.PhoenixUtil;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import org.json.simple.JSONObject;
 
 public class ArmIOTalonFX implements ArmIO {
 
@@ -59,7 +54,6 @@ public class ArmIOTalonFX implements ArmIO {
   private ArrayList<Map<String, Double>> loadedTraj = null;
 
   private Iterator<Map<String, Double>> trajIterator = null;
-
 
   public ArmIOTalonFX() {
 
@@ -106,8 +100,6 @@ public class ArmIOTalonFX implements ArmIO {
     inputs.armEncoderAbsolutePosition = cancoderAbsolutePosition.getValue().in(Rotations);
   }
 
-
-
   public void goLoadedTraj() {
     if (trajIterator.hasNext()) {
       Map<String, Double> point = trajIterator.next();
@@ -130,9 +122,9 @@ public class ArmIOTalonFX implements ArmIO {
   }
 
   @Override
-    public void setPosition(Angle position, AngularVelocity velocity) {
-        armMotor.setControl(positionRequest.withPosition(position).withVelocity(velocity));
-    }
+  public void setPosition(Angle position, AngularVelocity velocity) {
+    armMotor.setControl(positionRequest.withPosition(position).withVelocity(velocity));
+  }
 
   @Override
   public void setVoltage(Voltage voltage) {

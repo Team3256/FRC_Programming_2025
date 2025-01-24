@@ -109,7 +109,7 @@ public class RobotContainer {
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
     m_driverController.a().onTrue(arm.setPosition(Degrees.of(90)));
-    m_driverController.b().onTrue(arm.goLoadedTraj());
+    m_driverController.b().onTrue(arm.runTraj("l3-stow"));
 
     m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
