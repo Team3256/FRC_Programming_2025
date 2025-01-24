@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -75,10 +75,9 @@ public class Elevator extends DisableSubsystem {
     } else {
       return this.setPosition(
           ElevatorConstants.SimulationConstants.kReefPositions[level]
-                  .div(ElevatorConstants.SimulationConstants.kWheelRadius)
+                  .div(ElevatorConstants.SimulationConstants.kDrumRadius)
                   .magnitude()
-              / (2 * Math.PI)
-              * ElevatorConstants.SimulationConstants.kGearRatio);
+              / (2 * Math.PI));
     }
   }
 
