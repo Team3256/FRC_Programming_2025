@@ -5,18 +5,47 @@ import casadi as ca
 import matplotlib.pyplot as plt
 import numpy as np
 
+# .25
 
 def main():
+    trajectories = [
+        {
+            "name": "stow-l3",
+            "elevator_start_height": 0.25,
+            "elevator_end_height": 3,
+            "arm_start_angle": math.pi / 2,
+            "arm_end_angle": -math.pi / 2
+        },
+        {
+            "name": "l3-stow",
+            "elevator_start_height": 3,
+            "elevator_end_height": 1,
+            "arm_start_angle": math.pi / 2,
+            "arm_end_angle": 0
+        }
+    ]
+    for trajectory in trajectories:
+        gen_traj(
+            trajectory["elevator_start_height"],
+            trajectory["elevator_end_height"],
+            trajectory["arm_start_angle"],
+            trajectory["arm_end_angle"],
+            trajectory["name"]
+        )
+
+
+
+def gen_traj(elevator_start_height, elevator_end_height, arm_start_angle, arm_end_angle, name):
     N = 700
 
-    ELEVATOR_START_HEIGHT = 3  # m
-    ELEVATOR_END_HEIGHT = .25  #  min height from cad
+    ELEVATOR_START_HEIGHT = elevator_start_height  # m
+    ELEVATOR_END_HEIGHT = elevator_end_height  #  min height from cad
     ELEVATOR_MAX_VELOCITY = 1  # m/s
     ELEVATOR_MAX_ACCELERATION = 2.0  # m/s²
 
     ARM_LENGTH = 0.59055  # m from cad
-    ARM_START_ANGLE = -math.pi / 2  # rad
-    ARM_END_ANGLE = math.pi / 2  # rad
+    ARM_START_ANGLE = arm_start_angle  # rad
+    ARM_END_ANGLE = arm_end_angle  # rad
     ARM_MAX_VELOCITY = 2.0 * math.pi  # rad/s
     ARM_MAX_ACCELERATION = 4.0 * math.pi  # rad/s²
 
@@ -110,23 +139,23 @@ def main():
     ts = [0]
     for i in range(N):
         ts.append(ts[-1] + sol.value(dt)[i])
-    convert_to_json(ts, sol.value(arm))
-    fig, axs = plt.subplots(3, 2)
-    axs[0, 0].set_title("Arm Position (r)")
-    axs[1, 0].set_title("Arm Velocity (r/s)")
-    axs[2, 0].set_title("Arm Acceleration (r/s²)")
-    axs[0, 1].set_title("Elevator Position (m)")
-    axs[1, 1].set_title("Elevator Velocity (m/s)")
-    axs[2, 1].set_title("Elevator Acceleration (m/s²)")
-    axs[0, 0].plot(ts, sol.value(arm)[0, :].reshape(N + 1, 1))
-    axs[1, 0].plot(ts, sol.value(arm)[1, :].reshape(N + 1, 1))
-    axs[2, 0].plot(ts[:-1], sol.value(arm_accel).reshape(N, 1))
-    axs[0, 1].plot(ts, sol.value(elevator[0, :]).reshape(N + 1, 1))
-    axs[1, 1].plot(ts, sol.value(elevator[1, :]).reshape(N + 1, 1))
-    axs[2, 1].plot(ts[:-1], sol.value(elevator_accel).reshape(N, 1))
-    plt.show()
+    convert_to_json(ts, sol.value(arm), name)
+    # fig, axs = plt.subplots(3, 2)
+    # axs[0, 0].set_title("Arm Position (r)")
+    # axs[1, 0].set_title("Arm Velocity (r/s)")
+    # axs[2, 0].set_title("Arm Acceleration (r/s²)")
+    # axs[0, 1].set_title("Elevator Position (m)")
+    # axs[1, 1].set_title("Elevator Velocity (m/s)")
+    # axs[2, 1].set_title("Elevator Acceleration (m/s²)")
+    # axs[0, 0].plot(ts, sol.value(arm)[0, :].reshape(N + 1, 1))
+    # axs[1, 0].plot(ts, sol.value(arm)[1, :].reshape(N + 1, 1))
+    # axs[2, 0].plot(ts[:-1], sol.value(arm_accel).reshape(N, 1))
+    # axs[0, 1].plot(ts, sol.value(elevator[0, :]).reshape(N + 1, 1))
+    # axs[1, 1].plot(ts, sol.value(elevator[1, :]).reshape(N + 1, 1))
+    # axs[2, 1].plot(ts[:-1], sol.value(elevator_accel).reshape(N, 1))
+    # plt.show()
 
-def convert_to_json(ts, arm):
+def convert_to_json(ts, arm, name):
     data = {"data":[]}
     index = 0
 
@@ -138,7 +167,7 @@ def convert_to_json(ts, arm):
              "velocity": arm[1, i]
             })
             index = i
-    with open("data.json", "w") as f:
+    with open("trajectories/"+name+".json", "w") as f:
         json.dump(data, f, indent=3)
 if __name__ == "__main__":
     main()
