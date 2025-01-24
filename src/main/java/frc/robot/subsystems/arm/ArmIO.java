@@ -10,6 +10,8 @@ package frc.robot.subsystems.arm;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
@@ -27,11 +29,11 @@ public interface ArmIO {
     public double armEncoderVelocity = 0.0;
   }
 
-  public default void loadPath() {}
 
-  public default void goLoadedTraj() {}
 
   public default void updateInputs(ArmIOInputs inputs) {}
+
+  public default void setPosition(Angle position, AngularVelocity velocity) {}
 
   public default void setPosition(Angle position) {}
 

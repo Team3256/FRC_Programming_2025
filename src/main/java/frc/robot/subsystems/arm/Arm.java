@@ -7,22 +7,47 @@
 
 package frc.robot.subsystems.arm;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.utils.DisableSubsystem;
+import org.json.simple.JSONObject;
 import org.littletonrobotics.junction.Logger;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 public class Arm extends DisableSubsystem {
 
   private final ArmIO armIO;
   private final ArmIOInputsAutoLogged armIOAutoLogged = new ArmIOInputsAutoLogged();
 
+
+  private final Gson GSON = new GsonBuilder().create();
+
+  private Map<String, ArrayList<Map<String, Double>>> loadedTrajs = null;
+
+  private Iterator<Map<String, Double>> trajIterator = null;
+
+  private ArrayList<Map<String, Double>> selectedTraj = null;
+
+
+
+
   public Arm(boolean enabled, ArmIO armIO) {
     super(enabled);
 
     this.armIO = armIO;
-    armIO.loadPath();
   }
 
   @Override
@@ -30,7 +55,38 @@ public class Arm extends DisableSubsystem {
     super.periodic();
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
+
+    if (trajIterator!=null && trajIterator.hasNext()) {
+      armIO.setPosition(Radians.of(trajIterator.next().get("position")), RadiansPerSecond.of(trajIterator.next().get("velocity")));
+    } else if (selectedTraj!=null) {
+      trajIterator = selectedTraj.iterator();
+    }
   }
+
+  public Command selectTraj(String trajName) {
+    return this.runOnce(() -> selectedTraj=loadedTrajs.get(trajName));
+  }
+
+
+  public void loadAllTraj() {
+
+    String trajPath = Filesystem.getDeployDirectory().toPath().resolve("data.json").toString();
+    File file = new File(Filesystem.getDeployDirectory(), "arm_traj");
+    for (File f : file.listFiles()) {
+      try {
+        var reader = new BufferedReader(new FileReader(f));
+        String str = reader.lines().reduce("", (a, b) -> a + b);
+        reader.close();
+        loadedTrajs.put(f.getName(), (ArrayList) GSON.fromJson(str, JSONObject.class).get("data"));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    //    System.out.println(o.toString());
+  }
+
+
 
   public Command setPosition(Angle position) {
     return this.run(() -> armIO.setPosition(position));

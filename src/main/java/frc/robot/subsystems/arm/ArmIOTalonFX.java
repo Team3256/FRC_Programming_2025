@@ -60,7 +60,6 @@ public class ArmIOTalonFX implements ArmIO {
 
   private Iterator<Map<String, Double>> trajIterator = null;
 
-  private double index = 0;
 
   public ArmIOTalonFX() {
 
@@ -107,22 +106,7 @@ public class ArmIOTalonFX implements ArmIO {
     inputs.armEncoderAbsolutePosition = cancoderAbsolutePosition.getValue().in(Rotations);
   }
 
-  public void loadPath() {
 
-    String trajPath = Filesystem.getDeployDirectory().toPath().resolve("data.json").toString();
-    File file = new File(Filesystem.getDeployDirectory(), "data.json");
-    try {
-      var reader = new BufferedReader(new FileReader(file));
-      String str = reader.lines().reduce("", (a, b) -> a + b);
-      reader.close();
-      loadedTraj = (ArrayList) GSON.fromJson(str, JSONObject.class).get("data");
-      trajIterator = loadedTraj.iterator();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    //    System.out.println(o.toString());
-  }
 
   public void goLoadedTraj() {
     if (trajIterator.hasNext()) {
@@ -144,6 +128,11 @@ public class ArmIOTalonFX implements ArmIO {
       armMotor.setControl(positionRequest.withPosition(position));
     }
   }
+
+  @Override
+    public void setPosition(Angle position, AngularVelocity velocity) {
+        armMotor.setControl(positionRequest.withPosition(position).withVelocity(velocity));
+    }
 
   @Override
   public void setVoltage(Voltage voltage) {
