@@ -37,7 +37,6 @@ public class CoralGroundIntake extends DisableSubsystem {
     return this.run(
             () -> {
               intakeIO.setIntakeVoltage(voltage);
-              intakeIO.setLinearMotorVoltage(passthroughVoltage);
             })
         .finallyDo(intakeIO::off);
   }
@@ -46,7 +45,6 @@ public class CoralGroundIntake extends DisableSubsystem {
     return this.run(
             () -> {
               intakeIO.setIntakeVelocity(velocity);
-              intakeIO.setLinearMotorVelocity(passthroughVelocity);
             })
         .finallyDo(intakeIO::off);
   }
@@ -59,27 +57,16 @@ public class CoralGroundIntake extends DisableSubsystem {
     return this.run(() -> intakeIO.setIntakeVelocity(velocity)).finallyDo(intakeIO::off);
   }
 
-  public Command setLinearMotorVoltage(double voltage) {
-    return this.run(() -> intakeIO.setLinearMotorVoltage(voltage)).finallyDo(intakeIO::off);
-  }
 
-  public Command setLinearMotorVelocity(double velocity) {
-    return this.run(() -> intakeIO.setLinearMotorVelocity(velocity)).finallyDo(intakeIO::off);
-  }
 
   public Command off() {
     return this.runOnce(intakeIO::off);
-  }
-
-  public Command setIntakeVelocityPassthroughVoltage(double velocity, double voltage) {
-    return setIntakeVelocity(velocity).andThen(setLinearMotorVoltage(voltage));
   }
 
   public Command intakeIn() {
     return this.run(
             () -> {
               intakeIO.setIntakeVelocity(80);
-              intakeIO.setLinearMotorVoltage(CoralGroundIntakeConstants.kLinearSlideMotorVoltage);
             })
         .until(debouncedBeamBreak)
         .andThen(this.off());

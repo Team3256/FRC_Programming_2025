@@ -21,13 +21,6 @@ public interface CoralIntakeIO {
     public double intakeMotorTemperature = 0.0;
     public double intakeMotorReferenceSlope = 0.0;
 
-    public double linearMotorVoltage = 0.0;
-    public double linearMotorVelocity = 0.0;
-    public double linearMotorStatorCurrent = 0.0;
-    public double linearMotorSupplyCurrent = 0.0;
-    public double linearMotorTemperature = 0.0;
-    public double linearMotorReferenceSlope = 0.0;
-
     public boolean isBeamBroken = false;
   }
 
@@ -37,10 +30,6 @@ public interface CoralIntakeIO {
 
   public default void setIntakeVelocity(double velocity) {}
 
-  public default void setLinearMotorVoltage(double voltage) {}
-
-  public default void setLinearMotorVelocity(double velocity) {}
-
   public default TalonFX getIntakeMotor() {
     return new TalonFX(0);
   }
@@ -49,13 +38,7 @@ public interface CoralIntakeIO {
     return new VoltageOut(0);
   }
 
-  public default TalonFX getLinearMotor() {
-    return new TalonFX(0);
-  }
 
-  public default VoltageOut getLinearVoltageRequest() {
-    return new VoltageOut(0);
-  }
 
   public default void off() {}
 

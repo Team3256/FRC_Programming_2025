@@ -18,15 +18,15 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public final class CoralGroundIntakeConstants {
   // CAN bus IDs
   public static final int kCGIMotorID = 0;
-  public static final int kLinearSlideMotorID = 0;
+  
 
   // Voltage
   public static final double kCGIMotorVoltage = 0.0;
-  public static final double kLinearSlideMotorVoltage = 0.0;
+  
 
   // Motion magic enable/disable default values
   public static boolean kCGIMotorMotionMagic = false;
-  public static boolean kLinearSlideMotorMotionMagic = false;
+  
 
   // time
   public static final double kBeamBreakDelayTime = 0;
@@ -34,27 +34,7 @@ public final class CoralGroundIntakeConstants {
   public static final int kIntakeBeamBreakDIO = 0;
   public static double updateFrequency = 0.0;
 
-  public static final TalonFXConfiguration linearMotorconfig =
-      new TalonFXConfiguration()
-          .withSlot0(new Slot0Configs().withKS(100).withKP(100).withKI(100).withKD(100).withKV(100))
-          .withMotorOutput(
-              new MotorOutputConfigs()
-                  .withNeutralMode(
-                      NeutralModeValue
-                          .Brake) // when no voltage is applied, motor will resist movement (brake)
-                  .withInverted(
-                      InvertedValue
-                          .Clockwise_Positive)) // motor will move in a clockwise dir w/ positive
-          // voltage
-          .withMotionMagic( // woohoo pay to win
-              new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(0.0)
-                  .withMotionMagicCruiseVelocity(0.0)
-                  .withMotionMagicJerk(0.0))
-          .withCurrentLimits( // prevents frying/destruction of motors
-              new CurrentLimitsConfigs()
-                  .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(0.0));
+  
 
   public static final TalonFXConfiguration intakeMotorConfig =
       new TalonFXConfiguration()
