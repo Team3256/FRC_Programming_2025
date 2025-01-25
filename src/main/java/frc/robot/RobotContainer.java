@@ -169,7 +169,7 @@ public class RobotContainer {
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
     azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    azimuth.HeadingController.setPID(5, 250, 0);
+    azimuth.HeadingController.setPID(5, 250, 2);
 
     if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
       drivetrain.setDefaultCommand(
@@ -250,92 +250,101 @@ public class RobotContainer {
                             .withTargetDirection(hang))
                 .withTimeout(aziTimeout));
 
-    // AB
-    new Trigger(
-            () ->
-                (getStickAngle(m_driverController).getDegrees() >= 240
-                    && getStickAngle(m_driverController).getDegrees() < 300))
+    new Trigger(() -> (m_driverController.getRightY() > 0 || m_driverController.getRightX() > 0))
         .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(reefAB))
-                .withTimeout(aziTimeout));
+            drivetrain.applyRequest(
+                () ->
+                    azimuth
+                        .withVelocityX(-m_driverController.getLeftY())
+                        .withVelocityY(-m_driverController.getLeftX())
+                        .withTargetDirection(getStickAngle(m_driverController))));
 
-    // CD
-    new Trigger(() -> (getStickAngle(m_driverController).getDegrees() >= 300))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(reefCD))
-                .withTimeout(aziTimeout));
-
-    // EF
-    new Trigger(
-            () ->
-                (getStickAngle(m_driverController).getDegrees() >= 0
-                    && getStickAngle(m_driverController).getDegrees() < 60))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(reefCD))
-                .withTimeout(aziTimeout));
-
-    // GH
-    new Trigger(
-            () ->
-                (getStickAngle(m_driverController).getDegrees() >= 60
-                    && getStickAngle(m_driverController).getDegrees() < 120))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(reefGH))
-                .withTimeout(aziTimeout));
-
-    // IJ
-    new Trigger(
-            () ->
-                (getStickAngle(m_driverController).getDegrees() >= 120
-                    && getStickAngle(m_driverController).getDegrees() < 180))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(reefIJ))
-                .withTimeout(aziTimeout));
-
-    // KL
-    new Trigger(
-            () ->
-                (getStickAngle(m_driverController).getDegrees() >= 180
-                    && getStickAngle(m_driverController).getDegrees() < 240))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(reefKL))
-                .withTimeout(aziTimeout));
+    //    // AB
+    //    new Trigger(
+    //            () ->
+    //                (getStickAngle(m_driverController).getDegrees() >= 240
+    //                    && getStickAngle(m_driverController).getDegrees() < 300))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withTargetDirection(reefAB))
+    //                .withTimeout(aziTimeout));
+    //
+    //    // CD
+    //    new Trigger(() -> (getStickAngle(m_driverController).getDegrees() >= 300))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withTargetDirection(reefCD))
+    //                .withTimeout(aziTimeout));
+    //
+    //    // EF
+    //    new Trigger(
+    //            () ->
+    //                (getStickAngle(m_driverController).getDegrees() >= 0
+    //                    && getStickAngle(m_driverController).getDegrees() < 60))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withTargetDirection(reefCD))
+    //                .withTimeout(aziTimeout));
+    //
+    //    // GH
+    //    new Trigger(
+    //            () ->
+    //                (getStickAngle(m_driverController).getDegrees() >= 60
+    //                    && getStickAngle(m_driverController).getDegrees() < 120))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withTargetDirection(reefGH))
+    //                .withTimeout(aziTimeout));
+    //
+    //    // IJ
+    //    new Trigger(
+    //            () ->
+    //                (getStickAngle(m_driverController).getDegrees() >= 120
+    //                    && getStickAngle(m_driverController).getDegrees() < 180))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withTargetDirection(reefIJ))
+    //                .withTimeout(aziTimeout));
+    //
+    //    // KL
+    //    new Trigger(
+    //            () ->
+    //                (getStickAngle(m_driverController).getDegrees() >= 180
+    //                    && getStickAngle(m_driverController).getDegrees() < 240))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withTargetDirection(reefKL))
+    //                .withTimeout(aziTimeout));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
