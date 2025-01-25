@@ -11,9 +11,9 @@ def main():
     trajectories = [
         {
             "name": "stow-l3",
-            "elevator_start_height": 0.25,
+            "elevator_start_height": 1.5,
             "elevator_end_height": 3,
-            "arm_start_angle": math.pi / 2,
+            "arm_start_angle": 0,
             "arm_end_angle": -math.pi / 2
         },
         {
@@ -36,7 +36,7 @@ def main():
 
 
 def gen_traj(elevator_start_height, elevator_end_height, arm_start_angle, arm_end_angle, name):
-    N = 700
+    N = 1400
 
     ELEVATOR_START_HEIGHT = elevator_start_height  # m
     ELEVATOR_END_HEIGHT = elevator_end_height  #  min height from cad
@@ -46,14 +46,14 @@ def gen_traj(elevator_start_height, elevator_end_height, arm_start_angle, arm_en
     ARM_LENGTH = 0.59055  # m from cad
     ARM_START_ANGLE = arm_start_angle  # rad
     ARM_END_ANGLE = arm_end_angle  # rad
-    ARM_MAX_VELOCITY = 2.0 * math.pi  # rad/s
+    ARM_MAX_VELOCITY = 2 * math.pi  # rad/s
     ARM_MAX_ACCELERATION = 4.0 * math.pi  # rad/s²
 
     END_EFFECTOR_MIN_HEIGHT = 0.44704 + 0.1  # m from cad
 
     END_EFFECTOR_WIDTH = 0.508 / 2  # m from cad
 
-    TOTAL_TIME = 7.0  # s
+    TOTAL_TIME = 10.0  # s
 
     problem = ca.Opti()
 

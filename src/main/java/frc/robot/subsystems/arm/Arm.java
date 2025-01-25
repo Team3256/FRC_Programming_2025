@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.json.simple.JSONObject;
@@ -33,7 +34,7 @@ public class Arm extends DisableSubsystem {
 
   private final Gson GSON = new GsonBuilder().create();
 
-  private Map<String, ArrayList<Map<String, Double>>> loadedTrajs = null;
+  private Map<String, ArrayList<Map<String, Double>>> loadedTrajs = new HashMap<>();
 
   private Iterator<Map<String, Double>> trajIterator = null;
 
@@ -66,6 +67,7 @@ public class Arm extends DisableSubsystem {
         .andThen(
             this.run(
                 () -> {
+                  System.out.println(trajIterator.next().get("position"));
                   if (trajIterator != null && trajIterator.hasNext()) {
                     armIO.setPosition(
                         Radians.of(trajIterator.next().get("position")),
@@ -79,7 +81,8 @@ public class Arm extends DisableSubsystem {
   private Command selectTraj(String trajName) {
     return this.runOnce(
         () -> {
-          selectedTraj = loadedTrajs.get(trajName);
+          System.out.println(loadedTrajs);
+          selectedTraj = loadedTrajs.get(trajName+".json");
           trajIterator = selectedTraj.iterator();
         });
   }
