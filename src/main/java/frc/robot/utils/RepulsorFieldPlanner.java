@@ -8,21 +8,25 @@
 package frc.robot.utils;
 
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEvent.Kind;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
+@Logged
 public class RepulsorFieldPlanner {
 
   abstract static class Obstacle {
@@ -86,9 +90,10 @@ public class RepulsorFieldPlanner {
     Translation2d loc;
     double radius = 0.5;
 
-    public SnowmanObstacle(Translation2d loc, double strength, boolean positive) {
+    public SnowmanObstacle(Translation2d loc, double strength, double radius, boolean positive) {
       super(strength, positive);
       this.loc = loc;
+      this.radius = radius;
     }
 
     public Force getForceAtPosition(Translation2d position, Translation2d target) {
@@ -99,7 +104,7 @@ public class RepulsorFieldPlanner {
       var dist = loc.getDistance(position);
       var sidewaysDist = sidewaysCircle.getDistance(position);
       var sidewaysMag = distToForceMag(sidewaysCircle.getDistance(position));
-      var outwardsMag = distToForceMag(loc.getDistance(position));
+      var outwardsMag = distToForceMag(Math.max(0.01, loc.getDistance(position) - radius));
       var initial = new Force(outwardsMag, position.minus(loc).getAngle());
 
       // flip the sidewaysMag based on which side of the goal-sideways circle the robot is on
@@ -142,8 +147,10 @@ public class RepulsorFieldPlanner {
 
   public static final List<Obstacle> FIELD_OBSTACLES =
       List.of(
-          new SnowmanObstacle(new Translation2d(4.49, 4), 1, true),
-          new SnowmanObstacle(new Translation2d(13.08, 4), 1, true));
+          new SnowmanObstacle(
+              new Translation2d(4.49, 4), 0.6, Units.inchesToMeters(65.5 / 2.0), true),
+          new SnowmanObstacle(
+              new Translation2d(13.08, 4), 0.6, Units.inchesToMeters(65.5 / 2.0), true));
   static final double FIELD_LENGTH = 16.42;
   static final double FIELD_WIDTH = 8.16;
   public static final List<Obstacle> WALLS =
@@ -151,9 +158,7 @@ public class RepulsorFieldPlanner {
           new HorizontalObstacle(0.0, 0.5, true),
           new HorizontalObstacle(FIELD_WIDTH, 0.5, false),
           new VerticalObstacle(0.0, 0.5, true),
-          new VerticalObstacle(FIELD_LENGTH, 0.5, false),
-          new VerticalObstacle(7.55, 0.5, false),
-          new VerticalObstacle(10, 0.5, true));
+          new VerticalObstacle(FIELD_LENGTH, 0.5, false));
 
   private List<Obstacle> fixedObstacles = new ArrayList<>();
   private Optional<Translation2d> goalOpt = Optional.empty();
@@ -162,8 +167,8 @@ public class RepulsorFieldPlanner {
     return new Pose2d(goalOpt.orElse(Translation2d.kZero), Rotation2d.kZero);
   }
 
-  private static final int ARROWS_X = 40;
-  private static final int ARROWS_Y = 20;
+  private static final int ARROWS_X = RobotBase.isSimulation() ? 40 : 0;
+  private static final int ARROWS_Y = RobotBase.isSimulation() ? 20 : 0;
   private static final int ARROWS_SIZE = (ARROWS_X + 1) * (ARROWS_Y + 1);
   private ArrayList<Pose2d> arrows = new ArrayList<>(ARROWS_SIZE);
 
@@ -279,7 +284,7 @@ public class RepulsorFieldPlanner {
     return goalForce;
   }
 
-  private SwerveSample sample(
+  public static SwerveSample sample(
       Translation2d trans, Rotation2d rot, double vx, double vy, double omega) {
     return new SwerveSample(
         0,
