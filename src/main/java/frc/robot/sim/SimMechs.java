@@ -8,6 +8,7 @@
 package frc.robot.sim;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.units.measure.Angle;
@@ -18,18 +19,42 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.Constants;
+import frc.robot.subsystems.arm.ArmConstants;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 
 public final class SimMechs {
 
-  public final Mechanism2d mech = new Mechanism2d(5, 5);
+  public final Mechanism2d mech =
+      new Mechanism2d(Constants.SimulationConstants.kDrivebaseWidth.in(Meters), 1);
 
-  private final MechanismRoot2d elevatorRoot = mech.getRoot("Elevator", 3.5, 0.2);
+  private final MechanismRoot2d elevatorRoot =
+      mech.getRoot(
+          "Elevator",
+          Constants.SimulationConstants.kDrivebaseWidth.in(Meters) / 2,
+          ElevatorConstants.SimulationConstants.kStartingHeight.in(Meters));
 
   private final MechanismLigament2d elevatorViz =
-      elevatorRoot.append(new MechanismLigament2d("Elevator", 2, 90));
+      elevatorRoot.append(
+          new MechanismLigament2d(
+              "Elevator",
+              // Show a little stubby lol
+              ElevatorConstants.SimulationConstants.kStartingHeight.plus(Inches.of(6)).in(Meters),
+              90));
 
   private final MechanismLigament2d armViz =
-      elevatorViz.append(new MechanismLigament2d("Arm", 1, 0.0, 5.0, new Color8Bit(Color.kGreen)));
+      elevatorViz.append(
+          new MechanismLigament2d(
+              "Arm", ArmConstants.Sim.armLength.in(Meters), 0.0, 7, new Color8Bit(Color.kGreen)));
+
+  private final MechanismLigament2d algaeEndEffectorViz =
+      armViz.append(
+          new MechanismLigament2d(
+              "Algae End Effector Flywheel", 0.35, 90, 2.5, new Color8Bit(Color.kRed)));
+  private final MechanismLigament2d coralEndEffectorViz =
+      armViz.append(
+          new MechanismLigament2d(
+              "Coral End Effector Flywheel", .25, 0.0, 2.5, new Color8Bit(Color.kYellow)));
 
   private static SimMechs instance = null;
 
@@ -52,5 +77,10 @@ public final class SimMechs {
 
   public void publishToNT() {
     SmartDashboard.putData("RobotSim", mech);
+  }
+
+  public void updateEndEffector(Angle algae, Angle coral) {
+    algaeEndEffectorViz.setAngle(algaeEndEffectorViz.getAngle() + algae.in(Degrees));
+    coralEndEffectorViz.setAngle(coralEndEffectorViz.getAngle() + coral.in(Degrees));
   }
 }

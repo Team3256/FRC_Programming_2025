@@ -7,7 +7,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Distance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -71,5 +74,9 @@ public final class Constants {
     // DEBUG: Everything (which will be useful for debugging)
     // INFO: Everything except DEBUG
     public static final Logged.Importance kEpilogueImportance = Logged.Importance.DEBUG;
+  }
+
+  public static class SimulationConstants {
+    public static final Distance kDrivebaseWidth = Inches.of(27);
   }
 }
