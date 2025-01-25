@@ -57,8 +57,6 @@ public class CoralGroundIntake extends DisableSubsystem {
     return this.run(() -> intakeIO.setIntakeVelocity(velocity)).finallyDo(intakeIO::off);
   }
 
-
-
   public Command off() {
     return this.runOnce(intakeIO::off);
   }

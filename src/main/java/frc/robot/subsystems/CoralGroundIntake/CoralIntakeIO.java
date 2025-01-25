@@ -38,8 +38,6 @@ public interface CoralIntakeIO {
     return new VoltageOut(0);
   }
 
-
-
   public default void off() {}
 
   public default boolean isBeamBroken() {

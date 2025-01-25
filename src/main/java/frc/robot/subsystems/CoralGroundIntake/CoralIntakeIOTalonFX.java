@@ -36,7 +36,6 @@ public class CoralIntakeIOTalonFX implements CoralIntakeIO {
   private final StatusSignal<Double> intakeMotorReferenceSlope =
       intakeMotor.getClosedLoopReferenceSlope();
 
-
   private DigitalInput beamBreakInput =
       new DigitalInput(CoralGroundIntakeConstants.kIntakeBeamBreakDIO);
 
@@ -71,7 +70,6 @@ public class CoralIntakeIOTalonFX implements CoralIntakeIO {
     inputs.intakeMotorTemperature = intakeMotorTemperature.getValueAsDouble();
     inputs.intakeMotorReferenceSlope = intakeMotorReferenceSlope.getValueAsDouble();
 
-
     inputs.isBeamBroken = !beamBreakInput.get();
   }
 
@@ -88,8 +86,6 @@ public class CoralIntakeIOTalonFX implements CoralIntakeIO {
       intakeMotor.setControl(intakeRequest.withVelocity(velocity));
     }
   }
-
-
 
   @Override
   public void off() {
@@ -110,5 +106,4 @@ public class CoralIntakeIOTalonFX implements CoralIntakeIO {
   public VoltageOut getIntakeVoltageRequest() {
     return intakeVoltageReq;
   }
-
 }

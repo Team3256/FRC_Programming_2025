@@ -18,23 +18,18 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public final class CoralGroundIntakeConstants {
   // CAN bus IDs
   public static final int kCGIMotorID = 0;
-  
 
   // Voltage
   public static final double kCGIMotorVoltage = 0.0;
-  
 
   // Motion magic enable/disable default values
   public static boolean kCGIMotorMotionMagic = false;
-  
 
   // time
   public static final double kBeamBreakDelayTime = 0;
 
   public static final int kIntakeBeamBreakDIO = 0;
   public static double updateFrequency = 0.0;
-
-  
 
   public static final TalonFXConfiguration intakeMotorConfig =
       new TalonFXConfiguration()
