@@ -66,7 +66,12 @@ public final class SimMechs {
   private final MechanismLigament2d climbViz =
       climbRoot.append(
           new MechanismLigament2d(
-              "Climb", ClimbConstants.sim.startingHeight.plus(Inches.of(ClimbConstants.kClimbLength)).in(Meters),180));
+              "Climb",
+              ClimbConstants.sim
+                  .startingHeight
+                  .plus(Inches.of(ClimbConstants.kClimbLength))
+                  .in(Meters),
+              180));
   private static SimMechs instance = null;
 
   private SimMechs() {}
