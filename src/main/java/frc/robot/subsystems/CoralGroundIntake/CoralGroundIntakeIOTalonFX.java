@@ -52,14 +52,11 @@ public class CoralGroundIntakeIOTalonFX implements CoralGroundIntakeIO {
 
   public CoralGroundIntakeIOTalonFX() {
     var motorConfig = CoralGroundIntakeConstants.intakeMotorConfig;
-    PhoenixUtil.checkErrorAndRetry(() -> intakeMotor.getConfigurator().refresh(motorConfig));
-    TalonUtil.applyAndCheckConfiguration(intakeMotor, motorConfig);
+    PhoenixUtil.applyMotorConfigs(intakeMotor, motorConfig, 2);
 
 
-    var passthroughConfig = CoralGroundIntakeConstants.linearMotorconfig;
-    PhoenixUtil.checkErrorAndRetry(
-        () -> passthroughMotor.getConfigurator().refresh(passthroughConfig));
-    TalonUtil.applyAndCheckConfiguration(linearSlideMotor, motorConfig);
+    var linmotorConfig = CoralGroundIntakeConstants.linearMotorconfig;
+    PhoenixUtil.applyMotorConfigs(linearSlideMotor, linmotorConfig, 2);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         CoralGroundIntakeConstants.updateFrequency,
