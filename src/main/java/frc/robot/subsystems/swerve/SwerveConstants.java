@@ -37,5 +37,5 @@ public final class SwerveConstants {
   public static final Rotation2d reefIJ = new Rotation2d(-reefCD.getDegrees());
   public static final Rotation2d reefKL = new Rotation2d(-reefEF.getDegrees());
 
-  public static final double aziTimeout = 0.3;
+  public static final double aziTimeout = 1;
 }

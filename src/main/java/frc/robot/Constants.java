@@ -56,7 +56,7 @@ public final class Constants {
     public static final boolean kEpilogueEnabled = true;
     // If true, the LoggedTunableNumber will work and do TunableNumber things
     public static final boolean kTuningModeEnabled = false;
-    // Toggle whether or not the controller map should dump
+    // Toggle whether the controller map should dump
     public static final boolean kControllerMapEnabled = true;
 
     public static final boolean kSwerveEnabled = true;
