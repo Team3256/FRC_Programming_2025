@@ -13,6 +13,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
+import frc.robot.subsystems.arm.ArmConstants;
 
 public final class ElevatorConstants {
   public static final int kMotorID = 22;
@@ -30,7 +31,7 @@ public final class ElevatorConstants {
   };
 
   public static class SimulationConstants {
-    public static final Mass kCarriageMass = Pounds.of(2.5);
+    public static final Mass kCarriageMass = Pounds.of(2.5).plus(ArmConstants.Sim.armMass);
     public static final double kGearRatio = 20;
     public static final Distance kDrumRadius = Inches.of(2);
     public static final Distance kMinHeight = Inches.of(0);
