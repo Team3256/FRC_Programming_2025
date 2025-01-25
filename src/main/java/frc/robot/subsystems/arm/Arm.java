@@ -82,7 +82,7 @@ public class Arm extends DisableSubsystem {
     return this.runOnce(
         () -> {
           System.out.println(loadedTrajs);
-          selectedTraj = loadedTrajs.get(trajName+".json");
+          selectedTraj = loadedTrajs.get(trajName + ".json");
           trajIterator = selectedTraj.iterator();
         });
   }
