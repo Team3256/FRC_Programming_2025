@@ -1,4 +1,4 @@
-// Copyright (c) 2024 FRC 3256
+// Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
 // Use of this source code is governed by a 
@@ -7,37 +7,30 @@
 
 package frc.robot.subsystems.CoralGroundIntake;
 
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
-import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.utils.DisableSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 public class CoralGroundIntake extends DisableSubsystem {
-  private final CoralGroundIntakeIO intakeIO;
-  private final IntakeIOInputsAutoLogged intakeIOAutoLogged = new IntakeIOInputsAutoLogged();
-  private final SysIdRoutine intake_sysIdRoutine;
-  private final SysIdRoutine linear_sysIdRoutine;
+  private final CoralIntakeIO intakeIO;
+  private final CoralIntakeIOInputsAutoLogged coralIOAutoLogged =
+      new CoralIntakeIOInputsAutoLogged();
 
   private final Trigger debouncedBeamBreak = new Trigger(this::isBeamBroken).debounce(0.1);
   ;
 
-  public CoralGroundIntake(boolean disabled, CoralGroundIntakeIO intakeIO) {
+  public CoralGroundIntake(boolean disabled, CoralIntakeIO intakeIO) {
     super(disabled);
 
     this.intakeIO = intakeIO;
-    
   }
 
   @Override
   public void periodic() {
     super.periodic();
-    intakeIO.updateInputs(intakeIOAutoLogged);
-    Logger.processInputs(this.getClass().getSimpleName(), intakeIOAutoLogged);
+    intakeIO.updateInputs(coralIOAutoLogged);
+    Logger.processInputs(this.getClass().getSimpleName(), coralIOAutoLogged);
   }
 
   public Command setVoltage(double voltage, double passthroughVoltage) {
@@ -91,7 +84,6 @@ public class CoralGroundIntake extends DisableSubsystem {
         .until(debouncedBeamBreak)
         .andThen(this.off());
   }
-
 
   public boolean isBeamBroken() {
     return intakeIO.isBeamBroken();

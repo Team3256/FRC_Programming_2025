@@ -28,7 +28,7 @@ public final class CoralGroundIntakeConstants {
   public static boolean kCGIMotorMotionMagic = false;
   public static boolean kLinearSlideMotorMotionMagic = false;
 
-  //time
+  // time
   public static final double kBeamBreakDelayTime = 0;
 
   public static final int kIntakeBeamBreakDIO = 0;
@@ -77,6 +77,4 @@ public final class CoralGroundIntakeConstants {
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(0.0));
-
-    
 }

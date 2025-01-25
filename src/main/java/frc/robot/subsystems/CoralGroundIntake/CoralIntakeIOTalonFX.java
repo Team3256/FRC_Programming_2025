@@ -1,28 +1,32 @@
+// Copyright (c) 2025 FRC 3256
+// https://github.com/Team3256
+//
+// Use of this source code is governed by a 
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.subsystems.CoralGroundIntake;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.utils.PhoenixUtil;
 
-public class CoralGroundIntakeIOTalonFX implements CoralGroundIntakeIO {
-    private final TalonFX intakeMotor = new TalonFX(CoralGroundIntakeConstants.kCGIMotorID);
-    final VelocityVoltage intakeRequest = new VelocityVoltage(0).withSlot(0);
-    final MotionMagicVelocityVoltage motionMagicIntakeRequest =
-        new MotionMagicVelocityVoltage(0).withSlot(0);
-    private final VoltageOut intakeVoltageReq = new VoltageOut(0);
+public class CoralIntakeIOTalonFX implements CoralIntakeIO {
+  private final TalonFX intakeMotor = new TalonFX(CoralGroundIntakeConstants.kCGIMotorID);
+  final VelocityVoltage intakeRequest = new VelocityVoltage(0).withSlot(0);
+  final MotionMagicVelocityVoltage motionMagicIntakeRequest =
+      new MotionMagicVelocityVoltage(0).withSlot(0);
+  private final VoltageOut intakeVoltageReq = new VoltageOut(0);
 
   private final StatusSignal<Voltage> intakeMotorVoltage = intakeMotor.getMotorVoltage();
   private final StatusSignal<AngularVelocity> intakeMotorVelocity = intakeMotor.getVelocity();
@@ -32,28 +36,31 @@ public class CoralGroundIntakeIOTalonFX implements CoralGroundIntakeIO {
   private final StatusSignal<Double> intakeMotorReferenceSlope =
       intakeMotor.getClosedLoopReferenceSlope();
 
-  private final TalonFX linearSlideMotor = new TalonFX(CoralGroundIntakeConstants.kLinearSlideMotorID);
+  private final TalonFX linearSlideMotor =
+      new TalonFX(CoralGroundIntakeConstants.kLinearSlideMotorID);
   final VelocityVoltage linearSlideRequest = new VelocityVoltage(0).withSlot(0);
   final MotionMagicVelocityVoltage motionMagicLinearSlideRequest =
       new MotionMagicVelocityVoltage(0).withSlot(0);
   private final VoltageOut linearSlideReq = new VoltageOut(0);
 
   private final StatusSignal<Voltage> passthroughMotorVoltage = linearSlideMotor.getMotorVoltage();
-  private final StatusSignal<AngularVelocity> passthroughMotorVelocity = linearSlideMotor.getVelocity();
+  private final StatusSignal<AngularVelocity> passthroughMotorVelocity =
+      linearSlideMotor.getVelocity();
   private final StatusSignal<Current> passthroughMotorStatorCurrent =
-  linearSlideMotor.getStatorCurrent();
+      linearSlideMotor.getStatorCurrent();
   private final StatusSignal<Current> passthroughMotorSupplyCurrent =
-  linearSlideMotor.getSupplyCurrent();
-  private final StatusSignal<Temperature> passthroughMotorTemperature = linearSlideMotor.getDeviceTemp();
+      linearSlideMotor.getSupplyCurrent();
+  private final StatusSignal<Temperature> passthroughMotorTemperature =
+      linearSlideMotor.getDeviceTemp();
   private final StatusSignal<Double> passthroughMotorReferenceSlope =
-  linearSlideMotor.getClosedLoopReferenceSlope();
+      linearSlideMotor.getClosedLoopReferenceSlope();
 
-  private DigitalInput beamBreakInput = new DigitalInput(CoralGroundIntakeConstants.kIntakeBeamBreakDIO);
+  private DigitalInput beamBreakInput =
+      new DigitalInput(CoralGroundIntakeConstants.kIntakeBeamBreakDIO);
 
-  public CoralGroundIntakeIOTalonFX() {
+  public CoralIntakeIOTalonFX() {
     var motorConfig = CoralGroundIntakeConstants.intakeMotorConfig;
     PhoenixUtil.applyMotorConfigs(intakeMotor, motorConfig, 2);
-
 
     var linmotorConfig = CoralGroundIntakeConstants.linearMotorconfig;
     PhoenixUtil.applyMotorConfigs(linearSlideMotor, linmotorConfig, 2);
@@ -77,7 +84,7 @@ public class CoralGroundIntakeIOTalonFX implements CoralGroundIntakeIO {
   }
 
   @Override
-  public void updateInputs(coralIntakeIOInputs inputs) {
+  public void updateInputs(CoralIntakeIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         intakeMotorVoltage,
         intakeMotorVelocity,
@@ -130,9 +137,9 @@ public class CoralGroundIntakeIOTalonFX implements CoralGroundIntakeIO {
   @Override
   public void setLinearMotorVelocity(double velocity) {
     if (CoralGroundIntakeConstants.kLinearSlideMotorMotionMagic) {
-        linearSlideMotor.setControl(motionMagicLinearSlideRequest.withVelocity(velocity));
+      linearSlideMotor.setControl(motionMagicLinearSlideRequest.withVelocity(velocity));
     } else {
-        linearSlideMotor.setControl(linearSlideRequest.withVelocity(velocity));
+      linearSlideMotor.setControl(linearSlideRequest.withVelocity(velocity));
     }
   }
 
@@ -167,6 +174,3 @@ public class CoralGroundIntakeIOTalonFX implements CoralGroundIntakeIO {
     return linearSlideReq;
   }
 }
-
-    
-
