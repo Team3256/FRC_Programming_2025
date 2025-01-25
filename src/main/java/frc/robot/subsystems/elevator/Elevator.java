@@ -75,10 +75,9 @@ public class Elevator extends DisableSubsystem {
     } else {
       return this.setPosition(
           ElevatorConstants.SimulationConstants.kReefPositions[level]
-                  .div(ElevatorConstants.SimulationConstants.kWheelRadius)
+                  .div(ElevatorConstants.SimulationConstants.kDrumRadius)
                   .magnitude()
-              / (2 * Math.PI)
-              * ElevatorConstants.SimulationConstants.kGearRatio);
+              / (2 * Math.PI));
     }
   }
 
