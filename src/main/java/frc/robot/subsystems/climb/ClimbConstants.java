@@ -52,7 +52,7 @@ public class ClimbConstants {
                   .withStatorCurrentLimit(80));
 
   public static final class sim {
-    public static final double simGearing = 0;
+    public static final double simGearing = 10;
     public static final Distance climbLength = Inches.of(kClimbLength);
     public static final Mass climbMass = Kilograms.of(kClimbMass);
     public static final double jkGMetersSquared = 1.2922967095;
