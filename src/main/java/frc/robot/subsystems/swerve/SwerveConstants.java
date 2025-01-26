@@ -15,15 +15,6 @@ public final class SwerveConstants {
   public static final double wheelRadiusMaxVelocity = 0.25; // Rad/Sec
   public static final double wheelRadiusMaxRampRate = 0.05; // Rad/Sec^2
 
-  public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
-  public static final double MaxAngularRate = 1.5 * Math.PI; // My drivetrain
-  public static final double SlowMaxSpeed = MaxSpeed * 0.3;
-  public static final double SlowMaxAngular = MaxAngularRate * 0.3;
-
-  public static final double aziDrivekP = 0.0;
-  public static final double aziDrivekI = 0.0;
-  public static final double aziDrivekD = 0.0;
-
   public static final Rotation2d sourceLeft1 = new Rotation2d(125.989);
   // source 1
   public static final Rotation2d sourceRight2 = new Rotation2d(-sourceLeft1.getDegrees());
