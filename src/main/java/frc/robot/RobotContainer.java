@@ -191,7 +191,7 @@ public class RobotContainer {
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
     azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    azimuth.HeadingController.setPID(5, 250, 2);
+    azimuth.HeadingController.setPID(6, 250, 2);
 
     if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
       drivetrain.setDefaultCommand(
@@ -271,15 +271,17 @@ public class RobotContainer {
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(hang))
                 .withTimeout(aziTimeout));
-
-    new Trigger(() -> (m_driverController.getRightY() > 0 || m_driverController.getRightX() > 0))
+//m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15
+    new Trigger(() -> (m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15))
         .onTrue(
-            drivetrain.applyRequest(
-                () ->
-                    azimuth
-                        .withVelocityX(-m_driverController.getLeftY())
-                        .withVelocityY(-m_driverController.getLeftX())
-                        .withTargetDirection(getStickAngle(m_driverController))));
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityX(-m_driverController.getLeftY())
+                            .withVelocityY(-m_driverController.getLeftX())
+                            .withTargetDirection(getStickAngle(m_driverController)))
+                .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
