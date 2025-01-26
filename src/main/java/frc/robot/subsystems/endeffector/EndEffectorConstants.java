@@ -7,13 +7,25 @@
 
 package frc.robot.subsystems.endeffector;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
   public static int algaeMotorID = 43;
   public static int coralMotorID = 48;
+
+  public static AngularVelocity l1Velocity = RotationsPerSecond.of(0.0);
+  public static AngularVelocity l2l3Velocity = RotationsPerSecond.of(0.0);
+  public static AngularVelocity l4Velocity = RotationsPerSecond.of(0.0);
+
+  public static AngularVelocity[] sourceVelocity = {
+    RotationsPerSecond.of(0.0), RotationsPerSecond.of(0)
+  };
+
   public static TalonFXConfiguration algaeMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(

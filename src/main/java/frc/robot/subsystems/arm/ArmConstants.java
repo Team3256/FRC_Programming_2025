@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
@@ -27,6 +28,22 @@ public final class ArmConstants {
   public static final boolean kUseMotionMagic = false; // idk
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
+
+  public static final Angle[] reefLeftPositions = {
+    Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
+  };
+
+  public static final Angle[] reefRightPositions = {
+    Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
+  };
+
+  public static final Angle dealgaeRightPosition = Rotations.of(0.0);
+  public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
+
+  public static final Angle sourceLeftPositions = Rotations.of(0.0);
+  public static final Angle sourceRightPositions = Rotations.of(0.0);
+
+  public static final Angle homePosition = Rotations.of(0.0);
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
@@ -75,7 +92,7 @@ public final class ArmConstants {
     public static final double jkGMetersSquared = 1.2922967095;
 
     public static final Rotation2d minAngle = Rotation2d.fromDegrees(0);
-    public static final Rotation2d maxAngle = Rotation2d.fromDegrees(270);
+    public static final Rotation2d maxAngle = Rotation2d.fromDegrees(360);
     public static final Rotation2d startingAngle = Rotation2d.fromDegrees(0);
   }
 }
