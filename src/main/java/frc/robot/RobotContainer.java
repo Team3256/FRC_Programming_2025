@@ -7,8 +7,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -28,6 +27,9 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
@@ -61,6 +63,7 @@ public class RobotContainer {
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
 
+  private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
 
   /* Swerve Rate Limiting */
@@ -109,9 +112,7 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_operatorController.a("ds").onTrue(climb.setVoltage(6));
-    m_operatorController.b("dsa").onTrue(climb.setVoltage(-6));
-    m_operatorController.y("off").onTrue(climb.off());
+
     m_operatorController
         .rightBumper("s")
         .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));

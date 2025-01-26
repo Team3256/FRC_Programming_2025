@@ -84,7 +84,7 @@ public final class SimMechs {
   }
 
   public void updateArm(Angle angle) {
-    armViz.setAngle(angle.in(Degrees));
+    armViz.setAngle(angle.minus(Degrees.of(90)).in(Degrees));
   }
 
   public void updateElevator(Distance height) {
