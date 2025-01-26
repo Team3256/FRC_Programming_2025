@@ -179,6 +179,10 @@ public class RobotContainer {
 
   private void configureSwerve() {
     // LinearVelocity is a vector, so we need to get the magnitude
+    final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
+    final double MaxAngularRate = 1.5 * Math.PI;
+    final double SlowMaxSpeed = MaxSpeed * 0.3;
+    final double SlowMaxAngular = MaxAngularRate * 0.3;
 
     SwerveRequest.FieldCentric drive =
         new SwerveRequest.FieldCentric()
