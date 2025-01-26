@@ -271,8 +271,9 @@ public class RobotContainer {
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(hang))
                 .withTimeout(aziTimeout));
-//m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15
-    new Trigger(() -> (m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15))
+
+    new Trigger(
+            () -> (m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15))
         .onTrue(
             drivetrain
                 .applyRequest(
