@@ -30,6 +30,8 @@ import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -60,8 +62,11 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
-
+  
+  
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
+  private final Climb climb = new Climb(true, new ClimbIOTalonFX());
+
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -108,15 +113,16 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_driverController.a().onTrue(arm.setPosition(Degrees.of(90)));
-    m_driverController.b().onTrue(arm.runTraj("l3-stow"));
 
-    m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
-    m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
-    m_operatorController.y("off").onTrue(roller.off());
     m_operatorController
         .rightBumper("s")
         .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+    // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
+    // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
+    // m_operatorController.y("off").onTrue(roller.off());
+    // m_operatorController
+    //     .rightBumper("s")
+    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
   }
 
   private void configureChoreoAutoChooser() {
