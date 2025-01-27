@@ -296,8 +296,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityX(-m_driverController.getLeftY())
-                            .withVelocityY(-m_driverController.getLeftX())
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withTargetDirection(getStickAngle(m_driverController)))
                 .withTimeout(3));
 
