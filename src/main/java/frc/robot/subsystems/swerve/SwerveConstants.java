@@ -20,10 +20,13 @@ public final class SwerveConstants {
   // source2
   public static final Rotation2d hang = new Rotation2d(180);
 
+  // angle backups
   public static final Rotation2d reefAB = new Rotation2d(0);
   public static final Rotation2d reefCD = new Rotation2d(60);
   public static final Rotation2d reefEF = new Rotation2d(120);
   public static final Rotation2d reefGH = new Rotation2d(180);
   public static final Rotation2d reefIJ = new Rotation2d(-reefCD.getDegrees());
   public static final Rotation2d reefKL = new Rotation2d(-reefEF.getDegrees());
+
+  public static final double aziTimeout = 1;
 }

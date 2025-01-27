@@ -7,8 +7,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
+import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -28,6 +30,11 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOTalonFX;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -58,6 +65,9 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
+
+  private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
+  private final Climb climb = new Climb(true, new ClimbIOTalonFX());
 
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
@@ -105,12 +115,16 @@ public class RobotContainer {
     // cancelling on release.
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
-    m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
-    m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
-    m_operatorController.y("off").onTrue(roller.off());
+
     m_operatorController
         .rightBumper("s")
         .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+    // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
+    // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
+    // m_operatorController.y("off").onTrue(roller.off());
+    // m_operatorController
+    //     .rightBumper("s")
+    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
   }
 
   private void configureChoreoAutoChooser() {
@@ -178,10 +192,10 @@ public class RobotContainer {
 
   private void configureSwerve() {
     // LinearVelocity is a vector, so we need to get the magnitude
-    double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
-    double MaxAngularRate = 1.5 * Math.PI; // My drivetrain
-    double SlowMaxSpeed = MaxSpeed * 0.3;
-    double SlowMaxAngular = MaxAngularRate * 0.3;
+    final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
+    final double MaxAngularRate = 1.5 * Math.PI;
+    final double SlowMaxSpeed = MaxSpeed * 0.3;
+    final double SlowMaxAngular = MaxAngularRate * 0.3;
 
     SwerveRequest.FieldCentric drive =
         new SwerveRequest.FieldCentric()
@@ -190,7 +204,11 @@ public class RobotContainer {
 
     SwerveRequest.ApplyRobotSpeeds driveAlt = new SwerveRequest.ApplyRobotSpeeds();
 
-    SwerveRequest.FieldCentricFacingAngle azimuth = new SwerveRequest.FieldCentricFacingAngle();
+    SwerveRequest.FieldCentricFacingAngle azimuth =
+        new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
+
+    azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+    azimuth.HeadingController.setPID(6, 250, 2);
 
     if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
       drivetrain.setDefaultCommand(
@@ -202,7 +220,7 @@ public class RobotContainer {
                               m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
                       .withVelocityY(
                           swerveVelYRateLimiter.calculate(m_driverController.getLeftX() * MaxSpeed))
-                      .withRotationalRate(m_driverController.getTriggerAxes())));
+                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
 
     } else {
       drivetrain.setDefaultCommand(
@@ -214,7 +232,7 @@ public class RobotContainer {
                           -m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
                       .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                      .withRotationalRate(m_driverController.getTriggerAxes())));
+                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
 
     m_driverController
@@ -230,20 +248,61 @@ public class RobotContainer {
                             -m_driverController.getLeftX()
                                 * SlowMaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(
-                            -m_driverController.getRightX()
+                            m_driverController.getTriggerAxes()
                                 * SlowMaxAngular) // Drive counterclockwise with negative X
                 // (left)
                 ));
 
-    m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
     m_driverController
         .x()
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(sourceLeft1)));
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(sourceLeft1))
+                .withTimeout(aziTimeout));
+
     m_driverController
         .b()
-        .onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(sourceRight2)));
-    m_driverController.a().onTrue(drivetrain.applyRequest(() -> azimuth.withTargetDirection(hang)));
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(sourceRight2))
+                .withTimeout(aziTimeout));
+
+    m_driverController
+        .a()
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(hang))
+                .withTimeout(aziTimeout));
+
+    new Trigger(
+            () -> (m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withTargetDirection(getStickAngle(m_driverController)))
+                .withTimeout(3));
+
+    m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 }
