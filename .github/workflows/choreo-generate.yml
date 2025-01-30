@@ -29,7 +29,7 @@ jobs:
 
       - name: Generate paths
         run: |
-          ./choreo-cli --chor src/main/deploy/choreo/Choreo.chor --all-trajectories -g
+          ./choreo-cli --chor src/main/deploy/choreo/Choreo.chor --all-trajectory -g
 
       - name: Zip the generated paths
         run: |
