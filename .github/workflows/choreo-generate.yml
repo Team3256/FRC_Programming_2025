@@ -36,9 +36,10 @@ jobs:
           zip -r choreo-paths.zip src/main/deploy/choreo
 
       - name: Upload the generated paths
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: choreo-paths
+          path: choreo-paths.zip
 
       # - name: Commit changes
       #   uses: stefanzweifel/git-auto-commit-action@v5
