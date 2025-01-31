@@ -14,8 +14,6 @@ import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
-import choreo.auto.AutoTrajectory;
-
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -194,11 +192,11 @@ public class RobotContainer {
     RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
   }
 
-  public void updateAngles(){
-    if (drivetrain.getCurrentQHeading().getClass() == Rotation2d.class){
+  public void updateAngles() {
+    if (drivetrain.getCurrentQHeading().getClass() == Rotation2d.class) {
       this.finalAutoHeading = (Rotation2d) drivetrain.getCurrentQHeading();
-    }
-    else { drivetrain.getPigeon2().getRotation2d();
+    } else {
+      drivetrain.getPigeon2().getRotation2d();
     }
   }
 

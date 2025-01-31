@@ -28,7 +28,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.NetworkTableValue;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -411,7 +410,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     Logger.recordOutput("Swerve/pose", this.getState().Pose);
   }
 
-  public Object getCurrentQHeading(){
+  public Object getCurrentQHeading() {
     if (!Utils.isSimulation() && questNav.connected()) {
       return this.questNav.getPose().getRotation();
     } else {
