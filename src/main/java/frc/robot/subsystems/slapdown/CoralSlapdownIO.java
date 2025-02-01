@@ -7,25 +7,24 @@
 
 package frc.robot.subsystems.slapdown;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface ArmIO {
+public interface CoralSlapdownIO {
   @AutoLog
   public static class ArmIOInputs {
-    public double armMotorVoltage = 0.0;
-    public double armMotorVelocity = 0.0;
-    public double armMotorPosition = 0.0;
-    public double armMotorStatorCurrent = 0.0;
-    public double armMotorSupplyCurrent = 0.0;
+    public double coralSlapdownMotorVoltage = 0.0;
+    public double coralSlapdownVelocity = 0.0;
+    public double coralSlapdownMotorPosition = 0.0;
+    public double coralSlapdownStatorCurrent = 0.0;
+    public double coralSlapdownMotorSupplyCurrent = 0.0;
 
-    public double armEncoderAbsolutePosition = 0.0;
-    public double armEncoderPosition = 0.0;
-    public double armEncoderVelocity = 0.0;
+    public double coralSlapdownEncoderAbsolutePosition = 0.0;
+    public double coralSlapdownEncoderPosition = 0.0;
+    public double coralSlapdownEncoderVelocity = 0.0;
   }
 
   public default void updateInputs(ArmIOInputs inputs) {}
@@ -40,9 +39,7 @@ public interface ArmIO {
     return new TalonFX(0);
   }
 
-  public default CANcoder getEncoder() {
-    return new CANcoder(0);
-  }
+
 
   public default void off() {}
 }

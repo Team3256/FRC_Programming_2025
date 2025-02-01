@@ -16,10 +16,10 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
-public final class ArmConstants {
-  public static final int armMotorId = 38;
+public final class CoralSlapdownConstants {
+  public static final int coralSlapdownMotorID = 38;
 
-  public static final int armMotorEncoderId = 39;
+  public static final int coralSlapdownMotorEncoderID = 39;
 
   // max value is 8, min is 0
 
@@ -68,26 +68,13 @@ public final class ArmConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(120))
-          .withFeedback(
-              new FeedbackConfigs()
-                  .withFeedbackRemoteSensorID(39)
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                  .withSensorToMechanismRatio(1)
-                  .withRotorToSensorRatio(168));
+                  .withStatorCurrentLimit(120));
 
-  public static final CANcoderConfiguration cancoderConfiguration =
-      new CANcoderConfiguration()
-          .withMagnetSensor(
-              new MagnetSensorConfigs()
-                  .withMagnetOffset(Rotations.of(0))
-                  .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-                  .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
 
   public static final class Sim {
     public static final double simGearing = 168;
 
-    public static final Distance armLength = Inches.of(22);
+    public static final Distance coralSlapdownLength = Inches.of(22);
     public static final Mass armMass = Kilograms.of(2);
     public static final double jkGMetersSquared = 1.2922967095;
 

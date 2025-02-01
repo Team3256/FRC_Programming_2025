@@ -15,7 +15,6 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,13 +27,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ArmIOTalonFX implements ArmIO {
+public class CoralSlapdownIOTalonFX implements CoralSlapdownIO {
 
-  private final TalonFX armMotor = new TalonFX(ArmConstants.armMotorId);
+  private final TalonFX armMotor = new TalonFX(CoralSlapdownConstants.coralSlapdownMotorID);
   private final PositionVoltage positionRequest =
-      new PositionVoltage(0).withSlot(0).withEnableFOC(ArmConstants.kUseFOC);
+      new PositionVoltage(0).withSlot(0).withEnableFOC(CoralSlapdownConstants.kUseFOC);
   private final MotionMagicVoltage motionMagicRequest =
-      new MotionMagicVoltage(0).withSlot(0).withEnableFOC(ArmConstants.kUseFOC);
+      new MotionMagicVoltage(0).withSlot(0).withEnableFOC(CoralSlapdownConstants.kUseFOC);
   private final VoltageOut voltageReq = new VoltageOut(0);
 
   private final StatusSignal<Voltage> armMotorVoltage = armMotor.getMotorVoltage();
@@ -43,11 +42,9 @@ public class ArmIOTalonFX implements ArmIO {
   private final StatusSignal<Current> armMotorStatorCurrent = armMotor.getStatorCurrent();
   private final StatusSignal<Current> armMotorSupplyCurrent = armMotor.getSupplyCurrent();
 
-  private final CANcoder cancoder = new CANcoder(ArmConstants.armMotorEncoderId);
+ 
 
-  private final StatusSignal<Angle> cancoderAbsolutePosition = cancoder.getAbsolutePosition();
-  private final StatusSignal<Angle> cancoderPosition = cancoder.getPosition();
-  private final StatusSignal<AngularVelocity> cancoderVelocity = cancoder.getVelocity();
+ 
 
   private final Gson GSON = new GsonBuilder().create();
 
@@ -55,27 +52,21 @@ public class ArmIOTalonFX implements ArmIO {
 
   private Iterator<Map<String, Double>> trajIterator = null;
 
-  public ArmIOTalonFX() {
+  public CoralSlapdownIOTalonFX() {
 
     PhoenixUtil.applyMotorConfigs(
-        armMotor, ArmConstants.motorConfigs, ArmConstants.flashConfigRetries);
-
-    PhoenixUtil.applyCancoderConfig(
-        cancoder, ArmConstants.cancoderConfiguration, ArmConstants.flashConfigRetries);
+        armMotor, CoralSlapdownConstants.motorConfigs, CoralSlapdownConstants.flashConfigRetries);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
-        ArmConstants.updateFrequency,
+        CoralSlapdownConstants.updateFrequency,
         armMotorVoltage,
         armMotorVelocity,
         armMotorPosition,
         armMotorStatorCurrent,
-        armMotorSupplyCurrent,
-        cancoderAbsolutePosition,
-        cancoderPosition,
-        cancoderVelocity);
+        armMotorSupplyCurrent);
 
     armMotor.optimizeBusUtilization();
-    cancoder.optimizeBusUtilization();
+
   }
 
   @Override
@@ -85,19 +76,14 @@ public class ArmIOTalonFX implements ArmIO {
         armMotorVelocity,
         armMotorPosition,
         armMotorStatorCurrent,
-        armMotorSupplyCurrent,
-        cancoderAbsolutePosition,
-        cancoderPosition,
-        cancoderVelocity);
-    inputs.armMotorVoltage = armMotorVoltage.getValue().in(Volt);
-    inputs.armMotorVelocity = armMotorVelocity.getValue().in(RotationsPerSecond);
-    inputs.armMotorPosition = armMotorPosition.getValue().in(Rotations);
-    inputs.armMotorStatorCurrent = armMotorStatorCurrent.getValue().in(Amps);
-    inputs.armMotorSupplyCurrent = armMotorSupplyCurrent.getValue().in(Amps);
+        armMotorSupplyCurrent);
+    inputs.coralSlapdownMotorVoltage = armMotorVoltage.getValue().in(Volt);
+    inputs.coralSlapdownVelocity = armMotorVelocity.getValue().in(RotationsPerSecond);
+    inputs.coralSlapdownMotorPosition = armMotorPosition.getValue().in(Rotations);
+    inputs.coralSlapdownStatorCurrent = armMotorStatorCurrent.getValue().in(Amps);
+    inputs.coralSlapdownMotorSupplyCurrent = armMotorSupplyCurrent.getValue().in(Amps);
 
-    inputs.armEncoderPosition = cancoderPosition.getValue().in(Rotations);
-    inputs.armEncoderVelocity = cancoderVelocity.getValue().in(RotationsPerSecond);
-    inputs.armEncoderAbsolutePosition = cancoderAbsolutePosition.getValue().in(Rotations);
+
   }
 
   public void goLoadedTraj() {
@@ -114,7 +100,7 @@ public class ArmIOTalonFX implements ArmIO {
 
   @Override
   public void setPosition(Angle position) {
-    if (ArmConstants.kUseMotionMagic) {
+    if (CoralSlapdownConstants.kUseMotionMagic) {
       armMotor.setControl(motionMagicRequest.withPosition(position));
     } else {
       armMotor.setControl(positionRequest.withPosition(position));
@@ -141,8 +127,5 @@ public class ArmIOTalonFX implements ArmIO {
     return armMotor;
   }
 
-  @Override
-  public CANcoder getEncoder() {
-    return cancoder;
-  }
+
 }
