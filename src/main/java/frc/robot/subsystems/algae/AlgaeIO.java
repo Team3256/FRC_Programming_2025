@@ -29,11 +29,13 @@ public interface AlgaeIO {
 
   }
   
-  public default void intakeLog(AlgaeInputs inputs) {}
+  public default void updateInputs(AlgaeInputs inputs) {}
 
   public default void setIntakeVelocity(double velocity){}
 
   public default void setIntakeVoltage(double voltage){}
+
+
 
   public default boolean isBeamBroken(){
     return false;
