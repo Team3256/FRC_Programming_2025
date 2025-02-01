@@ -19,6 +19,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -195,7 +196,8 @@ public class RobotContainer {
   public void updateAngles() {
     if (drivetrain.getCurrentQHeading().getClass() == Rotation2d.class) {
       this.finalAutoHeading = (Rotation2d) drivetrain.getCurrentQHeading();
-    } else {
+    }
+    if (drivetrain.getCurrentQHeading().getClass() == Alert.class) {
       drivetrain.getPigeon2().getRotation2d();
     }
   }
