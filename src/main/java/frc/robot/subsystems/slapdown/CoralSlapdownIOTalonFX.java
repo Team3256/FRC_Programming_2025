@@ -42,10 +42,6 @@ public class CoralSlapdownIOTalonFX implements CoralSlapdownIO {
   private final StatusSignal<Current> armMotorStatorCurrent = armMotor.getStatorCurrent();
   private final StatusSignal<Current> armMotorSupplyCurrent = armMotor.getSupplyCurrent();
 
- 
-
- 
-
   private final Gson GSON = new GsonBuilder().create();
 
   private ArrayList<Map<String, Double>> loadedTraj = null;
@@ -66,7 +62,6 @@ public class CoralSlapdownIOTalonFX implements CoralSlapdownIO {
         armMotorSupplyCurrent);
 
     armMotor.optimizeBusUtilization();
-
   }
 
   @Override
@@ -82,8 +77,6 @@ public class CoralSlapdownIOTalonFX implements CoralSlapdownIO {
     inputs.coralSlapdownMotorPosition = armMotorPosition.getValue().in(Rotations);
     inputs.coralSlapdownStatorCurrent = armMotorStatorCurrent.getValue().in(Amps);
     inputs.coralSlapdownMotorSupplyCurrent = armMotorSupplyCurrent.getValue().in(Amps);
-
-
   }
 
   public void goLoadedTraj() {
@@ -126,6 +119,4 @@ public class CoralSlapdownIOTalonFX implements CoralSlapdownIO {
   public TalonFX getMotor() {
     return armMotor;
   }
-
-
 }

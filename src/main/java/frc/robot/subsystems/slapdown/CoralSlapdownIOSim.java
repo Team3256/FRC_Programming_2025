@@ -9,7 +9,6 @@ package frc.robot.subsystems.slapdown;
 
 import static edu.wpi.first.units.Units.*;
 
-
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -35,7 +34,6 @@ public class CoralSlapdownIOSim extends CoralSlapdownIOTalonFX {
           CoralSlapdownConstants.Sim.startingAngle.getRadians());
 
   private TalonFXSimState coralSlapdownSimState;
- 
 
   public CoralSlapdownIOSim() {
     super();
@@ -51,12 +49,13 @@ public class CoralSlapdownIOSim extends CoralSlapdownIOTalonFX {
     armSimModel.setInputVoltage(coralSlapdownSimState.getMotorVoltage());
     armSimModel.update(LoggedRobot.defaultPeriodSecs);
     coralSlapdownSimState.setRawRotorPosition(
-        Units.radiansToRotations(armSimModel.getAngleRads()) * CoralSlapdownConstants.Sim.simGearing);
+        Units.radiansToRotations(armSimModel.getAngleRads())
+            * CoralSlapdownConstants.Sim.simGearing);
     coralSlapdownSimState.setRotorVelocity(
-        Units.radiansToRotations(armSimModel.getVelocityRadPerSec()) * CoralSlapdownConstants.Sim.simGearing);
+        Units.radiansToRotations(armSimModel.getVelocityRadPerSec())
+            * CoralSlapdownConstants.Sim.simGearing);
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(armSimModel.getCurrentDrawAmps()));
-
 
     coralSlapdownSimState.setRotorVelocity(
         RadiansPerSecond.of(armSimModel.getVelocityRadPerSec()).in(RotationsPerSecond));

@@ -70,7 +70,6 @@ public final class CoralSlapdownConstants {
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(120));
 
-
   public static final class Sim {
     public static final double simGearing = 168;
 

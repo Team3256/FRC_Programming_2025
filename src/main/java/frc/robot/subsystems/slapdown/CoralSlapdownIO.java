@@ -39,7 +39,5 @@ public interface CoralSlapdownIO {
     return new TalonFX(0);
   }
 
-
-
   public default void off() {}
 }
