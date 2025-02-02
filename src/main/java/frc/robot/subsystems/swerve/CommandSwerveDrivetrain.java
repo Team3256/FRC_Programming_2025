@@ -78,9 +78,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.ApplyFieldSpeeds()
           .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
-  private final PIDController m_pathXController = new PIDController(10, 0, 0);
-  private final PIDController m_pathYController = new PIDController(10, 0, 0);
-  private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
+  private final PIDController m_pathXController = new PIDController(5, 0, 0);
+  private final PIDController m_pathYController = new PIDController(5, 0, 0);
+  private final PIDController m_pathThetaController = new PIDController(5, 0, 0);
 
   /* Swerve requests to apply during SysId characterization */
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
@@ -327,6 +327,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     targetSpeeds.omegaRadiansPerSecond +=
         m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
 
+    Logger.recordOutput(this.getClass().getSimpleName()+"/TargetSpeeds", targetSpeeds);
     setControl(
         m_pathApplyFieldSpeeds
             .withSpeeds(targetSpeeds)

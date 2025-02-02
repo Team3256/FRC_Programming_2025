@@ -65,10 +65,6 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
-
-  private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
-  private final Climb climb = new Climb(true, new ClimbIOTalonFX());
-
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -116,9 +112,8 @@ public class RobotContainer {
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
-    m_operatorController
-        .rightBumper("s")
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+    m_operatorController.rightBumper("s").whileTrue(roller.setRollerVoltage(6));
+    m_operatorController.leftBumper("s").whileTrue(roller.setRollerVoltage(-6));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());

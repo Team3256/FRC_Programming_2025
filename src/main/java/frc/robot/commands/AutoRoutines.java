@@ -23,8 +23,8 @@ public class AutoRoutines {
   }
 
   public AutoRoutine simplePathAuto() {
-    final AutoRoutine routine = m_factory.newRoutine("Source2 - A");
-    final AutoTrajectory simplePath = routine.trajectory("Source2-A");
+    final AutoRoutine routine = m_factory.newRoutine("test");
+    final AutoTrajectory simplePath = routine.trajectory("test");
 
     routine.active().onTrue(simplePath.resetOdometry().andThen(simplePath.cmd()));
     return routine;
