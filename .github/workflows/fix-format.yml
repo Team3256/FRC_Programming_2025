@@ -10,6 +10,7 @@ on:
   # pull_request:
   #   branches: [ main ]
   workflow_dispatch:
+  workflow_call: # Needs the user information
 
 jobs:
   # This workflow contains a single job called "build"
@@ -27,22 +28,22 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v3
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
 
-    # Declares the repository safe and not under dubious ownership.
-    - name: Add repository to git safe directories
-      run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      # Declares the repository safe and not under dubious ownership.
+      - name: Add repository to git safe directories
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
 
-    # Grant execute permission for gradlew
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      # Grant execute permission for gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    # Runs a single command using the runners shell
-    - name: Compile and run tests on robot code
-      run: ./gradlew spotlessApply
+      # Runs a single command using the runners shell
+      - name: Run spotless
+        run: ./gradlew spotlessApply
 
-    # Commit changes
-    - uses: stefanzweifel/git-auto-commit-action@v5
-      with:
+      # Commit changes
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
           commit_message: run spotless
