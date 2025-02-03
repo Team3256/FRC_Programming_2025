@@ -17,8 +17,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import org.littletonrobotics.junction.Logger;
-import org.warriorb.lib.subsystems.DisableSubsystem;
-import org.warriorb.lib.utils.MathUtil;
+import org.warriorb.lib.custom.DisableSubsystem;
+import org.warriorb.lib.misc.MathUtil;
 
 public class Elevator extends DisableSubsystem {
 

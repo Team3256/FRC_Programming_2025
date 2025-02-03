@@ -20,7 +20,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.*;
-import org.warriorb.lib.utils.PhoenixUtil;
+import org.warriorb.lib.misc.PhoenixUtil;
 
 public class ClimbIOTalonFX implements ClimbIO {
   private final TalonFX climbMotor = new TalonFX(ClimbConstants.kClimbMotorID);

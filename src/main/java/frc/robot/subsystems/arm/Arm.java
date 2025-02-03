@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.Map;
 import org.json.simple.JSONObject;
 import org.littletonrobotics.junction.Logger;
-import org.warriorb.lib.subsystems.DisableSubsystem;
-import org.warriorb.lib.utils.MathUtil;
+import org.warriorb.lib.custom.DisableSubsystem;
+import org.warriorb.lib.misc.MathUtil;
 
 public class Arm extends DisableSubsystem {
 

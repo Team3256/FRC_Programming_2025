@@ -17,7 +17,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import org.warriorb.lib.utils.PhoenixUtil;
+import org.warriorb.lib.misc.PhoenixUtil;
 
 public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final TalonFX algaeMotor = new TalonFX(EndEffectorConstants.algaeMotorID);

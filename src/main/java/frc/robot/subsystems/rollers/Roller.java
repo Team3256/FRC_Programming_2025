@@ -9,7 +9,7 @@ package frc.robot.subsystems.rollers;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
-import org.warriorb.lib.subsystems.DisableSubsystem;
+import org.warriorb.lib.custom.DisableSubsystem;
 
 public class Roller extends DisableSubsystem {
 

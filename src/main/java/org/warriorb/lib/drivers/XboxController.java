@@ -12,12 +12,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MappedXboxController extends CommandXboxController implements Mapper.IMapped {
+public class XboxController extends CommandXboxController implements Mapper.IMapped {
   private Map<String, String> buttonMap = new HashMap<>();
 
   public final String name;
 
-  public MappedXboxController(int port, String name) {
+  public XboxController(int port, String name) {
     super(port);
     this.name = name;
   }

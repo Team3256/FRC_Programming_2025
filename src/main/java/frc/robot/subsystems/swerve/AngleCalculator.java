@@ -8,10 +8,10 @@
 package frc.robot.subsystems.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import org.warriorb.lib.drivers.MappedXboxController;
+import org.warriorb.lib.drivers.XboxController;
 
 public class AngleCalculator {
-  public static Rotation2d getStickAngle(MappedXboxController control) {
+  public static Rotation2d getStickAngle(XboxController control) {
     return new Rotation2d(Math.atan2(control.getRightY(), control.getRightX()));
   }
 }

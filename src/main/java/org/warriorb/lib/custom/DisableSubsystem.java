@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.warriorb.lib.subsystems;
+package org.warriorb.lib.custom;
 
 import edu.wpi.first.hal.HALUtil;
 import edu.wpi.first.wpilibj2.command.Command;

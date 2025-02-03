@@ -11,7 +11,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
-import org.warriorb.lib.subsystems.DisableSubsystem;
+import org.warriorb.lib.custom.DisableSubsystem;
 
 public class Climb extends DisableSubsystem {
   private final ClimbIO climbIO;

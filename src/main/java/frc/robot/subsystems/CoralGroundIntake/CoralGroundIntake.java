@@ -10,7 +10,7 @@ package frc.robot.subsystems.CoralGroundIntake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.littletonrobotics.junction.Logger;
-import org.warriorb.lib.subsystems.DisableSubsystem;
+import org.warriorb.lib.custom.DisableSubsystem;
 
 public class CoralGroundIntake extends DisableSubsystem {
   private final CoralIntakeIO intakeIO;

@@ -19,7 +19,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import org.warriorb.lib.utils.PhoenixUtil;
+import org.warriorb.lib.misc.PhoenixUtil;
 
 public class CoralIntakeIOTalonFX implements CoralIntakeIO {
   private final TalonFX intakeMotor = new TalonFX(CoralGroundIntakeConstants.kCGIMotorID);

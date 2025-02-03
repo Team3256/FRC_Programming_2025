@@ -44,8 +44,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
-import org.warriorb.lib.subsystems.QuestNav;
-import org.warriorb.lib.utils.repulsor.RepulsorFieldPlanner;
+import org.warriorb.lib.drivers.QuestNav;
+import org.warriorb.lib.misc.repulsor.RepulsorFieldPlanner;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily

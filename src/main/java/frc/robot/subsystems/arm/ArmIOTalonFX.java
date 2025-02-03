@@ -26,7 +26,7 @@ import edu.wpi.first.units.measure.Voltage;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-import org.warriorb.lib.utils.PhoenixUtil;
+import org.warriorb.lib.misc.PhoenixUtil;
 
 public class ArmIOTalonFX implements ArmIO {
 

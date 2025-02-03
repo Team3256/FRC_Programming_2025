@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.warriorb.lib.utils.repulsor;
+package org.warriorb.lib.misc.repulsor;
 
 import static edu.wpi.first.units.Units.Meters;
 

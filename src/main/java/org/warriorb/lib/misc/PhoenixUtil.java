@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package org.warriorb.lib.utils;
+package org.warriorb.lib.misc;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.AudioConfigs;

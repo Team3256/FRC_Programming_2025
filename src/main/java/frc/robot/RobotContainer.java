@@ -41,8 +41,8 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import java.util.ArrayList;
-import org.warriorb.lib.drivers.MappedXboxController;
-import org.warriorb.lib.utils.AdaptiveSlewRateLimiter;
+import org.warriorb.lib.drivers.XboxController;
+import org.warriorb.lib.misc.AdaptiveSlewRateLimiter;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,10 +54,10 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  public final MappedXboxController m_driverController =
-      new MappedXboxController(ControllerConstants.kDriverControllerPort, "driver");
-  public final MappedXboxController m_operatorController =
-      new MappedXboxController(ControllerConstants.kOperatorControllerPort, "operator");
+  public final XboxController m_driverController =
+      new XboxController(ControllerConstants.kDriverControllerPort, "driver");
+  public final XboxController m_operatorController =
+      new XboxController(ControllerConstants.kOperatorControllerPort, "operator");
 
   private final Telemetry logger =
       new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
