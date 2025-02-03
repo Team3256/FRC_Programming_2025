@@ -1,20 +1,20 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.utils;
+package org.warriorb.lib.utils;
 
 import java.util.List;
 
 /** Contains basic functions that are used often. */
-public class Util {
+public class MathUtil {
   public static final double kEpsilon = 1e-12;
 
   /** Prevent this class from being instantiated. */
-  private Util() {}
+  private MathUtil() {}
 
   /** Limits the given input to the given magnitude. */
   public static double limit(double v, double maxMagnitude) {

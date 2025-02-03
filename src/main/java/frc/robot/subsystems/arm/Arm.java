@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -18,8 +18,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.utils.DisableSubsystem;
-import frc.robot.utils.Util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -29,6 +27,8 @@ import java.util.Iterator;
 import java.util.Map;
 import org.json.simple.JSONObject;
 import org.littletonrobotics.junction.Logger;
+import org.warriorb.lib.subsystems.DisableSubsystem;
+import org.warriorb.lib.utils.MathUtil;
 
 public class Arm extends DisableSubsystem {
 
@@ -146,7 +146,7 @@ public class Arm extends DisableSubsystem {
   }
 
   public boolean isAtPosition() {
-    return Util.epsilonEquals(
+    return MathUtil.epsilonEquals(
         armIOAutoLogged.armEncoderAbsolutePosition, requestedPosition.in(Rotations), 0.01);
   }
 

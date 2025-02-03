@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -10,8 +10,8 @@ package frc.robot.subsystems.climb;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.utils.DisableSubsystem;
 import org.littletonrobotics.junction.Logger;
+import org.warriorb.lib.subsystems.DisableSubsystem;
 
 public class Climb extends DisableSubsystem {
   private final ClimbIO climbIO;

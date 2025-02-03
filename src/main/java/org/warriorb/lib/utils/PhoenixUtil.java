@@ -39,7 +39,7 @@ import java.util.function.Supplier;
 
 // The only method you should really use is applyMotorConfigs
 public class PhoenixUtil {
-  public class PhoenixConfigEquality {
+  private class PhoenixConfigEquality {
     // Stolen from 254, as it's a dependency of PhoenixUtil.
     // Should probably make this configured like how we normally configure code
 

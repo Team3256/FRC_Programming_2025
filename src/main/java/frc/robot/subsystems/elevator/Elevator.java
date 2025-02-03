@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -16,9 +16,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
-import frc.robot.utils.DisableSubsystem;
-import frc.robot.utils.Util;
 import org.littletonrobotics.junction.Logger;
+import org.warriorb.lib.subsystems.DisableSubsystem;
+import org.warriorb.lib.utils.MathUtil;
 
 public class Elevator extends DisableSubsystem {
 
@@ -104,7 +104,7 @@ public class Elevator extends DisableSubsystem {
   }
 
   public boolean isAtPosition() {
-    return Util.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.05);
+    return MathUtil.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.05);
   }
 
   public Command toHome() {
