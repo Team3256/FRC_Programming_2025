@@ -34,8 +34,6 @@ public class StreamDeck {
   private BooleanSubscriber K;
   private BooleanSubscriber L;
 
-
-
   public StreamDeck(String tableName) {
     nt4Instance = NetworkTableInstance.getDefault();
     nt4Table = nt4Instance.getTable(tableName);
@@ -56,59 +54,69 @@ public class StreamDeck {
     J = nt4Table.getBooleanTopic("J").subscribe(false);
     K = nt4Table.getBooleanTopic("K").subscribe(false);
     L = nt4Table.getBooleanTopic("L").subscribe(false);
-
-
-
   }
 
   public Trigger l1() {
     return new Trigger(() -> l1.get());
   }
+
   public Trigger l2() {
     return new Trigger(() -> l2.get());
   }
+
   public Trigger l3() {
     return new Trigger(() -> l3.get());
   }
+
   public Trigger l4() {
     return new Trigger(() -> l4.get());
   }
+
   public Trigger A() {
     return new Trigger(() -> A.get());
   }
+
   public Trigger B() {
     return new Trigger(() -> B.get());
   }
+
   public Trigger C() {
     return new Trigger(() -> C.get());
   }
+
   public Trigger D() {
     return new Trigger(() -> D.get());
   }
+
   public Trigger E() {
     return new Trigger(() -> E.get());
   }
+
   public Trigger F() {
     return new Trigger(() -> F.get());
   }
+
   public Trigger G() {
     return new Trigger(() -> G.get());
   }
+
   public Trigger H() {
     return new Trigger(() -> H.get());
   }
+
   public Trigger I() {
     return new Trigger(() -> I.get());
   }
+
   public Trigger J() {
     return new Trigger(() -> J.get());
   }
+
   public Trigger K() {
     return new Trigger(() -> K.get());
   }
+
   public Trigger L() {
     return new Trigger(() -> L.get());
   }
-
-
 }

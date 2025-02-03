@@ -11,8 +11,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public final class SwerveConstants {
 
-  public static final double wheelRadiusMaxVelocity = 0.25; // Rad/Sec
-  public static final double wheelRadiusMaxRampRate = 0.05; // Rad/Sec^2
+  public static final double wheelRadiusMaxVelocity = 2 * Math.PI; // Rad/Sec
+  public static final double wheelRadiusMaxRampRate = Math.PI / 2; // Rad/Sec^2
 
   public static final Rotation2d sourceLeft1 = new Rotation2d(125.989);
   // source 1
