@@ -2,9 +2,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.wpi.first.hal.HAL;
 import frc.robot.RobotContainer;
-import frc.robot.utils.Mapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.warriorb.lib.drivers.Mapper;
 
 public class RobotContainerTest {
 

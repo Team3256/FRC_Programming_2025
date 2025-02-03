@@ -1,4 +1,4 @@
-package frc.robot.drivers;
+package org.warriorb.lib.drivers;
 
 import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
@@ -6,7 +6,6 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.HashMap;
 import java.util.Map;
-import org.warriorb.lib.definitions.Mapper;
 
 public class StreamDeck implements Mapper.IMapped {
   private NetworkTable nt4Table;

@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -19,7 +19,7 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.utils.PhoenixUtil;
+import org.warriorb.lib.utils.PhoenixUtil;
 
 public class CoralIntakeIOTalonFX implements CoralIntakeIO {
   private final TalonFX intakeMotor = new TalonFX(CoralGroundIntakeConstants.kCGIMotorID);
