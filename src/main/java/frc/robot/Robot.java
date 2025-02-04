@@ -168,7 +168,10 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    m_robotContainer.updateAngles();
+    m_robotContainer.configureSwerve();
+  }
 
   @Override
   public void teleopInit() {

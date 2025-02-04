@@ -412,12 +412,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     Logger.recordOutput("Swerve/pose", this.getState().Pose);
   }
 
-  public Object getCurrentQHeading() {
+  public Rotation2d getCurrentHeading() {
     if (!Utils.isSimulation() && questNav.connected()) {
       return this.questNav.getPose().getRotation();
     } else {
       a_questNavNotConnected.set(true);
-      return a_questNavNotConnected;
+      return this.m_pigeon2.getRotation2d();
     }
   }
 
