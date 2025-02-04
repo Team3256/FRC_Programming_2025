@@ -5,6 +5,8 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
+package frc.robot.utils;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import java.util.Date;
 
