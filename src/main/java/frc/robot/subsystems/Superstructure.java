@@ -67,13 +67,12 @@ public class Superstructure {
   private final EndEffector endEffector;
   private final Arm arm;
 
-  public static enum AutoCommands {
-    CORAL,
-    NONE,
-    DONE
+  public static enum AutoSequences {
+    SCORE_CORAL,
+    IDLE
   }
 
-  private AutoCommands currentAuto = AutoCommands.NONE;
+  private AutoSequences currentAuto = AutoSequences.IDLE;
 
   public Superstructure(Elevator elevator, EndEffector endEffector, Arm arm) {
     this.elevator = elevator;
@@ -131,11 +130,11 @@ public class Superstructure {
         .or(stateTriggers.get(StructureState.L3))
         .or(stateTriggers.get(StructureState.L4))
         .and(this.elevator.reachedPosition.and(this.arm.reachedPosition))
-        .and(isRunningAutoSequence(AutoCommands.CORAL))
+        .and(isRunningAutoSequence(AutoSequences.SCORE_CORAL))
         .onTrue(this.setState(StructureState.SCORE_CORAL));
     stateTriggers
         .get(StructureState.SCORE_CORAL)
-        .and(isRunningAutoSequence(AutoCommands.CORAL))
+        .and(isRunningAutoSequence(AutoSequences.SCORE_CORAL))
         .and(endEffector.reachedVelocity)
         // TODO: feature flag?
         .and(
@@ -215,25 +214,24 @@ public class Superstructure {
         });
   }
 
-  private Trigger isRunningAutoSequence(AutoCommands auto) {
+  private Trigger isRunningAutoSequence(AutoSequences auto) {
     // TODO: optimize into getting from a hashmap of cached triggers?
     return new Trigger(() -> this.currentAuto == auto);
   }
 
-  private Command runAutoSequence(AutoCommands auto, Command command) {
+  private Command runAutoSequence(AutoSequences auto, Command command) {
     return Commands.runOnce(() -> this.currentAuto = auto)
         .andThen(command)
-        .until(() -> this.currentAuto == AutoCommands.DONE)
-        .andThen(() -> this.currentAuto = AutoCommands.NONE);
+        .until(() -> this.currentAuto == AutoSequences.IDLE);
   }
 
   private Command finishAutoSequence() {
-    return Commands.runOnce(() -> this.currentAuto = AutoCommands.DONE);
+    return Commands.runOnce(() -> this.currentAuto = AutoSequences.IDLE);
   }
 
   public Command scoreCoral(ScoringTypes location, ManipulatorSide side) {
     return this.runAutoSequence(
-        AutoCommands.CORAL,
+        AutoSequences.SCORE_CORAL,
         this.setManipulatorSide(side)
             .andThen(
                 this.setState(
@@ -243,5 +241,9 @@ public class Superstructure {
                       case L3 -> StructureState.L3;
                       case L4 -> StructureState.L4;
                     })));
+  }
+
+  public Command intakeCoralFromSource() {
+    return this.setState(StructureState.PRESOURCE);
   }
 }

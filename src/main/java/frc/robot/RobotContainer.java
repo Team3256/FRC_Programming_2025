@@ -30,11 +30,16 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -68,6 +73,9 @@ public class RobotContainer {
 
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
+  private final Elevator elevator = new Elevator(true, new ElevatorIOTalonFX());
+  private final EndEffector endeffector = new EndEffector(true, new EndEffectorIOTalonFX());
+  private final Superstructure superstructure = new Superstructure(elevator, endeffector, arm);
 
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
@@ -182,7 +190,7 @@ public class RobotContainer {
             IntakeLocations.Source2,
             ScoringLocations.B,
             ScoringTypes.L1));
-    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
+    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes, superstructure));
 
     SmartDashboard.putData("auto chooser", autoChooser);
 

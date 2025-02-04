@@ -66,21 +66,19 @@ public class NodeManager {
               routine.trajectory(
                   node.intakeLocation().name() + "-" + node.scoringLocation().name());
           // Wait for intake traj to be done then trigger scoring traj
+          intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
+          // scoringTraj.done().toggleOnTrue(superstructure.)
           switch (node.scoringType()) {
             case L1 -> {
-              intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
               scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
             case L2 -> {
-              intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
               scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
             case L3 -> {
-              intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
               scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
             case L4 -> {
-              intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
               scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
           }
