@@ -78,10 +78,10 @@ public class QuestNav {
   // Zero the absolute 3D position of the robot (similar to long-pressing the quest logo)
   public void zeroPosition() {
     resetPosition = getPose();
-//    if (questMiso.get() != 99) {
-//      questMosi.set(1);
-//    }
-//    questMosi.set(0);
+    //    if (questMiso.get() != 99) {
+    //      questMosi.set(1);
+    //    }
+    //    questMosi.set(0);
   }
 
   // Clean up questnav subroutine messages after processing on the headset

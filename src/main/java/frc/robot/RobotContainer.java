@@ -30,11 +30,6 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIOSim;
-import frc.robot.subsystems.arm.ArmIOTalonFX;
-import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -114,7 +109,7 @@ public class RobotContainer {
 
     m_operatorController.rightBumper("s").whileTrue(roller.setRollerVoltage(6));
     m_operatorController.leftBumper("s").whileTrue(roller.setRollerVoltage(-6));
-    m_operatorController.a("sd").onTrue(Commands.runOnce(()->drivetrain.resetPose(new Pose2d())));
+    m_operatorController.a("sd").onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());

@@ -327,7 +327,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     targetSpeeds.omegaRadiansPerSecond +=
         m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
 
-    Logger.recordOutput(this.getClass().getSimpleName()+"/TargetSpeeds", targetSpeeds);
+    Logger.recordOutput(this.getClass().getSimpleName() + "/TargetSpeeds", targetSpeeds);
     setControl(
         m_pathApplyFieldSpeeds
             .withSpeeds(targetSpeeds)
