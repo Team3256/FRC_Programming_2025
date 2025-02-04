@@ -15,10 +15,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.endeffector.EndEffector;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import java.util.ArrayList;
+
+import static edu.wpi.first.units.Units.Rotations;
 
 public class NodeManager {
 
@@ -53,7 +56,7 @@ public class NodeManager {
           TrajTriggers.atTimeToEnd(preloadTraj, .5)
               .toggleOnTrue(elevator.toReefLevel(3).alongWith(arm.toRightReefLevel(2)));
           preloadTraj.done().and(routine.observe(elevator.reachedPosition)).and(routine.observe(arm.reachedPosition)).toggleOnTrue(endEffector.setL4Velocity());
-          endEffector.rightBeamBreak.negate().toggleOnTrue(arm.toHome()).debounce(.1).toggleOnTrue(elevator.toHome());
+          endEffector.rightBeamBreak.negate().toggleOnTrue(arm.toHome()).toggleOnTrue(elevator.toHome());
           nextTrajTrigger = preloadTraj.done(60);
           lastScoringLocation = node.scoringLocation();
         }
@@ -63,6 +66,9 @@ public class NodeManager {
               routine.trajectory(lastScoringLocation.name() + "-" + node.intakeLocation().name());
           // Wait for whatever finished last to be done then trigger next traj
           nextTrajTrigger.toggleOnTrue(intakeTraj.cmd());
+          TrajTriggers.atTimeToEnd(intakeTraj,1)
+                          .toggleOnTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)));
+          TrajTriggers.atTimeToEnd(intakeTraj,.5).toggleOnTrue(arm.toRightSourceLevel());
           intakeTraj.done().toggleOnTrue(rollers.setRollerVoltage(3));
           // Load scoring traj
           AutoTrajectory scoringTraj =
