@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -28,11 +28,5 @@ public class AutoRoutines {
 
     routine.active().onTrue(simplePath.resetOdometry().andThen(simplePath.cmd()));
     return routine;
-  }
-
-  private static class AutoCommands {
-    private AutoCommands() {
-      throw new UnsupportedOperationException("This is a utility class!");
-    }
   }
 }

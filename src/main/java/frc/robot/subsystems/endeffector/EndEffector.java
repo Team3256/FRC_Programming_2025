@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -20,6 +20,11 @@ public class EndEffector extends DisableSubsystem {
   private final EndEffectorIO endEffectorIO;
   private final EndEffectorIOInputsAutoLogged endEffectorIOInputsAutoLogged =
       new EndEffectorIOInputsAutoLogged();
+  private AngularVelocity[] requestedVelocity = {
+    RotationsPerSecond.of(0), RotationsPerSecond.of(0)
+  };
+
+  public final Trigger reachedVelocity = new Trigger(() -> isAtPosition());
 
   public final Trigger leftBeamBreak =
       new Trigger(() -> endEffectorIOInputsAutoLogged.leftBeamBreak);
@@ -50,10 +55,17 @@ public class EndEffector extends DisableSubsystem {
   public Command setVelocity(AngularVelocity algaeVelocity, AngularVelocity coralVelocity) {
     return this.run(
             () -> {
+              requestedVelocity[0] = algaeVelocity;
+              requestedVelocity[1] = coralVelocity;
               endEffectorIO.setAlgaeVelocity(algaeVelocity);
               endEffectorIO.setCoralVelocity(coralVelocity);
             })
         .finallyDo(endEffectorIO::off);
+  }
+
+  private boolean isAtPosition() {
+    return endEffectorIOInputsAutoLogged.algaeMotorVelocity.isNear(requestedVelocity[0], 0.05)
+        && endEffectorIOInputsAutoLogged.coralMotorVelocity.isNear(requestedVelocity[1], 0.05);
   }
 
   public Command setL1Velocity() {
