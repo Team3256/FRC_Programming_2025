@@ -295,6 +295,18 @@ public class RobotContainer {
                             .withTargetDirection(hang))
                 .withTimeout(aziTimeout));
 
+    m_driverController
+            .povLeft()
+            .onTrue(
+                    drivetrain
+                            .applyRequest(
+                                    () ->
+                                            azimuth
+                                                    .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                                                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                                                    .withTargetDirection(finalAutoHeading))
+                            .withTimeout(aziTimeout));
+
     new Trigger(
             () -> (m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15))
         .onTrue(
