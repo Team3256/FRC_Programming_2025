@@ -59,17 +59,15 @@ public class NodeManager {
           nextTrajTrigger.toggleOnTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
           TrajTriggers.atTimeToEnd(preloadTraj, .5)
               .toggleOnTrue(elevator.toReefLevel(3).alongWith(arm.toRightReefLevel(2)));
-          preloadTraj
-              .done()
-              .and(routine.observe(elevator.reachedPosition))
-              .and(routine.observe(arm.reachedPosition))
-              .toggleOnTrue(endEffector.setL4Velocity());
-          endEffector
-              .rightBeamBreak
-              .negate()
-              .toggleOnTrue(arm.toHome())
-              .toggleOnTrue(elevator.toHome());
-          nextTrajTrigger = preloadTraj.done(60);
+          Command scoreCmd =
+              Commands.waitUntil(elevator.reachedPosition.and(arm.reachedPosition))
+                  .andThen(
+                      endEffector
+                          .setL4Velocity()
+                          .until(routine.observe(endEffector.rightBeamBreak))
+                          .andThen(arm.toHome().alongWith(elevator.toHome())));
+          preloadTraj.done().toggleOnTrue(scoreCmd);
+          nextTrajTrigger = new Trigger(scoreCmd::isFinished);
           lastScoringLocation = node.scoringLocation();
         }
         case SCORE_AND_INTAKE -> {
@@ -81,7 +79,15 @@ public class NodeManager {
           TrajTriggers.atTimeToEnd(intakeTraj, 1)
               .toggleOnTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)));
           TrajTriggers.atTimeToEnd(intakeTraj, .5).toggleOnTrue(arm.toRightSourceLevel());
-          intakeTraj.done().toggleOnTrue(rollers.setRollerVoltage(3));
+          intakeTraj
+              .done()
+              .onTrue(
+                  endEffector
+                      .setSourceVelocity()
+                      .until(endEffector.rightBeamBreak.debounce(.1))
+                      .andThen(
+                          arm.toHome()
+                              .alongWith(Commands.waitSeconds(.2).andThen(elevator.toHome()))));
           // Load scoring traj
           AutoTrajectory scoringTraj =
               routine.trajectory(
@@ -90,19 +96,19 @@ public class NodeManager {
           switch (node.scoringType()) {
             case L1 -> {
               intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
-              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
+              //              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
             case L2 -> {
               intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
-              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
+              //              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
             case L3 -> {
               intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
-              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
+              //              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
             case L4 -> {
               intakeTraj.done().toggleOnTrue(scoringTraj.cmd());
-              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
+              //              scoringTraj.done().toggleOnTrue(rollers.setRollerVoltage(-3));
             }
           }
 
