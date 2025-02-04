@@ -18,11 +18,11 @@ public final class TrajTriggers {
     throw new UnsupportedOperationException("This is a utility class!");
   }
 
-  private static Trigger atTimeToEnd(AutoTrajectory traj, Time time) {
+  public static Trigger atTimeToEnd(AutoTrajectory traj, Time time) {
     return atTimeToEnd(traj, time.in(Seconds));
   }
 
-  private static Trigger atTimeToEnd(AutoTrajectory traj, double time) {
+  public static Trigger atTimeToEnd(AutoTrajectory traj, double time) {
     return traj.atTime(traj.getRawTrajectory().getTotalTime() - time);
   }
 }

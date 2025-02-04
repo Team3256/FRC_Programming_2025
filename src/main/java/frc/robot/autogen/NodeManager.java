@@ -13,6 +13,9 @@ import choreo.auto.AutoTrajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.endeffector.EndEffector;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import java.util.ArrayList;
@@ -20,14 +23,18 @@ import java.util.ArrayList;
 public class NodeManager {
 
   private final CommandSwerveDrivetrain drivetrain;
-  private final Roller rollers;
+  private final Elevator elevator;
+    private final Arm arm;
+    private final EndEffector endEffector;
 
   private final AutoFactory factory;
 
-  public NodeManager(CommandSwerveDrivetrain drivetrain, Roller rollers, AutoFactory factory) {
+  public NodeManager(CommandSwerveDrivetrain drivetrain, Elevator elevator, Arm arm, EndEffector endEffector, AutoFactory factory) {
     this.drivetrain = drivetrain;
-    this.rollers = rollers;
     this.factory = factory;
+    this.elevator = elevator;
+    this.arm = arm;
+    this.endEffector = endEffector;
   }
 
   public AutoRoutine createAuto(ArrayList<Node> nodes) {
@@ -43,7 +50,10 @@ public class NodeManager {
               routine.trajectory(
                   node.intakeLocation().name() + "-" + node.scoringLocation().name());
           nextTrajTrigger.toggleOnTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
-          preloadTraj.done().toggleOnTrue(rollers.setRollerVoltage(3));
+          TrajTriggers.atTimeToEnd(preloadTraj, .5)
+              .toggleOnTrue(elevator.toReefLevel(3).alongWith(arm.toRightReefLevel(2)));
+          preloadTraj.done().and(routine.observe(elevator.reachedPosition)).and(routine.observe(arm.reachedPosition)).toggleOnTrue(endEffector.setL4Velocity());
+          endEffector.rightBeamBreak.negate().toggleOnTrue(arm.toHome()).debounce(.1).toggleOnTrue(elevator.toHome());
           nextTrajTrigger = preloadTraj.done(60);
           lastScoringLocation = node.scoringLocation();
         }
@@ -54,7 +64,6 @@ public class NodeManager {
           // Wait for whatever finished last to be done then trigger next traj
           nextTrajTrigger.toggleOnTrue(intakeTraj.cmd());
           intakeTraj.done().toggleOnTrue(rollers.setRollerVoltage(3));
-
           // Load scoring traj
           AutoTrajectory scoringTraj =
               routine.trajectory(
