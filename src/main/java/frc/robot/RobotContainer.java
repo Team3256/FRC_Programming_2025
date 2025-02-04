@@ -114,6 +114,7 @@ public class RobotContainer {
 
     m_operatorController.rightBumper("s").whileTrue(roller.setRollerVoltage(6));
     m_operatorController.leftBumper("s").whileTrue(roller.setRollerVoltage(-6));
+    m_operatorController.a("sd").onTrue(Commands.runOnce(()->drivetrain.resetPose(new Pose2d())));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());
