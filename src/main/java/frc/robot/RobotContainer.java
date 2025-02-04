@@ -319,8 +319,6 @@ public class RobotContainer {
                             .withTargetDirection(getStickAngle(m_driverController)))
                 .withTimeout(3));
 
-    // m_driverController.povLeft().onTrue() // correct pose command here
-
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     drivetrain.registerTelemetry(logger::telemeterize);
