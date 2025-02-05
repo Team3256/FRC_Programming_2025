@@ -20,6 +20,14 @@ public interface ElevatorIO {
     public double motorPosition = 0.0;
     public double motorStatorCurrent = 0.0;
     public double motorSupplyCurrent = 0.0;
+
+    public double encoderARawPosition = 0.0;
+    public double encoderAAbsolutePosition = 0.0;
+    public double encoderAVelocity = 0.0;
+
+    public double encoderBRawPosition = 0.0;
+    public double encoderBAbsolutePosition = 0.0;
+    public double encoderBVelocity = 0.0;
   }
 
   public default void updateInputs(ElevatorIOInputs inputs) {}
