@@ -20,8 +20,6 @@ public interface ElevatorIO {
     public double motorPosition = 0.0;
     public double motorStatorCurrent = 0.0;
     public double motorSupplyCurrent = 0.0;
-    public double motorTemperature = 0.0;
-    public double motorReferenceSlope = 0.0;
   }
 
   public default void updateInputs(ElevatorIOInputs inputs) {}

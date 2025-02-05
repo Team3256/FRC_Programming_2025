@@ -30,8 +30,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final StatusSignal<Angle> motorPosition;
   private final StatusSignal<Current> motorStatorCurrent;
   private final StatusSignal<Current> motorSupplyCurrent;
-  // private final StatusSignal<Double> motorTemperature;
-  private final StatusSignal<Double> motorReferenceSlope;
 
   public ElevatorIOTalonFX() {
     motor = new TalonFX(ElevatorConstants.kMotorID);
@@ -39,8 +37,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     motorPosition = motor.getPosition();
     motorStatorCurrent = motor.getStatorCurrent();
     motorSupplyCurrent = motor.getSupplyCurrent();
-    // motorTemperature = motor.getDeviceTemp();
-    motorReferenceSlope = motor.getClosedLoopReferenceSlope();
 
     PhoenixUtil.applyMotorConfigs(
         motor, ElevatorConstants.kMotorConfig, ElevatorConstants.kFlashConfigRetries);
@@ -50,9 +46,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         motorVoltage,
         motorPosition,
         motorStatorCurrent,
-        motorSupplyCurrent,
-        // motorTemperature,
-        motorReferenceSlope);
+        motorSupplyCurrent);
     motor.optimizeBusUtilization();
   }
 
@@ -62,15 +56,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         motorVoltage,
         motorPosition,
         motorStatorCurrent,
-        motorSupplyCurrent,
-        // motorTemperature,
-        motorReferenceSlope);
+        motorSupplyCurrent);
     inputs.motorVoltage = motorVoltage.getValueAsDouble();
     inputs.motorPosition = motorPosition.getValueAsDouble();
     inputs.motorStatorCurrent = motorStatorCurrent.getValueAsDouble();
     inputs.motorSupplyCurrent = motorSupplyCurrent.getValueAsDouble();
-    // inputs.motorTemperature = motorTemperature.getValueAsDouble();
-    inputs.motorReferenceSlope = motorReferenceSlope.getValueAsDouble();
   }
 
   @Override

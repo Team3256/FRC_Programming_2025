@@ -17,6 +17,10 @@ import frc.robot.subsystems.arm.ArmConstants;
 
 public final class ElevatorConstants {
   public static final int kMotorID = 22;
+
+  
+
+
   public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration();
   public static final boolean kUseMotionMagic = true;
   public static final double kStatusSignalUpdateFrequency = 50.0; // Hz
