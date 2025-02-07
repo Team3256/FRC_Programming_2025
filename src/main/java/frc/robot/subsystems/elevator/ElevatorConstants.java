@@ -9,7 +9,8 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
@@ -17,12 +18,57 @@ import frc.robot.subsystems.arm.ArmConstants;
 
 public final class ElevatorConstants {
   public static final int kMotorID = 22;
-  public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration();
+
+  public static final int kEncoderAID = 23;
+  public static final int kEncoderBID = 24;
+
+  public static final TalonFXConfiguration kMotorConfig =
+      new TalonFXConfiguration()
+          .withSlot0(
+              new Slot0Configs()
+                  .withKS(0)
+                  .withKV(3)
+                  .withKP(100)
+                  .withKI(0)
+                  .withKD(0)
+                  .withKG(10)
+                  .withGravityType(GravityTypeValue.Elevator_Static) // Original 0.145
+              )
+          .withMotorOutput(
+              new MotorOutputConfigs()
+                  .withNeutralMode(NeutralModeValue.Brake)
+                  .withInverted(InvertedValue.Clockwise_Positive))
+          .withMotionMagic(
+              new MotionMagicConfigs()
+                  .withMotionMagicAcceleration(400)
+                  .withMotionMagicCruiseVelocity(50))
+          .withCurrentLimits(
+              new CurrentLimitsConfigs()
+                  .withStatorCurrentLimitEnable(true)
+                  .withStatorCurrentLimit(120));
   public static final boolean kUseMotionMagic = true;
   public static final double kStatusSignalUpdateFrequency = 50.0; // Hz
 
   public static final boolean kUseFOC = true;
   public static final int kFlashConfigRetries = 5;
+
+  public static final int kEncoderATeethCount = 29;
+  public static final int kEncoderBTeethCount = 31;
+
+  public static final CANcoderConfiguration kEncoderAConfig =
+      new CANcoderConfiguration()
+          .withMagnetSensor(
+              new MagnetSensorConfigs()
+                  .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1))
+                  .withMagnetOffset(Rotations.of(0))
+                  .withSensorDirection(SensorDirectionValue.Clockwise_Positive));
+  public static final CANcoderConfiguration kEncoderBConfig =
+      new CANcoderConfiguration()
+          .withMagnetSensor(
+              new MagnetSensorConfigs()
+                  .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1))
+                  .withMagnetOffset(Rotations.of(0))
+                  .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive));
 
   // Coral positions
   // Please tune
