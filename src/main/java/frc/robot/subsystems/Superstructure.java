@@ -121,7 +121,7 @@ public class Superstructure {
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
         .and(leftManipulatorSide)
-        .onTrue(arm.toLeftDealgaeLevel(0));
+        .onTrue(arm.toLeftDealgaeLevel());
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
@@ -159,7 +159,9 @@ public class Superstructure {
         .get(StructureState.HOME)
         .onTrue(arm.toHome())
         .onTrue(elevator.toHome())
-        .onTrue(endEffector.off());
+        .onTrue(endEffector.off())
+        .and(arm.reachedPosition.and(elevator.reachedPosition))
+        .onTrue(this.setState(StructureState.IDLE));
   }
 
   // call manually

@@ -100,6 +100,10 @@ public class TunerConstants {
   private static final double kSteerGearRatio = 18.75;
   private static final Distance kWheelRadius = Inches.of(2);
 
+  // For wheel radius characterization
+  public static final double kDriveRotationsPerMeter =
+      kDriveGearRatio / (2 * Math.PI * kWheelRadius.in(Meters));
+
   private static final boolean kInvertLeftSide = false;
   private static final boolean kInvertRightSide = true;
 
@@ -187,6 +191,10 @@ public class TunerConstants {
 
   private static final Distance kBackRightXPos = Inches.of(-10.875);
   private static final Distance kBackRightYPos = Inches.of(-10.875);
+
+  // For wheel radius characterization
+  public static final double kDriveRadius =
+      Math.hypot(kFrontLeftXPos.magnitude(), kFrontLeftYPos.magnitude());
 
   public static final SwerveModuleConstants<
           TalonFXConfiguration, TalonFXConfiguration, CANcoderConfiguration>

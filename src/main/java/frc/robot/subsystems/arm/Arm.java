@@ -133,7 +133,7 @@ public class Arm extends DisableSubsystem {
     return this.setPosition(ArmConstants.dealgaeRightPosition);
   }
 
-  public Command toLeftDealgaeLevel(int level) {
+  public Command toLeftDealgaeLevel() {
     return this.setPosition(ArmConstants.dealgaeLeftPosition);
   }
 
