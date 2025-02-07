@@ -159,7 +159,9 @@ public class Superstructure {
         .get(StructureState.HOME)
         .onTrue(arm.toHome())
         .onTrue(elevator.toHome())
-        .onTrue(endEffector.off());
+        .onTrue(endEffector.off())
+        .and(arm.reachedPosition.and(elevator.reachedPosition))
+        .onTrue(this.setState(StructureState.IDLE));
   }
 
   // call manually
