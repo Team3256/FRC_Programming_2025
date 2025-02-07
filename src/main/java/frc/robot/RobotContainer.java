@@ -63,6 +63,7 @@ public class RobotContainer {
       new Telemetry(TunerConstants.kSpeedAt12Volts.in(MetersPerSecond));
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  private Rotation2d finalAutoHeading = new Rotation2d();
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
 
@@ -94,6 +95,7 @@ public class RobotContainer {
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
     configureSwerve();
+
     if (Utils.isSimulation()) {
       SimMechs.getInstance().publishToNT();
     }
@@ -188,7 +190,7 @@ public class RobotContainer {
   }
 
   public void updateAngles() {
-    this.finalAutoHeading = this.drivetrain.getCurrentHeading();
+    this.finalAutoHeading = finalAutoHeading.plus(this.drivetrain.getCurrentHeading());
   }
 
   public void configureSwerve() {
