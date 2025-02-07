@@ -121,7 +121,7 @@ public class Superstructure {
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
         .and(leftManipulatorSide)
-        .onTrue(arm.toLeftDealgaeLevel(0));
+        .onTrue(arm.toLeftDealgaeLevel());
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
