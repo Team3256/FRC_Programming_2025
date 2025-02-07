@@ -299,7 +299,8 @@ public class RobotContainer {
                         azimuth
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(getStickAngle(m_driverController).plus(new Rotation2d(90))))
+                            .withTargetDirection(
+                                getStickAngle(m_driverController).plus(new Rotation2d(90))))
                 .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
