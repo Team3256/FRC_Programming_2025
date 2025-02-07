@@ -19,6 +19,7 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -44,9 +45,9 @@ import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.RepulsorFieldPlanner;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -67,6 +68,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private static final double kSimLoopPeriod = 0.005; // 5 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
+
+  @AutoLogOutput private double lastGyroYawRads = 0;
+  @AutoLogOutput private double accumGyroYawRads = 0;
+  @AutoLogOutput private double averageWheelPosition = 0;
+  @AutoLogOutput private double[] startWheelPositions = new double[4];
+  @AutoLogOutput private double currentEffectiveWheelRadius = 0;
 
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -464,88 +471,83 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
-  public Command wheelRadiusCharacterization(double wheelRampRate, double wheelMaxVel) {
-    SlewRateLimiter limiter = new SlewRateLimiter(wheelRampRate);
-    WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
+  /**
+   * Runs the wheel radius characterization routine.
+   *
+   * @param omegaDirection Direction of the robot to turn either 1 or -1
+   */
+  public Command wheelRadiusCharacterization(double omegaDirection) {
 
-    return Commands.parallel(
-        // Drive control sequence
-        Commands.sequence(
-            // Reset acceleration limiter
-            Commands.runOnce(
-                () -> {
-                  limiter.reset(0.0);
-                }),
+    /* wheel radius characterization schtuffs */
+    final DoubleSupplier m_gyroYawRadsSupplier =
+        () -> Units.degreesToRadians(getPigeon2().getYaw().getValueAsDouble());
+    // () -> getState().Pose.getRotation().getRadians();
+    final SlewRateLimiter m_omegaLimiter = new SlewRateLimiter(0.5);
+    final SwerveRequest.RobotCentric m_characterizationReq =
+        new SwerveRequest.RobotCentric()
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
+    final double m_characterizationSpeed = 1.5;
 
-            // Turn in place, accelerating up to full speed
-            this.run(
-                () -> {
-                  double speed = limiter.calculate(wheelMaxVel);
-                  this.setControl(
-                      new SwerveRequest.ApplyRobotSpeeds()
-                          .withSpeeds(new ChassisSpeeds(0.0, 0.0, speed)));
-                }),
+    var initialize =
+        runOnce(
+            () -> {
+              lastGyroYawRads = m_gyroYawRadsSupplier.getAsDouble();
+              accumGyroYawRads = 0;
+              currentEffectiveWheelRadius = 0;
+              averageWheelPosition = 0;
+              for (int i = 0; i < getModules().length; i++) {
+                var pos = getModules()[i].getPosition(true);
+                startWheelPositions[i] =
+                    pos.distanceMeters * TunerConstants.kDriveRotationsPerMeter;
+              }
+              m_omegaLimiter.reset(0);
+            });
 
-            // Measurement sequence
-            Commands.sequence(
-                // Wait for modules to fully orient before starting measurement
-                Commands.waitSeconds(1.0),
+    var executeEnd =
+        runEnd(
+            () -> {
+              setControl(
+                  m_characterizationReq.withRotationalRate(
+                      m_omegaLimiter.calculate(m_characterizationSpeed * omegaDirection)));
+              accumGyroYawRads +=
+                  MathUtil.angleModulus(m_gyroYawRadsSupplier.getAsDouble() - lastGyroYawRads);
+              lastGyroYawRads = m_gyroYawRadsSupplier.getAsDouble();
+              averageWheelPosition = 0;
+              double[] wheelPositions = new double[4];
+              for (int i = 0; i < getModules().length; i++) {
+                var pos = getModules()[i].getPosition(true);
+                wheelPositions[i] = pos.distanceMeters * TunerConstants.kDriveRotationsPerMeter;
+                averageWheelPosition += Math.abs(wheelPositions[i] - startWheelPositions[i]);
+              }
+              averageWheelPosition = averageWheelPosition / 4.0;
+              currentEffectiveWheelRadius =
+                  (accumGyroYawRads * TunerConstants.kDriveRadius) / averageWheelPosition;
+              // System.out.println("effective wheel radius: " + currentEffectiveWheelRadius);
+              System.out.println("Average Wheel Position: " + averageWheelPosition);
+            },
+            () -> {
+              setControl(m_characterizationReq.withRotationalRate(0));
+              if (Math.abs(accumGyroYawRads) <= Math.PI * 2.0) {
+                System.out.println(
+                    "not enough data for characterization "
+                        + accumGyroYawRads
+                        + "\navgWheelPos: "
+                        + averageWheelPosition
+                        + "radians");
+              } else {
+                System.out.println(
+                    "effective wheel radius: "
+                        + currentEffectiveWheelRadius
+                        + " inches"
+                        + "\naccumGryoYawRads: "
+                        + accumGyroYawRads
+                        + "radians"
+                        + "\navgWheelPos: "
+                        + averageWheelPosition
+                        + "radians");
+              }
+            });
 
-                // Record starting measurement
-                Commands.runOnce(
-                    () -> {
-                      state.positions = this.getWheelRadiusCharacterizationPositions();
-                      state.lastAngle = this.getState().Pose.getRotation();
-                      state.gyroDelta = 0.0;
-                    }),
-
-                // Update gyro delta
-                Commands.run(
-                        () -> {
-                          var rotation = this.getState().Pose.getRotation();
-                          state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
-                          state.lastAngle = rotation;
-                        })
-
-                    // When cancelled, calculate and print results
-                    .finallyDo(
-                        () -> {
-                          double[] positions = this.getWheelRadiusCharacterizationPositions();
-                          double wheelDelta = 0.0;
-                          for (int i = 0; i < 4; i++) {
-                            wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
-                          }
-                          double wheelRadius = (state.gyroDelta * driveBaseRadius) / wheelDelta;
-
-                          NumberFormat formatter = new DecimalFormat("#0.000");
-                          System.out.println(
-                              "********** Wheel Radius Characterization Results **********");
-                          System.out.println(
-                              "\tWheel Delta: " + formatter.format(wheelDelta) + " radians");
-                          System.out.println(
-                              "\tGyro Delta: " + formatter.format(state.gyroDelta) + " radians");
-                          System.out.println(
-                              "\tWheel Radius: "
-                                  + formatter.format(wheelRadius)
-                                  + " meters, "
-                                  + formatter.format(Units.metersToInches(wheelRadius))
-                                  + " inches");
-                        }))));
-  }
-
-  private double[] getWheelRadiusCharacterizationPositions() {
-    double[] values = new double[4];
-    for (int i = 0; i < 4; i++) {
-      values[i] =
-          Units.rotationsToRadians(
-              this.getModules()[i].getDriveMotor().getPosition().getValueAsDouble());
-    }
-    return values;
-  }
-
-  private static class WheelRadiusCharacterizationState {
-    double[] positions = new double[4];
-    Rotation2d lastAngle = new Rotation2d();
-    double gyroDelta = 0.0;
+    return Commands.sequence(initialize, executeEnd);
   }
 }

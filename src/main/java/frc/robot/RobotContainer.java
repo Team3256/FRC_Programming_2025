@@ -38,7 +38,6 @@ import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
@@ -131,11 +130,7 @@ public class RobotContainer {
 
     // Add options to the chooser
     autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
-    autoChooser.addCmd(
-        "Wheel Radius Change",
-        () ->
-            drivetrain.wheelRadiusCharacterization(
-                SwerveConstants.wheelRadiusMaxVelocity, SwerveConstants.wheelRadiusMaxRampRate));
+    autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
     autoChooser.addCmd(
         "SysID forward translation dynamic",
         () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kForward));
