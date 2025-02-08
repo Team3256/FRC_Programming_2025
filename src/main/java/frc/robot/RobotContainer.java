@@ -39,7 +39,6 @@ import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.ResetPose;
-import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
