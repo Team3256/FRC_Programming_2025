@@ -18,13 +18,22 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class AlgaeConstants {
   // wait do i have to put the k in front of them
   public static final int algaeRollerMotorID = 0;
+  public static final int algaeSlapdownMotorID = 0;
 
   public static final double algaeRollerMotorVoltage = 0.0;
+  public static final double algaeSlapdownMotorVoltage = 0.0;
 
   public static final double beamBreakDelayTime = 0.0;
   public static final int beamBreakDIO = 0;
   
   public static final TalonFXConfiguration algaeRollerMotorConfig = new TalonFXConfiguration()
+  .withSlot0(new Slot0Configs().withKP(0).withKI(0).withKV(0).withKS(0))
+  .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(0).withStatorCurrentLimitEnable(true))
+  .withMotionMagic(new MotionMagicConfigs().withMotionMagicAcceleration(0).withMotionMagicJerk(0))
+  // can you check if it is clockwise/counter 
+  .withMotorOutput(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake).withInverted(InvertedValue.Clockwise_Positive));
+
+  public static final TalonFXConfiguration algaeSlapdownMotorConfig = new TalonFXConfiguration()
   .withSlot0(new Slot0Configs().withKP(0).withKI(0).withKV(0).withKS(0))
   .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(0).withStatorCurrentLimitEnable(true))
   .withMotionMagic(new MotionMagicConfigs().withMotionMagicAcceleration(0).withMotionMagicJerk(0))
