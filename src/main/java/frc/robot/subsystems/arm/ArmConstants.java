@@ -50,11 +50,11 @@ public final class ArmConstants {
           .withSlot0(
               new Slot0Configs()
                   .withKS(0)
-                  .withKV(3)
-                  .withKP(100)
+                  .withKV(17.65)
+                  .withKP(1)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(10)
+                  .withKG(.137)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(

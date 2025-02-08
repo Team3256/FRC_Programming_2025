@@ -58,13 +58,13 @@ public class Arm extends DisableSubsystem {
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
 
-    if (trajIterator != null && trajIterator.hasNext()) {
-      armIO.setPosition(
-          Radians.of(trajIterator.next().get("position")),
-          RadiansPerSecond.of(trajIterator.next().get("velocity")));
-    } else if (selectedTraj != null) {
-      trajIterator = selectedTraj.iterator();
-    }
+    //    if (trajIterator != null && trajIterator.hasNext()) {
+    //      armIO.setPosition(
+    //          Radians.of(trajIterator.next().get("position")),
+    //          RadiansPerSecond.of(trajIterator.next().get("velocity")));
+    //    } else if (selectedTraj != null) {
+    //      trajIterator = selectedTraj.iterator();
+    //    }
   }
 
   public Command runTraj(String trajName) {

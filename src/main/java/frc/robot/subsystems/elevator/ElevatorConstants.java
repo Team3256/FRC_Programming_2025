@@ -27,7 +27,7 @@ public final class ElevatorConstants {
           .withSlot0(
               new Slot0Configs()
                   .withKS(0)
-                  .withKV(3)
+                  .withKV(2.46)
                   .withKP(100)
                   .withKI(0)
                   .withKD(0)
