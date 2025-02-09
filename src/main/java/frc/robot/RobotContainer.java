@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
@@ -27,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
-import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.arm.Arm;
@@ -116,13 +114,13 @@ public class RobotContainer {
 
     m_operatorController
         .rightBumper("s")
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+        .onTrue(Commands.runOnce(() -> drivetrain.resetPoseAndQuest(new Pose2d())));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());
     // m_operatorController
     //     .rightBumper("s")
-    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPoseAndQuest(new Pose2d())));
   }
 
   private void configureChoreoAutoChooser() {

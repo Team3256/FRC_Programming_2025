@@ -7,7 +7,17 @@
 
 package frc.robot.subsystems.swerve;
 
+import static edu.wpi.first.units.Units.*;
+
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
+import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public final class SwerveConstants {
 
@@ -29,4 +39,33 @@ public final class SwerveConstants {
   public static final Rotation2d reefKL = new Rotation2d(-reefEF.getDegrees());
 
   public static final double aziTimeout = 1;
+
+  public static final Mass robotMass = Pounds.of(120);
+  public static final MomentOfInertia robotMOI = KilogramSquareMeters.of(36);
+
+  public static final Translation2d frontLeft =
+      new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY);
+  public static final Translation2d frontRight =
+      new Translation2d(TunerConstants.FrontRight.LocationX, TunerConstants.FrontRight.LocationY);
+  public static final Translation2d backLeft =
+      new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY);
+  public static final Translation2d backRight =
+      new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY);
+  public static final RobotConfig ppRobotConfig =
+      new RobotConfig(
+          SwerveConstants.robotMass,
+          SwerveConstants.robotMOI,
+          new ModuleConfig(
+              TunerConstants.kWheelRadius,
+              TunerConstants.kSpeedAt12Volts,
+              1,
+              DCMotor.getKrakenX60(1),
+              Amps.of(80),
+              1),
+          frontLeft,
+          frontRight,
+          backLeft,
+          backRight);
+
+  public static final AngularVelocity maxSteerModuleSpeed = RotationsPerSecond.of(1);
 }
