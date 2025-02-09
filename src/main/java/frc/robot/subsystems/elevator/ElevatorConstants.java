@@ -26,12 +26,12 @@ public final class ElevatorConstants {
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(0)
-                  .withKV(2.46)
-                  .withKP(100)
+                  .withKS(0.1)
+                  .withKV(1.5)
+                  .withKP(1.8)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(10)
+                  .withKG(.6)
                   .withGravityType(GravityTypeValue.Elevator_Static) // Original 0.145
               )
           .withMotorOutput(
@@ -40,12 +40,12 @@ public final class ElevatorConstants {
                   .withInverted(InvertedValue.Clockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(400)
-                  .withMotionMagicCruiseVelocity(50))
+                  .withMotionMagicAcceleration(20)
+                  .withMotionMagicCruiseVelocity(7))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(120));
+                  .withStatorCurrentLimit(80));
   public static final boolean kUseMotionMagic = true;
   public static final double kStatusSignalUpdateFrequency = 50.0; // Hz
 

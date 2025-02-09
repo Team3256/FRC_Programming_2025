@@ -19,7 +19,7 @@ import edu.wpi.first.units.measure.Mass;
 public final class ArmConstants {
   public static final int armMotorId = 38;
 
-  public static final int armMotorEncoderId = 39;
+  public static final int armMotorEncoderId = 40;
 
   // max value is 8, min is 0
 
@@ -51,10 +51,10 @@ public final class ArmConstants {
               new Slot0Configs()
                   .withKS(0)
                   .withKV(17.65)
-                  .withKP(1)
+                  .withKP(2)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(.137)
+                  .withKG(.36)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
@@ -63,8 +63,8 @@ public final class ArmConstants {
                   .withInverted(InvertedValue.Clockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(400)
-                  .withMotionMagicCruiseVelocity(50))
+                  .withMotionMagicAcceleration(1.25)
+                  .withMotionMagicCruiseVelocity(.5))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
@@ -72,9 +72,9 @@ public final class ArmConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackRemoteSensorID(39)
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                   .withSensorToMechanismRatio(1)
-                  .withRotorToSensorRatio(168));
+                  .withRotorToSensorRatio(142.22));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()
