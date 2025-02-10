@@ -79,6 +79,18 @@ public final class Constants {
     public static final Distance kDrivebaseWidth = Inches.of(27);
   }
 
+  public enum RobotType {
+    COMPETITION("TODO: TUne"),
+    PRACTICE("TODO: Tune"),
+    SIMULATION("no label");
+
+    public final String serialNumber;
+
+    RobotType(String serialNumber) {
+      this.serialNumber = serialNumber;
+    }
+  }
+
   public static final FieldConstants.BranchHeights branchHeights =
       FieldConstants.BranchHeights.PRACTICE_FIELD;
 }
