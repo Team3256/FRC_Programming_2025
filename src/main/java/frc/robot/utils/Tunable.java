@@ -8,7 +8,9 @@
 package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.Constants;
 import java.util.Date;
+import java.util.List;
 
 public class Tunable<T> {
   public static int STALE_DATE_THRESHOLD = 7 * 24 * 60 * 60 * 1000;
@@ -16,20 +18,28 @@ public class Tunable<T> {
   private Date tunedDate;
   private String author;
   private String note;
+  private Constants.RobotType robotType = null;
 
-  protected Tunable(T value, Date tunedDate, String author, String note) {
+  protected Tunable(
+      T value, Date tunedDate, String author, String note, Constants.RobotType robotType) {
     this.value = value;
     this.tunedDate = tunedDate;
     this.author = author;
     this.note = note;
+    this.robotType = robotType;
   }
 
   public static <T> Tunable<T> todo() {
-    return new Tunable<T>(null, null, null, "TODO");
+    return new Tunable<T>(null, null, null, "TODO", null);
   }
 
-  public static <T> Tunable<T> of(T value) {
-    return new Tunable<T>(value, null, null, null);
+  public static <T> Tunable<T> of(T value, Constants.RobotType robotType) {
+    return new Tunable<T>(value, null, null, null, robotType);
+  }
+
+  public Constants.RobotType getRobotType() {
+    // Null check unnecessary.
+    return robotType;
   }
 
   public Tunable<T> fromCAD() {
@@ -52,7 +62,7 @@ public class Tunable<T> {
     return this;
   }
 
-  public T use() {
+  public T get() {
     if (value == null) {
       throw new IllegalStateException("Not tuned");
     }
@@ -80,5 +90,15 @@ public class Tunable<T> {
     }
 
     return value;
+  }
+
+  public static <T> T use(List<Tunable<T>> tunables) {
+    for (Tunable<T> tunable : tunables) {
+      if (tunable.getRobotType() != Util.getRobotType()) {
+        continue;
+      }
+      return tunable.get();
+    }
+    throw new IllegalStateException("No tunable is tuned");
   }
 }

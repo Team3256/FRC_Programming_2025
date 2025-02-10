@@ -9,6 +9,7 @@ package frc.robot.utils;
 
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
 import java.util.Date;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -17,8 +18,9 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class TunableDouble extends Tunable<Double> implements DoubleSupplier {
   private LoggedNetworkNumber loggedNetworkNumber;
 
-  private TunableDouble(Double value, Date tunedDate, String author, String notes) {
-    super(value, tunedDate, author, notes);
+  private TunableDouble(
+      Double value, Date tunedDate, String author, String notes, Constants.RobotType robotType) {
+    super(value, tunedDate, author, notes, robotType);
     loggedNetworkNumber = null;
   }
 
@@ -30,11 +32,12 @@ public class TunableDouble extends Tunable<Double> implements DoubleSupplier {
     return this;
   }
 
-  public Double use() {
+  @Override
+  public Double get() {
     if (loggedNetworkNumber != null) {
       return loggedNetworkNumber.get();
     }
-    return super.use();
+    return super.get();
   }
 
   public Trigger onChange(Consumer<Double> consumer) {
@@ -51,6 +54,6 @@ public class TunableDouble extends Tunable<Double> implements DoubleSupplier {
   }
 
   public double getAsDouble() {
-    return use();
+    return get();
   }
 }

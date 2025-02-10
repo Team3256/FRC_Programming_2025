@@ -78,4 +78,16 @@ public final class Constants {
   public static class SimulationConstants {
     public static final Distance kDrivebaseWidth = Inches.of(27);
   }
+
+  public enum RobotType {
+    COMPETITION("TODO: TUne"),
+    PRACTICE("TODO: Tune"),
+    SIMULATION("no label");
+
+    public final String serialNumber;
+
+    RobotType(String serialNumber) {
+      this.serialNumber = serialNumber;
+    }
+  }
 }
