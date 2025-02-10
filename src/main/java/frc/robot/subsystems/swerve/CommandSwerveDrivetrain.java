@@ -95,9 +95,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.ApplyFieldSpeeds()
           .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
-  private final PIDController m_pathXController = new PIDController(10, 0, 0);
-  private final PIDController m_pathYController = new PIDController(10, 0, 0);
-  private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
+  private final PIDController m_pathXController = new PIDController(25, 0, 0);
+  private final PIDController m_pathYController = new PIDController(25, 0, 0);
+  private final PIDController m_pathThetaController = new PIDController(6, 0, 0);
+
+  private final PIDController xController = new PIDController(5.0, 0.0, 0.1);
+  private final PIDController yController = new PIDController(5.0, 0.0, 0.1);
+  private final PIDController headingController = new PIDController(6, 0, 0);
 
   /* Swerve requests to apply during SysId characterization */
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
@@ -112,14 +116,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           SwerveConstants.ppRobotConfig, SwerveConstants.maxSteerModuleSpeed);
   private SwerveSetpoint previousSetpoint =
       new SwerveSetpoint(
-          new ChassisSpeeds(),
+          new ChassisSpeeds(0, 0, 0),
           new SwerveModuleState[] {
             new SwerveModuleState(0, new Rotation2d(0)),
             new SwerveModuleState(0, new Rotation2d(0)),
             new SwerveModuleState(0, new Rotation2d(0)),
             new SwerveModuleState(0, new Rotation2d(0))
           },
-          null);
+          new DriveFeedforwards(
+              new double[] {0},
+              new double[] {0},
+              new double[] {0},
+              new double[] {0},
+              new double[] {0}));
 
   /*
    * SysId routine for characterizing translation. This is used to find PID gains
@@ -287,14 +296,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(
         () -> {
           m_repulsor.setGoal(target.get().getTranslation());
-          followPathRepulsor(
-              this.getState().Pose,
-              m_repulsor.getCmd(
-                  this.getState().Pose,
-                  this.getState().Speeds,
-                  4,
-                  true,
-                  target.get().getRotation()));
+          if (this.getState().Pose.getTranslation().getDistance(target.get().getTranslation())
+              < .3) {
+            this.setControl(
+                m_pathApplyFieldSpeeds.withSpeeds(
+                    new ChassisSpeeds(
+                        xController.calculate(this.getState().Pose.getX(), target.get().getX()),
+                        yController.calculate(this.getState().Pose.getY(), target.get().getY()),
+                        headingController.calculate(
+                            this.getState().Pose.getRotation().getRadians(),
+                            target.get().getRotation().getRadians()))));
+          } else {
+            followPathRepulsor(
+                this.getState().Pose,
+                m_repulsor.getCmd(
+                    this.getState().Pose,
+                    this.getState().Speeds,
+                    4.2,
+                    true,
+                    target.get().getRotation()));
+          }
         });
   }
 
@@ -363,15 +384,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     var targetSpeeds = sample.getChassisSpeeds();
-    targetSpeeds.vxMetersPerSecond += m_pathXController.calculate(pose.getX(), sample.x);
-    targetSpeeds.vyMetersPerSecond += m_pathYController.calculate(pose.getY(), sample.y);
+    targetSpeeds.vyMetersPerSecond = m_pathXController.calculate(pose.getX(), sample.x);
+    targetSpeeds.vyMetersPerSecond = m_pathYController.calculate(pose.getY(), sample.y);
     targetSpeeds.omegaRadiansPerSecond +=
         m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
-
-    driveFieldRelative(
-        targetSpeeds.vxMetersPerSecond,
-        targetSpeeds.vyMetersPerSecond,
-        targetSpeeds.omegaRadiansPerSecond);
+    this.setControl(
+        m_pathApplyFieldSpeeds
+            .withSpeeds(targetSpeeds)
+            .withWheelForceFeedforwardsX(sample.moduleForcesX())
+            .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 
   /**
@@ -525,8 +546,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     previousSetpoint =
         setpointGenerator.generateSetpoint(
-            previousSetpoint, new ChassisSpeeds(-xVelocity, -yVelocity, angularVelocity), 0.02);
-
+            previousSetpoint, new ChassisSpeeds(xVelocity, yVelocity, angularVelocity), 0.02);
     this.setControl(
         new SwerveRequest.ApplyFieldSpeeds()
             .withSpeeds(kinematics.toChassisSpeeds(previousSetpoint.moduleStates())));
