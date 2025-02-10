@@ -78,4 +78,7 @@ public final class Constants {
   public static class SimulationConstants {
     public static final Distance kDrivebaseWidth = Inches.of(27);
   }
+
+  public static final FieldConstants.BranchHeights branchHeights =
+      FieldConstants.BranchHeights.PRACTICE_FIELD;
 }

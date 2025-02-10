@@ -14,6 +14,8 @@ import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
+import frc.robot.Constants;
+import frc.robot.FieldConstants;
 import frc.robot.subsystems.arm.ArmConstants;
 
 public final class ElevatorConstants {
@@ -72,8 +74,25 @@ public final class ElevatorConstants {
 
   // Coral positions
   // Please tune
-  public static final Angle[] kReefPositions = {
+
+  public static final Angle[] kReefPositionsPracticeField = {
     Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
+  };
+  public static final Distance[] kReefPositionsMeters = Constants.branchHeights.distances;
+
+  public static final Angle[] kReefPositions = {
+    convertMetersToRotations(
+            FieldConstants.BranchHeights.PRACTICE_FIELD.distances[0].minus(kReefPositionsMeters[0]))
+        .plus(kReefPositionsPracticeField[0]),
+    convertMetersToRotations(
+            FieldConstants.BranchHeights.PRACTICE_FIELD.distances[1].minus(kReefPositionsMeters[1]))
+        .plus(kReefPositionsPracticeField[1]),
+    convertMetersToRotations(
+            FieldConstants.BranchHeights.PRACTICE_FIELD.distances[2].minus(kReefPositionsMeters[2]))
+        .plus(kReefPositionsPracticeField[2]),
+    convertMetersToRotations(
+            FieldConstants.BranchHeights.PRACTICE_FIELD.distances[3].minus(kReefPositionsMeters[3]))
+        .plus(kReefPositionsPracticeField[3]),
   };
 
   public static final Angle[] kDealgaePositions = {Rotations.of(0.0), Rotations.of(0.0)};
@@ -100,5 +119,13 @@ public final class ElevatorConstants {
       Inches.of(31.875 - 3).minus(kStartingHeight),
       Inches.of(72 - 7.07).minus(kStartingHeight)
     };
+  }
+
+  public static Distance convertRotationsToMeters(Angle rotations) {
+    return SimulationConstants.kDrumRadius.times(2 * Math.PI * rotations.in(Rotations));
+  }
+
+  public static Angle convertMetersToRotations(Distance dist) {
+    return Rotations.of(dist.div(SimulationConstants.kDrumRadius.times(2 * Math.PI)).magnitude());
   }
 }
