@@ -1,7 +1,7 @@
 // Copyright (c) 2025 FRC 3256
 // https://github.com/Team3256
 //
-// Use of this source code is governed by a 
+// Use of this source code is governed by a
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
@@ -93,12 +93,21 @@ public class Tunable<T> {
   }
 
   public static <T> T use(List<Tunable<T>> tunables) {
+    Tunable<T> latestTunable = null;
     for (Tunable<T> tunable : tunables) {
       if (tunable.getRobotType() != Util.getRobotType()) {
         continue;
       }
-      return tunable.get();
+      if (latestTunable == null
+          || (tunable.tunedDate != null
+              && latestTunable.tunedDate != null
+              && tunable.tunedDate.after(latestTunable.tunedDate))) {
+        latestTunable = tunable;
+      }
     }
-    throw new IllegalStateException("No tunable is tuned");
+    if (latestTunable == null) {
+      throw new IllegalStateException("No tunable is tuned");
+    }
+    return latestTunable.get();
   }
 }
