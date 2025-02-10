@@ -7,9 +7,7 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
@@ -18,6 +16,7 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -27,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
-import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.arm.Arm;
@@ -38,11 +36,9 @@ import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
-import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -118,24 +114,20 @@ public class RobotContainer {
 
     m_operatorController
         .rightBumper("s")
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+        .onTrue(Commands.runOnce(() -> drivetrain.resetPoseAndQuest(new Pose2d())));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());
     // m_operatorController
     //     .rightBumper("s")
-    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPoseAndQuest(new Pose2d())));
   }
 
   private void configureChoreoAutoChooser() {
 
     // Add options to the chooser
     autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
-    autoChooser.addCmd(
-        "Wheel Radius Change",
-        () ->
-            drivetrain.wheelRadiusCharacterization(
-                SwerveConstants.wheelRadiusMaxVelocity, SwerveConstants.wheelRadiusMaxRampRate));
+    autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
     autoChooser.addCmd(
         "SysID forward translation dynamic",
         () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kForward));
@@ -165,24 +157,25 @@ public class RobotContainer {
     autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
     //    SmartDashboard.updateValues();
     // Put the auto chooser on the dashboard
-    NodeManager nodeManager =
-        new NodeManager(drivetrain, roller, drivetrain.createAutoFactory(drivetrain::trajLogger));
-    ArrayList<Node> nodes = new ArrayList<>();
-    nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H, ScoringTypes.L1));
-    nodes.add(
-        new Node(
-            NodeType.SCORE_AND_INTAKE,
-            IntakeLocations.Source2,
-            ScoringLocations.A,
-            ScoringTypes.L1));
-    nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
-    nodes.add(
-        new Node(
-            NodeType.SCORE_AND_INTAKE,
-            IntakeLocations.Source2,
-            ScoringLocations.B,
-            ScoringTypes.L1));
-    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
+    //    NodeManager nodeManager =
+    //        new NodeManager(drivetrain, , drivetrain.createAutoFactory(drivetrain::trajLogger));
+    //    ArrayList<Node> nodes = new ArrayList<>();
+    //    nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H,
+    // ScoringTypes.L1));
+    //    nodes.add(
+    //        new Node(
+    //            NodeType.SCORE_AND_INTAKE,
+    //            IntakeLocations.Source2,
+    //            ScoringLocations.A,
+    //            ScoringTypes.L1));
+    //    nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
+    //    nodes.add(
+    //        new Node(
+    //            NodeType.SCORE_AND_INTAKE,
+    //            IntakeLocations.Source2,
+    //            ScoringLocations.B,
+    //            ScoringTypes.L1));
+    //    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
 
     SmartDashboard.putData("auto chooser", autoChooser);
 
@@ -290,7 +283,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     new Trigger(
-            () -> (m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15))
+            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -298,7 +291,8 @@ public class RobotContainer {
                         azimuth
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(getStickAngle(m_driverController)))
+                            .withTargetDirection(
+                                getStickAngle(m_driverController).plus(new Rotation2d(90))))
                 .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));

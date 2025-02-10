@@ -29,7 +29,7 @@ public final class EndEffectorConstants {
   public static TalonFXConfiguration algaeMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.15).withKA(0).withKP(8).withKI(0).withKD(0.1))
+              new Slot0Configs().withKS(0).withKV(0.17).withKA(0).withKP(.5).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
@@ -45,7 +45,7 @@ public final class EndEffectorConstants {
   public static TalonFXConfiguration coralMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.15).withKA(0).withKP(8).withKI(0).withKD(0.1))
+              new Slot0Configs().withKS(0).withKV(0.14).withKA(0).withKP(.25).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
@@ -69,8 +69,8 @@ public final class EndEffectorConstants {
       new CANdiConfiguration()
           .withDigitalInputs(
               new DigitalInputsConfigs()
-                  .withS1CloseState(S1CloseStateValue.CloseWhenHigh)
-                  .withS2CloseState(S2CloseStateValue.CloseWhenLow));
+                  .withS1CloseState(S1CloseStateValue.CloseWhenFloating)
+                  .withS2CloseState(S2CloseStateValue.CloseWhenFloating));
 
   public static final int candiID = 21;
 

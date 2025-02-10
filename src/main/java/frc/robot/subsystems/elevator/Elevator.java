@@ -12,6 +12,8 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -28,7 +30,7 @@ public class Elevator extends DisableSubsystem {
 
   private double requestedPosition = 0;
 
-  public final Trigger reachedPosition = new Trigger(() -> isAtPosition());
+  public final Trigger reachedPosition = new Trigger(this::isAtPosition);
 
   public Elevator(boolean enabled, ElevatorIO motorIO) {
     super(enabled);
@@ -101,6 +103,17 @@ public class Elevator extends DisableSubsystem {
               / (2 * Math.PI)
               * ElevatorConstants.SimulationConstants.kGearRatio);
     }
+  }
+
+  public Angle getModulusPosition() {
+    return Rotations.of(
+        MathUtil.inputModulus(
+                (motorIOAutoLogged.encoderAAbsolutePosition
+                    - motorIOAutoLogged.encoderBAbsolutePosition),
+                0,
+                1)
+            * ((double) ElevatorConstants.kEncoderBTeethCount
+                / (ElevatorConstants.kEncoderBTeethCount - ElevatorConstants.kEncoderATeethCount)));
   }
 
   public boolean isAtPosition() {

@@ -19,12 +19,22 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -34,6 +44,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -42,9 +53,9 @@ import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.RepulsorFieldPlanner;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -66,6 +77,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
 
+  @AutoLogOutput private double lastGyroYawRads = 0;
+  @AutoLogOutput private double accumGyroYawRads = 0;
+  @AutoLogOutput private double averageWheelPosition = 0;
+  @AutoLogOutput private double[] startWheelPositions = new double[4];
+  @AutoLogOutput private double currentEffectiveWheelRadius = 0;
+
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
   /* Red alliance sees forward as 180 degrees (toward blue alliance wall) */
@@ -78,9 +95,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.ApplyFieldSpeeds()
           .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
-  private final PIDController m_pathXController = new PIDController(10, 0, 0);
-  private final PIDController m_pathYController = new PIDController(10, 0, 0);
-  private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
+  private final PIDController m_pathXController = new PIDController(25, 0, 0);
+  private final PIDController m_pathYController = new PIDController(25, 0, 0);
+  private final PIDController m_pathThetaController = new PIDController(6, 0, 0);
+
+  private final PIDController xController = new PIDController(5.0, 0.0, 0.1);
+  private final PIDController yController = new PIDController(5.0, 0.0, 0.1);
+  private final PIDController headingController = new PIDController(6, 0, 0);
 
   /* Swerve requests to apply during SysId characterization */
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
@@ -89,6 +110,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
+
+  private final SwerveSetpointGenerator setpointGenerator =
+      new SwerveSetpointGenerator(
+          SwerveConstants.ppRobotConfig, SwerveConstants.maxSteerModuleSpeed);
+  private SwerveSetpoint previousSetpoint =
+      new SwerveSetpoint(
+          new ChassisSpeeds(0, 0, 0),
+          new SwerveModuleState[] {
+            new SwerveModuleState(0, new Rotation2d(0)),
+            new SwerveModuleState(0, new Rotation2d(0)),
+            new SwerveModuleState(0, new Rotation2d(0)),
+            new SwerveModuleState(0, new Rotation2d(0))
+          },
+          new DriveFeedforwards(
+              new double[] {0},
+              new double[] {0},
+              new double[] {0},
+              new double[] {0},
+              new double[] {0}));
 
   /*
    * SysId routine for characterizing translation. This is used to find PID gains
@@ -150,10 +190,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
-  private QuestNav questNav = new QuestNav();
+  private final QuestNav questNav = new QuestNav();
 
   public RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
 
+  private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
+  private int _calculatedOffsetToRobotCenterCount = 0;
+
+  private final SwerveDriveKinematics kinematics =
+      new SwerveDriveKinematics(
+          SwerveConstants.frontLeft,
+          SwerveConstants.frontRight,
+          SwerveConstants.backLeft,
+          SwerveConstants.backRight);
   /* WPILib Alerts start */
 
   private final Alert a_questNavNotConnected =
@@ -175,7 +224,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // resetPose(new Pose2d());
+    configurePathPlanner();
+    // resetPoseAndQuest(new Pose2d());
   }
 
   /**
@@ -197,7 +247,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // resetPose(new Pose2d());
+    configurePathPlanner();
+    // resetPoseAndQuest(new Pose2d());
   }
 
   /**
@@ -230,7 +281,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // resetPose(new Pose2d());
+    configurePathPlanner();
+    // resetPoseAndQuest(new Pose2d());
   }
 
   public Pose2d targetPose() {
@@ -244,14 +296,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(
         () -> {
           m_repulsor.setGoal(target.get().getTranslation());
-          followPath(
-              this.getState().Pose,
-              m_repulsor.getCmd(
-                  this.getState().Pose,
-                  this.getState().Speeds,
-                  4,
-                  true,
-                  target.get().getRotation()));
+          if (this.getState().Pose.getTranslation().getDistance(target.get().getTranslation())
+              < .3) {
+            this.setControl(
+                m_pathApplyFieldSpeeds.withSpeeds(
+                    new ChassisSpeeds(
+                        xController.calculate(this.getState().Pose.getX(), target.get().getX()),
+                        yController.calculate(this.getState().Pose.getY(), target.get().getY()),
+                        headingController.calculate(
+                            this.getState().Pose.getRotation().getRadians(),
+                            target.get().getRotation().getRadians()))));
+          } else {
+            followPathRepulsor(
+                this.getState().Pose,
+                m_repulsor.getCmd(
+                    this.getState().Pose,
+                    this.getState().Speeds,
+                    4.2,
+                    true,
+                    target.get().getRotation()));
+          }
         });
   }
 
@@ -276,25 +340,55 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    */
   public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> trajLogger) {
     return new AutoFactory(
-        () -> getState().Pose, this::resetPose, this::followPath, true, this, trajLogger);
+        () -> getState().Pose, this::resetPoseAndQuest, this::followPath, true, this, trajLogger);
   }
 
-  @Override
-  public void resetPose(Pose2d pose) {
+  public void resetPoseAndQuest(Pose2d pose) {
     super.resetPose(pose);
-    questNav.zeroPosition();
+    questNav.resetPose(pose);
   }
 
-  public void followPath(Pose2d pose, SwerveSample sample) {
+  public Command determineOffsetToRobotCenter() {
+    return Commands.repeatingSequence(
+            this.runOnce(
+                    () -> {
+                      this.setControl(
+                          new SwerveRequest.ApplyRobotSpeeds()
+                              .withSpeeds(new ChassisSpeeds(0, 0, .314)));
+                    })
+                .withTimeout(2.0),
+            Commands.runOnce(
+                () -> {
+                  // Update current offset
+                  Translation2d offset =
+                      questNav.calculateOffsetToRobotCenter(this.getState().Pose);
+
+                  _calculatedOffsetToRobotCenter =
+                      _calculatedOffsetToRobotCenter
+                          .times(
+                              (double) _calculatedOffsetToRobotCenterCount
+                                  / (_calculatedOffsetToRobotCenterCount + 1))
+                          .plus(offset.div(_calculatedOffsetToRobotCenterCount + 1));
+                  _calculatedOffsetToRobotCenterCount++;
+
+                  SmartDashboard.putNumberArray(
+                      "Quest Calculated Offset to Robot Center",
+                      new double[] {
+                        _calculatedOffsetToRobotCenter.getX(), _calculatedOffsetToRobotCenter.getY()
+                      });
+                }))
+        .withTimeout(10.0);
+  }
+
+  public void followPathRepulsor(Pose2d pose, SwerveSample sample) {
     m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     var targetSpeeds = sample.getChassisSpeeds();
-    targetSpeeds.vxMetersPerSecond += m_pathXController.calculate(pose.getX(), sample.x);
-    targetSpeeds.vyMetersPerSecond += m_pathYController.calculate(pose.getY(), sample.y);
+    targetSpeeds.vyMetersPerSecond = m_pathXController.calculate(pose.getX(), sample.x);
+    targetSpeeds.vyMetersPerSecond = m_pathYController.calculate(pose.getY(), sample.y);
     targetSpeeds.omegaRadiansPerSecond +=
         m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
-
-    setControl(
+    this.setControl(
         m_pathApplyFieldSpeeds
             .withSpeeds(targetSpeeds)
             .withWheelForceFeedforwardsX(sample.moduleForcesX())
@@ -304,7 +398,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /**
    * Returns a command that applies the specified control request to this swerve drivetrain.
    *
-   * @param request Function returning the request to apply
+   * @param requestSupplier Function returning the request to apply
    * @return Command to run
    */
   public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -396,11 +490,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
               });
     }
-    if (!Utils.isSimulation() && questNav.connected()) {
+    if (!Utils.isSimulation() && questNav.isConnected()) {
       // this.addVisionMeasurement(
       // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
       // Utils.getCurrentTimeSeconds());
-      Logger.recordOutput("QuestNav/pose", questNav.getPose());
+      Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
       Logger.recordOutput("QuestNav/quaternion", questNav.getQuaternion());
       Logger.recordOutput("QuestNav/batteryPercent", questNav.getBatteryPercent());
     } else {
@@ -408,6 +502,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     Logger.recordOutput("Swerve/pose", this.getState().Pose);
+  }
+
+  private void configurePathPlanner() {
+    AutoBuilder.configure(
+        () -> this.getState().Pose,
+        this::resetPoseAndQuest,
+        () -> this.getState().Speeds,
+        this::driveRobotRelativeWithFF,
+        new PPHolonomicDriveController(
+            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+        SwerveConstants.ppRobotConfig,
+        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+        this);
   }
 
   private void startSimThread() {
@@ -427,88 +534,101 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     m_simNotifier.startPeriodic(kSimLoopPeriod);
   }
 
-  public Command wheelRadiusCharacterization(double wheelRampRate, double wheelMaxVel) {
-    SlewRateLimiter limiter = new SlewRateLimiter(wheelRampRate);
-    WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
-
-    return Commands.parallel(
-        // Drive control sequence
-        Commands.sequence(
-            // Reset acceleration limiter
-            Commands.runOnce(
-                () -> {
-                  limiter.reset(0.0);
-                }),
-
-            // Turn in place, accelerating up to full speed
-            this.run(
-                () -> {
-                  double speed = limiter.calculate(wheelMaxVel);
-                  this.setControl(
-                      new SwerveRequest.ApplyRobotSpeeds()
-                          .withSpeeds(new ChassisSpeeds(0.0, 0.0, speed)));
-                }),
-
-            // Measurement sequence
-            Commands.sequence(
-                // Wait for modules to fully orient before starting measurement
-                Commands.waitSeconds(1.0),
-
-                // Record starting measurement
-                Commands.runOnce(
-                    () -> {
-                      state.positions = this.getWheelRadiusCharacterizationPositions();
-                      state.lastAngle = this.getState().Pose.getRotation();
-                      state.gyroDelta = 0.0;
-                    }),
-
-                // Update gyro delta
-                Commands.run(
-                        () -> {
-                          var rotation = this.getState().Pose.getRotation();
-                          state.gyroDelta += Math.abs(rotation.minus(state.lastAngle).getRadians());
-                          state.lastAngle = rotation;
-                        })
-
-                    // When cancelled, calculate and print results
-                    .finallyDo(
-                        () -> {
-                          double[] positions = this.getWheelRadiusCharacterizationPositions();
-                          double wheelDelta = 0.0;
-                          for (int i = 0; i < 4; i++) {
-                            wheelDelta += Math.abs(positions[i] - state.positions[i]) / 4.0;
-                          }
-                          double wheelRadius = (state.gyroDelta * driveBaseRadius) / wheelDelta;
-
-                          NumberFormat formatter = new DecimalFormat("#0.000");
-                          System.out.println(
-                              "********** Wheel Radius Characterization Results **********");
-                          System.out.println(
-                              "\tWheel Delta: " + formatter.format(wheelDelta) + " radians");
-                          System.out.println(
-                              "\tGyro Delta: " + formatter.format(state.gyroDelta) + " radians");
-                          System.out.println(
-                              "\tWheel Radius: "
-                                  + formatter.format(wheelRadius)
-                                  + " meters, "
-                                  + formatter.format(Units.metersToInches(wheelRadius))
-                                  + " inches");
-                        }))));
+  public void driveRobotRelativeWithFF(ChassisSpeeds speeds, DriveFeedforwards feedforwards) {
+    this.setControl(
+        new SwerveRequest.ApplyRobotSpeeds()
+            .withSpeeds(speeds)
+            .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+            .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons()));
   }
 
-  private double[] getWheelRadiusCharacterizationPositions() {
-    double[] values = new double[4];
-    for (int i = 0; i < 4; i++) {
-      values[i] =
-          Units.rotationsToRadians(
-              this.getModules()[i].getDriveMotor().getPosition().getValueAsDouble());
-    }
-    return values;
+  public void driveFieldRelative(double xVelocity, double yVelocity, double angularVelocity) {
+
+    previousSetpoint =
+        setpointGenerator.generateSetpoint(
+            previousSetpoint, new ChassisSpeeds(xVelocity, yVelocity, angularVelocity), 0.02);
+    this.setControl(
+        new SwerveRequest.ApplyFieldSpeeds()
+            .withSpeeds(kinematics.toChassisSpeeds(previousSetpoint.moduleStates())));
   }
 
-  private static class WheelRadiusCharacterizationState {
-    double[] positions = new double[4];
-    Rotation2d lastAngle = new Rotation2d();
-    double gyroDelta = 0.0;
+  /**
+   * Runs the wheel radius characterization routine.
+   *
+   * @param omegaDirection Direction of the robot to turn either 1 or -1
+   */
+  public Command wheelRadiusCharacterization(double omegaDirection) {
+
+    /* wheel radius characterization schtuffs */
+    final DoubleSupplier m_gyroYawRadsSupplier =
+        () -> Units.degreesToRadians(getPigeon2().getYaw().getValueAsDouble());
+    // () -> getState().Pose.getRotation().getRadians();
+    final SlewRateLimiter m_omegaLimiter = new SlewRateLimiter(0.5);
+    final SwerveRequest.RobotCentric m_characterizationReq =
+        new SwerveRequest.RobotCentric()
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
+    final double m_characterizationSpeed = 1.5;
+
+    var initialize =
+        runOnce(
+            () -> {
+              lastGyroYawRads = m_gyroYawRadsSupplier.getAsDouble();
+              accumGyroYawRads = 0;
+              currentEffectiveWheelRadius = 0;
+              averageWheelPosition = 0;
+              for (int i = 0; i < getModules().length; i++) {
+                var pos = getModules()[i].getPosition(true);
+                startWheelPositions[i] =
+                    pos.distanceMeters * TunerConstants.kDriveRotationsPerMeter;
+              }
+              m_omegaLimiter.reset(0);
+            });
+
+    var executeEnd =
+        runEnd(
+            () -> {
+              setControl(
+                  m_characterizationReq.withRotationalRate(
+                      m_omegaLimiter.calculate(m_characterizationSpeed * omegaDirection)));
+              accumGyroYawRads +=
+                  MathUtil.angleModulus(m_gyroYawRadsSupplier.getAsDouble() - lastGyroYawRads);
+              lastGyroYawRads = m_gyroYawRadsSupplier.getAsDouble();
+              averageWheelPosition = 0;
+              double[] wheelPositions = new double[4];
+              for (int i = 0; i < getModules().length; i++) {
+                var pos = getModules()[i].getPosition(true);
+                wheelPositions[i] = pos.distanceMeters * TunerConstants.kDriveRotationsPerMeter;
+                averageWheelPosition += Math.abs(wheelPositions[i] - startWheelPositions[i]);
+              }
+              averageWheelPosition = averageWheelPosition / 4.0;
+              currentEffectiveWheelRadius =
+                  (accumGyroYawRads * TunerConstants.kDriveRadius) / averageWheelPosition;
+              // System.out.println("effective wheel radius: " + currentEffectiveWheelRadius);
+              System.out.println("Average Wheel Position: " + averageWheelPosition);
+            },
+            () -> {
+              setControl(m_characterizationReq.withRotationalRate(0));
+              if (Math.abs(accumGyroYawRads) <= Math.PI * 2.0) {
+                System.out.println(
+                    "not enough data for characterization "
+                        + accumGyroYawRads
+                        + "\navgWheelPos: "
+                        + averageWheelPosition
+                        + "radians");
+              } else {
+                System.out.println(
+                    "effective wheel radius: "
+                        + currentEffectiveWheelRadius
+                        + " inches"
+                        + "\naccumGryoYawRads: "
+                        + accumGyroYawRads
+                        + "radians"
+                        + "\navgWheelPos: "
+                        + averageWheelPosition
+                        + "radians");
+              }
+            });
+
+    return Commands.sequence(initialize, executeEnd);
   }
 }

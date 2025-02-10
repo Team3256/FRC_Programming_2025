@@ -17,16 +17,11 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.PhoenixUtil;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
 
 public class ArmIOTalonFX implements ArmIO {
 
@@ -48,12 +43,6 @@ public class ArmIOTalonFX implements ArmIO {
   private final StatusSignal<Angle> cancoderAbsolutePosition = cancoder.getAbsolutePosition();
   private final StatusSignal<Angle> cancoderPosition = cancoder.getPosition();
   private final StatusSignal<AngularVelocity> cancoderVelocity = cancoder.getVelocity();
-
-  private final Gson GSON = new GsonBuilder().create();
-
-  private ArrayList<Map<String, Double>> loadedTraj = null;
-
-  private Iterator<Map<String, Double>> trajIterator = null;
 
   public ArmIOTalonFX() {
 
@@ -98,18 +87,6 @@ public class ArmIOTalonFX implements ArmIO {
     inputs.armEncoderPosition = cancoderPosition.getValue().in(Rotations);
     inputs.armEncoderVelocity = cancoderVelocity.getValue().in(RotationsPerSecond);
     inputs.armEncoderAbsolutePosition = cancoderAbsolutePosition.getValue().in(Rotations);
-  }
-
-  public void goLoadedTraj() {
-    if (trajIterator.hasNext()) {
-      Map<String, Double> point = trajIterator.next();
-      armMotor.setControl(
-          positionRequest
-              .withPosition(Radians.of(point.get("position")))
-              .withVelocity(RadiansPerSecond.of(point.get("velocity"))));
-    } else {
-      trajIterator = loadedTraj.iterator();
-    }
   }
 
   @Override

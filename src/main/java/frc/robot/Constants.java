@@ -90,4 +90,7 @@ public final class Constants {
       this.serialNumber = serialNumber;
     }
   }
+
+  public static final FieldConstants.BranchHeights branchHeights =
+      FieldConstants.BranchHeights.PRACTICE_FIELD;
 }
