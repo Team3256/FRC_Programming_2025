@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.json.simple.JSONObject;
 import org.littletonrobotics.junction.Logger;
 
@@ -111,64 +114,56 @@ public class Arm extends DisableSubsystem {
     //    System.out.println(o.toString());
   }
 
-  public Command setPosition(Angle position) {
+  public Command setPosition(Supplier<Angle> position, boolean continuous) {
     return this.run(
         () -> {
-          armIO.setPosition(continuousWrapAtHome(position));
-          requestedPosition.mut_replace(position);
+          requestedPosition.mut_replace(
+              continuous ? continuousWrapAtHome(position.get()) : position.get());
+          armIO.setPosition(requestedPosition);
         });
   }
 
-  public Command setPosition(double position) {
-    return this.run(
-        () -> {
-          armIO.setPosition(continuousWrapAtHome(position));
-          requestedPosition.mut_replace(position, Rotations);
-        });
+  public Command setPosition(Angle position, boolean continuous) {
+    return setPosition(() -> position, continuous);
   }
 
-  public Command setPositionRaw(double position) {
-    return this.run(
-        () -> {
-          armIO.setPosition(position);
-          requestedPosition.mut_replace(position, Rotations);
-        });
+  public Command setPosition(double position, boolean continuous) {
+    return setPosition(() -> Rotations.of(position), continuous);
   }
 
-  public Command setPositionRaw(Angle position) {
-    return this.run(
-        () -> {
-          armIO.setPosition(position);
-          requestedPosition.mut_replace(position);
-        });
+  public Command setPosition(DoubleSupplier position, boolean continuous) {
+    return setPosition(() -> Rotations.of(position.getAsDouble()), continuous);
   }
 
   public Command setVoltage(Voltage voltage) {
     return this.run(() -> armIO.setVoltage(voltage));
   }
 
-  public Command toRightReefLevel(int level) {
-    return this.setPosition(ArmConstants.reefRightPositions[level]);
+  public Command toReefLevel(int level, BooleanSupplier rightSide) {
+    return setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.reefRightPositions[level]
+                : ArmConstants.reefLeftPositions[level],
+        true);
   }
 
-  public Command toLeftReefLevel(int level) {
-    return this.setPosition(ArmConstants.reefLeftPositions[level]);
+  public Command toDealgaeLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.dealgaeRightPosition
+                : ArmConstants.dealgaeLeftPosition,
+        true);
   }
 
-  public Command toRightDealgaeLevel() {
-    return this.setPosition(ArmConstants.dealgaeRightPosition);
-  }
-
-  public Command toLeftDealgaeLevel() {
-    return this.setPosition(ArmConstants.dealgaeLeftPosition);
-  }
-
-  public Command toRightSourceLevel() {
-    return this.setPosition(ArmConstants.sourceRightPositions);
-  }
-
-  public Command toLeftSourceLevel() {
-    return this.setPosition(ArmConstants.sourceLeftPositions);
+  public Command toSourceLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.sourceRightPositions
+                : ArmConstants.sourceLeftPositions,
+        true);
   }
 
   public boolean isAtPosition() {
@@ -177,11 +172,10 @@ public class Arm extends DisableSubsystem {
   }
 
   public Command toHome() {
-    return this.setPosition(ArmConstants.homePosition);
+    return this.setPosition(() -> ArmConstants.homePosition, true);
   }
 
   public Command off() {
-
     return this.runOnce(armIO::off);
   }
 

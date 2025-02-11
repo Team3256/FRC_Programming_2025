@@ -124,8 +124,8 @@ public class RobotContainer {
     m_operatorController
         .a("hge")
         .onTrue(elevator.setPosition(1.26))
-        .onTrue(arm.setPosition(.18)); // L2
-    m_operatorController.b("a").onTrue(arm.setPosition(.25));
+        .onTrue(arm.setPosition(.18, true)); // L2
+    m_operatorController.b("a").onTrue(arm.setPosition(.25, true));
     m_operatorController.y().onTrue(arm.off()).onTrue(elevator.off());
     m_operatorController.x().onTrue(elevator.setPosition(0));
 

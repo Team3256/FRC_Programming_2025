@@ -22,8 +22,9 @@ public final class EndEffectorConstants {
   public static AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
   public static AngularVelocity l4Velocity = RotationsPerSecond.of(20.0);
 
+  // algae first then coral
   public static AngularVelocity[] sourceVelocity = {
-    RotationsPerSecond.of(0.0), RotationsPerSecond.of(0)
+    RotationsPerSecond.of(10.0), RotationsPerSecond.of(50.0)
   };
 
   public static TalonFXConfiguration algaeMotorConfigs =
