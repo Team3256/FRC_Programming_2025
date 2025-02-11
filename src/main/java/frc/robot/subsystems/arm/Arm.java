@@ -13,7 +13,6 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Voltage;
@@ -191,13 +190,13 @@ public class Arm extends DisableSubsystem {
   }
 
   public double continuousWrapAtHome(double angle) {
-    double errorBound = (1) / 2.0;
-    double wrappedAngle = MathUtil.inputModulus(angle, -errorBound, errorBound);
-    if (wrappedAngle > ArmConstants.maxRotations.in(Rotations)) {
-      wrappedAngle += 1;
-    } else if (wrappedAngle < -ArmConstants.maxRotations.in(Rotations)) {
-      wrappedAngle -= 1;
-    }
-    return wrappedAngle;
+    int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - angle);
+    int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - angle);
+
+    int nIdeal = (int) Math.round(armIOAutoLogged.armMotorPosition - angle);
+
+    int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
+
+    return angle + nCandidate;
   }
 }
