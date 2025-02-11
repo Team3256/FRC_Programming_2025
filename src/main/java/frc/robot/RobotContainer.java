@@ -33,8 +33,10 @@ import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.endeffector.EndEffectorIOSim;
 import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
@@ -63,13 +65,16 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final Elevator elevator = new Elevator(true, new ElevatorIOTalonFX());
+  private final Elevator elevator =
+      new Elevator(true, Utils.isSimulation() ? new ElevatorIOSim() : new ElevatorIOTalonFX());
 
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
 
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
-  private final EndEffector endEffector = new EndEffector(true, new EndEffectorIOTalonFX());
+  private final EndEffector endEffector =
+      new EndEffector(
+          true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(

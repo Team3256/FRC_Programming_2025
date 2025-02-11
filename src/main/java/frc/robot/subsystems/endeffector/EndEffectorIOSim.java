@@ -27,18 +27,14 @@ public class EndEffectorIOSim extends EndEffectorIOTalonFX {
               EndEffectorConstants.kUseFOC ? DCMotor.getKrakenX60Foc(1) : DCMotor.getKrakenX60(1),
               EndEffectorConstants.SimulationConstants.algaeGearingRatio,
               EndEffectorConstants.SimulationConstants.algaeMomentOfInertia),
-          EndEffectorConstants.kUseFOC ? DCMotor.getKrakenX60Foc(1) : DCMotor.getKrakenX60(1),
-          EndEffectorConstants.SimulationConstants.algaeGearingRatio,
-          EndEffectorConstants.SimulationConstants.algaeMomentOfInertia);
+          EndEffectorConstants.kUseFOC ? DCMotor.getKrakenX60Foc(1) : DCMotor.getKrakenX60(1));
   private final FlywheelSim coralSimModel =
       new FlywheelSim(
           LinearSystemId.createFlywheelSystem(
               EndEffectorConstants.kUseFOC ? DCMotor.getKrakenX60Foc(1) : DCMotor.getKrakenX60(1),
               EndEffectorConstants.SimulationConstants.coralGearingRatio,
               EndEffectorConstants.SimulationConstants.coralMomentOfInertia),
-          EndEffectorConstants.kUseFOC ? DCMotor.getKrakenX60Foc(1) : DCMotor.getKrakenX60(1),
-          EndEffectorConstants.SimulationConstants.coralGearingRatio,
-          EndEffectorConstants.SimulationConstants.coralMomentOfInertia);
+          EndEffectorConstants.kUseFOC ? DCMotor.getKrakenX60Foc(1) : DCMotor.getKrakenX60(1));
   private final TalonFXSimState algaeMotorSim;
   private final TalonFXSimState coralMotorSim;
 

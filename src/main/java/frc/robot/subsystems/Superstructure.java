@@ -81,7 +81,7 @@ public class Superstructure {
   }
 
   public void configStateTransitions() {
-    stateTriggers.get(StructureState.IDLE);
+    stateTriggers.get(StructureState.IDLE).onTrue(endEffector.off());
 
     stateTriggers
         .get(StructureState.L1)
@@ -89,7 +89,11 @@ public class Superstructure {
         .onTrue(arm.toReefLevel(0, rightManipulatorSide));
 
     stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(1));
-    stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(3));
+    stateTriggers.get(StructureState.L3).onTrue(elevator.toReefLevel(2));
+    stateTriggers
+        .get(StructureState.L4)
+        .onTrue(elevator.toReefLevel(3))
+        .onTrue(arm.toReefLevel(2, rightManipulatorSide));
     stateTriggers
         .get(StructureState.L2)
         .or(stateTriggers.get(StructureState.L3))
@@ -109,12 +113,12 @@ public class Superstructure {
         .onTrue(endEffector.setL4Velocity(rightManipulatorSide));
 
     stateTriggers.get(StructureState.DEALGAE_L2).onTrue(elevator.toDealgaeLevel(0));
+
+    stateTriggers.get(StructureState.DEALGAE_L3).onTrue(elevator.toDealgaeLevel(1));
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
         .onTrue(arm.toDealgaeLevel(rightManipulatorSide));
-
-    stateTriggers.get(StructureState.DEALGAE_L3).onTrue(elevator.toDealgaeLevel(1));
 
     stateTriggers
         .get(StructureState.PRESOURCE)
@@ -132,6 +136,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PREHOME)
         .onTrue(arm.toHome())
+        .onTrue(elevator.toArmSafePosition())
         .and(arm.reachedPosition)
         .onTrue(this.setState(StructureState.HOME));
     stateTriggers
