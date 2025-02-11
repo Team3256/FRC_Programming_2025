@@ -29,6 +29,8 @@ public final class ArmConstants {
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
+  public static final Angle maxRotations = Rotations.of(3);
+
   public static final Angle[] reefLeftPositions = {
     Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
   };
@@ -84,7 +86,7 @@ public final class ArmConstants {
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
 
   public static final class Sim {
-    public static final double simGearing = 168;
+    public static final double simGearing = 142.22;
 
     public static final Distance armLength = Inches.of(22);
     public static final Mass armMass = Kilograms.of(2);

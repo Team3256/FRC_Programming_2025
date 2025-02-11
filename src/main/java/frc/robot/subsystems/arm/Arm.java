@@ -13,7 +13,9 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,7 +45,7 @@ public class Arm extends DisableSubsystem {
 
   private ArrayList<Map<String, Double>> selectedTraj = null;
   public final Trigger reachedPosition = new Trigger(() -> isAtPosition());
-  private Angle requestedPosition = Rotations.of(0.0);
+  private MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
     super(enabled);
@@ -113,13 +115,33 @@ public class Arm extends DisableSubsystem {
   public Command setPosition(Angle position) {
     return this.run(
         () -> {
-          armIO.setPosition(position);
-          requestedPosition = position;
+          armIO.setPosition(continuousWrapAtHome(position));
+          requestedPosition.mut_replace(position);
         });
   }
 
   public Command setPosition(double position) {
-    return setPosition(Rotations.of(position));
+    return this.run(
+        () -> {
+          armIO.setPosition(continuousWrapAtHome(position));
+          requestedPosition.mut_replace(position, Rotations);
+        });
+  }
+
+  public Command setPositionRaw(double position) {
+    return this.run(
+        () -> {
+          armIO.setPosition(position);
+          requestedPosition.mut_replace(position, Rotations);
+        });
+  }
+
+  public Command setPositionRaw(Angle position) {
+    return this.run(
+        () -> {
+          armIO.setPosition(position);
+          requestedPosition.mut_replace(position);
+        });
   }
 
   public Command setVoltage(Voltage voltage) {
@@ -162,5 +184,20 @@ public class Arm extends DisableSubsystem {
   public Command off() {
 
     return this.runOnce(armIO::off);
+  }
+
+  public Angle continuousWrapAtHome(Angle angle) {
+    return Rotations.of(continuousWrapAtHome(angle.in(Rotations)));
+  }
+
+  public double continuousWrapAtHome(double angle) {
+    double errorBound = (1) / 2.0;
+    double wrappedAngle = MathUtil.inputModulus(angle, -errorBound, errorBound);
+    if (wrappedAngle > ArmConstants.maxRotations.in(Rotations)) {
+      wrappedAngle += 1;
+    } else if (wrappedAngle < -ArmConstants.maxRotations.in(Rotations)) {
+      wrappedAngle -= 1;
+    }
+    return wrappedAngle;
   }
 }
