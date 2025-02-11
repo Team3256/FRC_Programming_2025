@@ -27,6 +27,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
@@ -75,6 +76,8 @@ public class RobotContainer {
   private final EndEffector endEffector =
       new EndEffector(
           true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
+
+  private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -126,14 +129,17 @@ public class RobotContainer {
     // m_operatorController.a("hge").onTrue(elevator.setPosition(4.68)).onTrue(arm.setPosition(.18)); // L4
     //
     // m_operatorController.a("hge").onTrue(elevator.setPosition(2.652)).onTrue(arm.setPosition(.18)); // L3
+    //    m_operatorController
+    //        .a("hge")
+    //        .onTrue(elevator.setPosition(1.26))
+    //        .onTrue(arm.setPosition(.18, true)); // L2
+    //    m_operatorController.b("a").onTrue(arm.setPosition(.25, true));
+    //    m_operatorController.y().onTrue(arm.off()).onTrue(elevator.off());
+    //    m_operatorController.x().onTrue(elevator.setPosition(0));
+    m_operatorController.a("hge").onTrue(superstructure.setState(Superstructure.StructureState.L4));
     m_operatorController
-        .a("hge")
-        .onTrue(elevator.setPosition(1.26))
-        .onTrue(arm.setPosition(.18, true)); // L2
-    m_operatorController.b("a").onTrue(arm.setPosition(.25, true));
-    m_operatorController.y().onTrue(arm.off()).onTrue(elevator.off());
-    m_operatorController.x().onTrue(elevator.setPosition(0));
-
+        .b("a")
+        .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));
     m_operatorController
         .rightBumper()
         .onTrue(endEffector.setVoltage(0, 3).until(endEffector.leftBeamBreak));

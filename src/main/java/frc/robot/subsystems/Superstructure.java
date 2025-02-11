@@ -45,7 +45,7 @@ public class Superstructure {
     RIGHT
   }
 
-  private ManipulatorSide manipulatorSide = ManipulatorSide.LEFT;
+  private ManipulatorSide manipulatorSide = ManipulatorSide.RIGHT;
 
   private StructureState state = StructureState.IDLE;
   private StructureState prevState = StructureState.IDLE;
@@ -146,6 +146,10 @@ public class Superstructure {
         .onTrue(endEffector.off())
         .and(arm.reachedPosition.and(elevator.reachedPosition))
         .onTrue(this.setState(StructureState.IDLE));
+    stateTriggers
+        .get(StructureState.HOME)
+        .and(prevStateTriggers.get(StructureState.PREHOME).negate())
+        .onTrue(this.setState(StructureState.PREHOME));
   }
 
   // call manually
