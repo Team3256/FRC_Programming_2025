@@ -49,6 +49,7 @@ public class Arm extends DisableSubsystem {
     super(enabled);
 
     this.armIO = armIO;
+    armIO.resetPosition(Rotations.of(0.25));
     loadAllTraj();
   }
 
@@ -115,6 +116,10 @@ public class Arm extends DisableSubsystem {
           armIO.setPosition(position);
           requestedPosition = position;
         });
+  }
+
+  public Command setPosition(double position) {
+    return setPosition(Rotations.of(position));
   }
 
   public Command setVoltage(Voltage voltage) {

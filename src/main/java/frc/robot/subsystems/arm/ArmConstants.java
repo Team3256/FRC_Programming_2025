@@ -17,7 +17,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public final class ArmConstants {
-  public static final int armMotorId = 38;
+  public static final int armMotorId = 42;
 
   public static final int armMotorEncoderId = 40;
 
@@ -25,7 +25,7 @@ public final class ArmConstants {
 
   /* Misc */
   public static final boolean kUseFOC = false;
-  public static final boolean kUseMotionMagic = false; // idk
+  public static final boolean kUseMotionMagic = true; // idk
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
@@ -50,31 +50,30 @@ public final class ArmConstants {
           .withSlot0(
               new Slot0Configs()
                   .withKS(0)
-                  .withKV(17.65)
-                  .withKP(2)
+                  .withKV(17)
+                  .withKP(6.5)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(.36)
+                  .withKG(.4)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
-                  .withInverted(InvertedValue.Clockwise_Positive))
+                  .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(1.25)
-                  .withMotionMagicCruiseVelocity(.5))
+                  .withMotionMagicAcceleration(2)
+                  .withMotionMagicCruiseVelocity(.7))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(120))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackRemoteSensorID(39)
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(1)
-                  .withRotorToSensorRatio(142.22));
+                  .withSensorToMechanismRatio(142.22)
+                  .withRotorToSensorRatio(1));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()

@@ -122,4 +122,9 @@ public class ArmIOTalonFX implements ArmIO {
   public CANcoder getEncoder() {
     return cancoder;
   }
+
+  @Override
+  public void resetPosition(Angle angle) {
+    armMotor.setPosition(angle);
+  }
 }

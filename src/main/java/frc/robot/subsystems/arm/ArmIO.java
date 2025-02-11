@@ -44,5 +44,7 @@ public interface ArmIO {
     return new CANcoder(0);
   }
 
+  public default void resetPosition(Angle angle) {}
+
   public default void off() {}
 }

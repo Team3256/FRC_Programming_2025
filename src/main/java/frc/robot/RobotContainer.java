@@ -15,7 +15,6 @@ import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -33,6 +32,10 @@ import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.rollers.Roller;
 import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
@@ -60,11 +63,13 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+  private final Elevator elevator = new Elevator(true, new ElevatorIOTalonFX());
+
   private final Roller roller = new Roller(true, new RollerIOTalonFX());
 
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
-
+  private final EndEffector endEffector = new EndEffector(true, new EndEffectorIOTalonFX());
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -112,9 +117,24 @@ public class RobotContainer {
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
+    //
+    // m_operatorController.a("hge").onTrue(elevator.setPosition(4.68)).onTrue(arm.setPosition(.18)); // L4
+    //
+    // m_operatorController.a("hge").onTrue(elevator.setPosition(2.652)).onTrue(arm.setPosition(.18)); // L3
     m_operatorController
-        .rightBumper("s")
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPoseAndQuest(new Pose2d())));
+        .a("hge")
+        .onTrue(elevator.setPosition(1.26))
+        .onTrue(arm.setPosition(.18)); // L2
+    m_operatorController.b("a").onTrue(arm.setPosition(.25));
+    m_operatorController.y().onTrue(arm.off()).onTrue(elevator.off());
+    m_operatorController.x().onTrue(elevator.setPosition(0));
+
+    m_operatorController
+        .rightBumper()
+        .onTrue(endEffector.setVoltage(0, 3).until(endEffector.leftBeamBreak));
+    m_operatorController
+        .leftBumper()
+        .onTrue(endEffector.setVoltage(0, -3).until(endEffector.rightBeamBreak));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());

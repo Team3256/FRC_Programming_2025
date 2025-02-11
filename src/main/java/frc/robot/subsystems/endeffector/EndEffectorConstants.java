@@ -15,8 +15,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
-  public static int algaeMotorID = 43;
-  public static int coralMotorID = 48;
+  public static int algaeMotorID = 45;
+  public static int coralMotorID = 43;
 
   public static AngularVelocity l1Velocity = RotationsPerSecond.of(0.0);
   public static AngularVelocity l2l3Velocity = RotationsPerSecond.of(0.0);
@@ -62,8 +62,8 @@ public final class EndEffectorConstants {
               new HardwareLimitSwitchConfigs()
                   .withForwardLimitSource(ForwardLimitSourceValue.RemoteCANdiS1)
                   .withReverseLimitSource(ReverseLimitSourceValue.RemoteCANdiS2)
-                  .withForwardLimitEnable(true)
-                  .withReverseLimitEnable(true));
+                  .withForwardLimitEnable(false)
+                  .withReverseLimitEnable(false));
 
   public static final CANdiConfiguration canDiConfigs =
       new CANdiConfiguration()

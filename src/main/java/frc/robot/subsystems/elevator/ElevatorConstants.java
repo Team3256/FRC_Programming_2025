@@ -19,7 +19,7 @@ import frc.robot.FieldConstants;
 import frc.robot.subsystems.arm.ArmConstants;
 
 public final class ElevatorConstants {
-  public static final int kMotorID = 22;
+  public static final int kMotorID = 44;
 
   public static final int kEncoderAID = 23;
   public static final int kEncoderBID = 24;
@@ -29,25 +29,31 @@ public final class ElevatorConstants {
           .withSlot0(
               new Slot0Configs()
                   .withKS(0.1)
-                  .withKV(1.5)
+                  .withKV(2)
                   .withKP(1.8)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(.6)
+                  .withKG(.5)
                   .withGravityType(GravityTypeValue.Elevator_Static) // Original 0.145
               )
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
-                  .withInverted(InvertedValue.Clockwise_Positive))
+                  .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicAcceleration(20)
-                  .withMotionMagicCruiseVelocity(7))
+                  .withMotionMagicCruiseVelocity(5))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(80));
+                  .withStatorCurrentLimit(80))
+          .withFeedback(
+              new FeedbackConfigs()
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                  .withSensorToMechanismRatio(16)
+                  .withRotorToSensorRatio(1));
+  ;
   public static final boolean kUseMotionMagic = true;
   public static final double kStatusSignalUpdateFrequency = 50.0; // Hz
 
@@ -56,6 +62,8 @@ public final class ElevatorConstants {
 
   public static final int kEncoderATeethCount = 29;
   public static final int kEncoderBTeethCount = 31;
+
+  public static final Angle armSafePosition = Rotations.of(2);
 
   public static final CANcoderConfiguration kEncoderAConfig =
       new CANcoderConfiguration()

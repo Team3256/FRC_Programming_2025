@@ -62,8 +62,8 @@ public class Elevator extends DisableSubsystem {
   public Command setPosition(double position) {
     return this.run(
         () -> {
-          requestedPosition = position * ElevatorConstants.SimulationConstants.kGearRatio;
-          motorIO.setPosition(position * ElevatorConstants.SimulationConstants.kGearRatio);
+          requestedPosition = position;
+          motorIO.setPosition(position);
         });
   }
 
@@ -114,6 +114,10 @@ public class Elevator extends DisableSubsystem {
                 1)
             * ((double) ElevatorConstants.kEncoderBTeethCount
                 / (ElevatorConstants.kEncoderBTeethCount - ElevatorConstants.kEncoderATeethCount)));
+  }
+
+  public Command toArmSafePosition() {
+    return this.setPosition(ElevatorConstants.armSafePosition.in(Rotations));
   }
 
   public boolean isAtPosition() {
