@@ -99,6 +99,15 @@ public class ArmIOTalonFX implements ArmIO {
   }
 
   @Override
+  public void setPosition(double position) {
+    if (ArmConstants.kUseMotionMagic) {
+      armMotor.setControl(motionMagicRequest.withPosition(position));
+    } else {
+      armMotor.setControl(positionRequest.withPosition(position));
+    }
+  }
+
+  @Override
   public void setPosition(Angle position, AngularVelocity velocity) {
     armMotor.setControl(positionRequest.withPosition(position).withVelocity(velocity));
   }
