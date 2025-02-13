@@ -341,13 +341,21 @@ public class RobotContainer {
         .leftBumper()
         .whileTrue(
             Commands.parallel(
-                Commands.either(drivetrain.repulsorCommand(                    () -> {
-                    return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true);
-                  }), AutoAim.translateToPose(
-                    drivetrain,
+                Commands.either(
+                    drivetrain.repulsorCommand(
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, true);
+                        }),
+                    AutoAim.translateToPose(
+                        drivetrain,
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, true);
+                        }),
                     () -> {
-                      return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true);
-                    }), () -> { return FeatureFlags.kAutoAlignPreferRepulsorPF; }),
+                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
+                    }),
                 Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
                     .andThen(
                         () -> {
@@ -358,26 +366,34 @@ public class RobotContainer {
                           m_driverController.setRumble(RumbleType.kBothRumble, 0);
                         })));
 
-                        m_driverController
-                        .rightBumper()
-                        .whileTrue(
-                            Commands.parallel(
-                                Commands.either(drivetrain.repulsorCommand(                    () -> {
-                                    return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false);
-                                  }), AutoAim.translateToPose(
-                                    drivetrain,
-                                    () -> {
-                                      return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false);
-                                    }), () -> { return FeatureFlags.kAutoAlignPreferRepulsorPF; }),
-                                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
-                                    .andThen(
-                                        () -> {
-                                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
-                                        })
-                                    .andThen(
-                                        () -> {
-                                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
-                                        })));
+    m_driverController
+        .rightBumper()
+        .whileTrue(
+            Commands.parallel(
+                Commands.either(
+                    drivetrain.repulsorCommand(
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, false);
+                        }),
+                    AutoAim.translateToPose(
+                        drivetrain,
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, false);
+                        }),
+                    () -> {
+                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
+                    }),
+                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
+                        })
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
+                        })));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
   }
