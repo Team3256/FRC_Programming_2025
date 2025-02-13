@@ -168,6 +168,14 @@ public class Superstructure {
         });
   }
 
+  public StructureState getState(){
+    return this.state;
+  }
+
+  public StructureState getPrevState() {
+    return this.prevState;
+  }
+
   public Command setManipulatorSide(ManipulatorSide side) {
     return Commands.runOnce(
         () -> {

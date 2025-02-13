@@ -99,7 +99,7 @@ public final class Constants {
    */
 
   public static class RobotConstants {
-    public static final int bumperLength = 22;
+    public static final int bumperLength = 22; // should be right?
     public static final int bumperWidth = 22;
   }
 }

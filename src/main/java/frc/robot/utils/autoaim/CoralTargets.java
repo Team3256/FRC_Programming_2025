@@ -58,7 +58,7 @@ public enum CoralTargets {
     // 0.248 for trough
     return original.transformBy(
         new Transform2d(
-            0.291 + (RobotConstants.bumperLength / 2),
+            0.291 + (RobotConstants.bumperLength / 2), // TODO: TUNE This!!
             0,
             Rotation2d.fromDegrees(180.0)));
   }
@@ -69,10 +69,12 @@ public enum CoralTargets {
   }
 
   /** Gets the closest offset target to the given pose. */
-  public static Pose2d getHandedClosestTarget(Pose2d pose, boolean leftHandeed) {
+  public static Pose2d getHandedClosestTarget(Pose2d pose, boolean leftHanded) {
     return pose.nearest(
         Arrays.stream(values())
-            .filter((target) -> target.leftHanded == leftHandeed)
+        // Lefthandedness is because each face of the reef has two branches going up
+        // so A is left, B is right    
+        .filter((target) -> target.leftHanded == leftHanded)
             .map(
                 (CoralTargets targets) -> {
                   return CoralTargets.getRobotTargetLocation(targets.location);
