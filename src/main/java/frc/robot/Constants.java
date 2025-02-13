@@ -93,4 +93,13 @@ public final class Constants {
 
   public static final FieldConstants.BranchHeights branchHeights =
       FieldConstants.BranchHeights.PRACTICE_FIELD;
+
+  /*
+   * Robot Constants.
+   */
+
+  public static class RobotConstants {
+    public static final int bumperLength = 22;
+    public static final int bumperWidth = 22;
+  }
 }
