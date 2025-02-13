@@ -33,23 +33,22 @@ public class Elevator extends DisableSubsystem {
   public final Trigger reachedPosition = new Trigger(this::isAtPosition);
 
   public Elevator(boolean enabled, ElevatorIO motorIO) {
+    System.out.println("test test test do not merge");
     super(enabled);
     this.motorIO = motorIO;
-    m_sysIdRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Seconds), // Use default ramp rate (1 V/s)
-                Volts.of(6), // Reduce dynamic step voltage to 4 to prevent brownout
-                null, // Use default timeout (10 s)
-                // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (volts) ->
-                    motorIO
-                        .getMotor()
-                        .setControl(motorIO.getVoltageRequest().withOutput(volts.in(Volts))),
-                null,
-                this));
+    m_sysIdRoutine = new SysIdRoutine(
+        new SysIdRoutine.Config(
+            Volts.of(0.2).per(Seconds), // Use default ramp rate (1 V/s)
+            Volts.of(6), // Reduce dynamic step voltage to 4 to prevent brownout
+            null, // Use default timeout (10 s)
+            // Log state with Phoenix SignalLogger class
+            (state) -> SignalLogger.writeString("state", state.toString())),
+        new SysIdRoutine.Mechanism(
+            (volts) -> motorIO
+                .getMotor()
+                .setControl(motorIO.getVoltageRequest().withOutput(volts.in(Volts))),
+            null,
+            this));
   }
 
   @Override
@@ -86,8 +85,8 @@ public class Elevator extends DisableSubsystem {
     } else {
       return this.setPosition(
           ElevatorConstants.SimulationConstants.kReefPositions[level]
-                  .div(ElevatorConstants.SimulationConstants.kDrumRadius)
-                  .magnitude()
+              .div(ElevatorConstants.SimulationConstants.kDrumRadius)
+              .magnitude()
               / (2 * Math.PI));
     }
   }
@@ -98,8 +97,8 @@ public class Elevator extends DisableSubsystem {
     } else {
       return this.setPosition(
           ElevatorConstants.SimulationConstants.kReefPositions[level]
-                  .div(ElevatorConstants.SimulationConstants.kDrumRadius)
-                  .magnitude()
+              .div(ElevatorConstants.SimulationConstants.kDrumRadius)
+              .magnitude()
               / (2 * Math.PI)
               * ElevatorConstants.SimulationConstants.kGearRatio);
     }
@@ -108,10 +107,10 @@ public class Elevator extends DisableSubsystem {
   public Angle getModulusPosition() {
     return Rotations.of(
         MathUtil.inputModulus(
-                (motorIOAutoLogged.encoderAAbsolutePosition
-                    - motorIOAutoLogged.encoderBAbsolutePosition),
-                0,
-                1)
+            (motorIOAutoLogged.encoderAAbsolutePosition
+                - motorIOAutoLogged.encoderBAbsolutePosition),
+            0,
+            1)
             * ((double) ElevatorConstants.kEncoderBTeethCount
                 / (ElevatorConstants.kEncoderBTeethCount - ElevatorConstants.kEncoderATeethCount)));
   }
