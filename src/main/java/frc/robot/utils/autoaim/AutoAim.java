@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Constants.FeatureFlags;
 
 /*
  * Adapted from 8033's Auto Aim implementation.
@@ -45,6 +46,10 @@ public class AutoAim {
   public static final double ROTATION_TOLERANCE_RADIANS = Units.degreesToRadians(2.0);
 
   public static Command translateToPose(CommandSwerveDrivetrain swerve, Supplier<Pose2d> target) {
+    if (!FeatureFlags.kAutoAlignEnabled){
+        System.out.println("**** repulsorCommand disabled because of kAutoAlignEnabled = false");
+        return Commands.none();
+    }
     // This feels like a horrible way of getting around lambda final requirements
     // Is there a cleaner way of doing this?
     final Pose2d cachedTarget[] = {new Pose2d()};

@@ -57,6 +57,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.Constants.FeatureFlags;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements Subsystem so it can easily
@@ -293,6 +294,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command repulsorCommand(Supplier<Pose2d> target) {
+    if (!FeatureFlags.kAutoAlignEnabled) {
+      System.out.println("**** repulsorCommand disabled because of kAutoAlignEnabled = false");
+      return Commands.none();
+    }
     return run(
         () -> {
           m_repulsor.setGoal(target.get().getTranslation());
