@@ -184,13 +184,17 @@ public class Arm extends DisableSubsystem {
   }
 
   public double continuousWrapAtHome(double angle) {
-    int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - angle);
-    int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - angle);
+    return continuousWrapAtHome(angle, armIOAutoLogged.armEncoderAbsolutePosition);
+  }
 
-    int nIdeal = (int) Math.round(armIOAutoLogged.armMotorPosition - angle);
+  public static double continuousWrapAtHome(double reqAbsAngle, double currentAngle) {
+    int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+    int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+
+    int nIdeal = (int) Math.round(currentAngle - reqAbsAngle);
 
     int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
 
-    return angle + nCandidate;
+    return reqAbsAngle + nCandidate;
   }
 }
