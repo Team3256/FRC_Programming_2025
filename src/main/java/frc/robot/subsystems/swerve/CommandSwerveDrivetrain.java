@@ -405,6 +405,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(() -> this.setControl(requestSupplier.get()));
   }
 
+  public Command applyRequest(SwerveRequest swerveRequest) {
+    return run(() -> this.setControl(swerveRequest));
+  }
+
   /**
    * Follows the given field-centric path sample with PID.
    *
@@ -464,6 +468,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   public Command sysIdTranslationDynamic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineTranslation.dynamic(direction);
+  }
+
+  public Command driveVelocityFieldRelative(Supplier<ChassisSpeeds> speeds) {
+    return this.applyRequest(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds.get()));
+  }
+
+  public ChassisSpeeds getVelocityFieldRelative() {
+    return this.getState().Speeds;
   }
 
   @Override
@@ -549,7 +561,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             previousSetpoint, new ChassisSpeeds(xVelocity, yVelocity, angularVelocity), 0.02);
     this.setControl(
         new SwerveRequest.ApplyFieldSpeeds()
-            .withSpeeds(kinematics.toChassisSpeeds(previousSetpoint.moduleStates())));
+            .withSpeeds(this.getKinematics().toChassisSpeeds(previousSetpoint.moduleStates())));
   }
 
   /**
