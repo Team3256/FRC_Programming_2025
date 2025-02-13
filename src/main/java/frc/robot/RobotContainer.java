@@ -11,15 +11,10 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
-import java.util.stream.Stream;
-
-import org.littletonrobotics.junction.Logger;
-
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -51,11 +46,12 @@ import frc.robot.subsystems.rollers.RollerIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
-import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.utils.autoaim.AlgaeIntakeTargets;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+import java.util.stream.Stream;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -341,31 +337,49 @@ public class RobotContainer {
 
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
-    m_driverController.leftBumper().whileTrue(Commands.parallel(AutoAim.translateToPose(drivetrain, () -> {
-        return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true);
-    }), Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose)).andThen(
-        () -> {
-            m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
-        }
-    ).andThen(() -> {
-        m_driverController.setRumble(RumbleType.kBothRumble, 0);
-    })));
+    m_driverController
+        .leftBumper()
+        .whileTrue(
+            Commands.parallel(
+                AutoAim.translateToPose(
+                    drivetrain,
+                    () -> {
+                      return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true);
+                    }),
+                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
+                        })
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
+                        })));
 
-    m_driverController.rightBumper().whileTrue(Commands.parallel(AutoAim.translateToPose(drivetrain, () -> {
-        return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false);
-    }), Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose)).andThen(
-        () -> {
-            m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
-        }
-    ).andThen(() -> {
-        m_driverController.setRumble(RumbleType.kBothRumble, 0);
-    })));
+    m_driverController
+        .rightBumper()
+        .whileTrue(
+            Commands.parallel(
+                AutoAim.translateToPose(
+                    drivetrain,
+                    () -> {
+                      return CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false);
+                    }),
+                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
+                        })
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
+                        })));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 
-  public void periodic(){
-        Logger.recordOutput(
+  public void periodic() {
+    Logger.recordOutput(
         "AutoAim/Targets/Coral",
         Stream.of(CoralTargets.values())
             .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
@@ -377,10 +391,10 @@ public class RobotContainer {
             .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
             .toArray(Pose2d[]::new));
 
-    
-            Logger.recordOutput("AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
-            Logger.recordOutput(
-                "AutoAim/AlgaeIntakeTarget", AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+    Logger.recordOutput(
+        "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
+    Logger.recordOutput(
+        "AutoAim/AlgaeIntakeTarget",
+        AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
   }
-
 }

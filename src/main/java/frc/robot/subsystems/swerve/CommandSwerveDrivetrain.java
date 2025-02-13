@@ -53,8 +53,6 @@ import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
 import frc.robot.utils.RepulsorFieldPlanner;
-
-import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -407,7 +405,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(() -> this.setControl(requestSupplier.get()));
   }
 
-  public Command applyRequest(SwerveRequest swerveRequest){
+  public Command applyRequest(SwerveRequest swerveRequest) {
     return run(() -> this.setControl(swerveRequest));
   }
 
@@ -565,7 +563,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         new SwerveRequest.ApplyFieldSpeeds()
             .withSpeeds(this.getKinematics().toChassisSpeeds(previousSetpoint.moduleStates())));
   }
-
 
   /**
    * Runs the wheel radius characterization routine.

@@ -1,3 +1,10 @@
+// Copyright (c) 2025 FRC 3256
+// https://github.com/Team3256
+//
+// Use of this source code is governed by a 
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.utils.autoaim;
 
 import choreo.util.ChoreoAllianceFlipUtil;
@@ -5,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import frc.robot.Constants.RobotConstants;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,10 +49,7 @@ public enum AlgaeIntakeTargets {
 
   public static Pose2d getRobotTargetLocation(Pose2d original) {
     return original.transformBy(
-        new Transform2d(
-            (RobotConstants.bumperLength / 2),
-            0,
-            Rotation2d.fromDegrees(180.0)));
+        new Transform2d((RobotConstants.bumperLength / 2), 0, Rotation2d.fromDegrees(180.0)));
   }
 
   /** Gets the closest offset target to the given pose. */

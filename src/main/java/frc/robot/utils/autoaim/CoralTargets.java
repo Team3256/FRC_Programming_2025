@@ -1,3 +1,10 @@
+// Copyright (c) 2025 FRC 3256
+// https://github.com/Team3256
+//
+// Use of this source code is governed by a 
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.utils.autoaim;
 
 import choreo.util.ChoreoAllianceFlipUtil;
@@ -72,9 +79,9 @@ public enum CoralTargets {
   public static Pose2d getHandedClosestTarget(Pose2d pose, boolean leftHanded) {
     return pose.nearest(
         Arrays.stream(values())
-        // Lefthandedness is because each face of the reef has two branches going up
-        // so A is left, B is right    
-        .filter((target) -> target.leftHanded == leftHanded)
+            // Lefthandedness is because each face of the reef has two branches going up
+            // so A is left, B is right
+            .filter((target) -> target.leftHanded == leftHanded)
             .map(
                 (CoralTargets targets) -> {
                   return CoralTargets.getRobotTargetLocation(targets.location);

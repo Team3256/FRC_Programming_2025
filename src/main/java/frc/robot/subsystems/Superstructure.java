@@ -168,7 +168,7 @@ public class Superstructure {
         });
   }
 
-  public StructureState getState(){
+  public StructureState getState() {
     return this.state;
   }
 
