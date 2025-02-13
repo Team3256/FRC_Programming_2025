@@ -340,8 +340,8 @@ public class RobotContainer {
     m_driverController
         .leftBumper()
         .whileTrue(
-            Commands.parallel(
-                Commands.either(
+            Commands.parallel( // Both run AutoAlign & check tolerance
+                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto alignment.
                     drivetrain.repulsorCommand(
                         () -> {
                           return CoralTargets.getHandedClosestTarget(
@@ -356,7 +356,12 @@ public class RobotContainer {
                     () -> {
                       return FeatureFlags.kAutoAlignPreferRepulsorPF;
                     }),
-                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
+                Commands.waitUntil(
+                        () ->
+                            AutoAim.isInToleranceCoral(
+                                drivetrain.getState()
+                                    .Pose)) // Additionally, once we're in tolerance, rumble the
+                    // controller
                     .andThen(
                         () -> {
                           m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
@@ -366,6 +371,7 @@ public class RobotContainer {
                           m_driverController.setRumble(RumbleType.kBothRumble, 0);
                         })));
 
+    // Same as prev, except find the NOT righthanded one.
     m_driverController
         .rightBumper()
         .whileTrue(
