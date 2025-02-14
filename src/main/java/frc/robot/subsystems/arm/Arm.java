@@ -46,7 +46,8 @@ public class Arm extends DisableSubsystem {
   private Iterator<Map<String, Double>> trajIterator = null;
 
   private ArrayList<Map<String, Double>> selectedTraj = null;
-  public final Trigger reachedPosition = new Trigger(() -> isAtPosition());
+  public final Trigger reachedPosition = new Trigger(this::isAtPosition);
+  public final Trigger isSafePosition = new Trigger(this::isSafePosition);
   private MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
@@ -157,6 +158,10 @@ public class Arm extends DisableSubsystem {
         true);
   }
 
+  public boolean isSafePosition() {
+    return Util.inRange((armIOAutoLogged.armMotorPosition + 5) % 1, 0.15, .35);
+  }
+
   public Command toSourceLevel(BooleanSupplier rightSide) {
     return this.setPosition(
         () ->
@@ -168,7 +173,7 @@ public class Arm extends DisableSubsystem {
 
   public boolean isAtPosition() {
     return Util.epsilonEquals(
-        armIOAutoLogged.armEncoderAbsolutePosition, requestedPosition.in(Rotations), 0.01);
+        armIOAutoLogged.armMotorPosition, requestedPosition.in(Rotations), 0.01);
   }
 
   public Command toHome() {
@@ -184,7 +189,7 @@ public class Arm extends DisableSubsystem {
   }
 
   public double continuousWrapAtHome(double angle) {
-    return continuousWrapAtHome(angle, armIOAutoLogged.armEncoderAbsolutePosition);
+    return continuousWrapAtHome(angle, armIOAutoLogged.armMotorPosition);
   }
 
   public static double continuousWrapAtHome(double reqAbsAngle, double currentAngle) {

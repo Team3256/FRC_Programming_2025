@@ -31,6 +31,7 @@ public class Elevator extends DisableSubsystem {
   private double requestedPosition = 0;
 
   public final Trigger reachedPosition = new Trigger(this::isAtPosition);
+  public final Trigger isSafeForArm = new Trigger(this::isSafePosition);
 
   public Elevator(boolean enabled, ElevatorIO motorIO) {
     super(enabled);
@@ -121,7 +122,11 @@ public class Elevator extends DisableSubsystem {
   }
 
   public boolean isAtPosition() {
-    return Util.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.05);
+    return Util.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.1);
+  }
+
+  public boolean isSafePosition() {
+    return motorIOAutoLogged.motorPosition > ElevatorConstants.armSafePosition.in(Rotations);
   }
 
   public Command toHome() {

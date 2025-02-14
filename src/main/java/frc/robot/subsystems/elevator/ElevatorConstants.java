@@ -29,8 +29,8 @@ public final class ElevatorConstants {
           .withSlot0(
               new Slot0Configs()
                   .withKS(0.1)
-                  .withKV(2)
-                  .withKP(1.8)
+                  .withKV(1.9)
+                  .withKP(12)
                   .withKI(0)
                   .withKD(0)
                   .withKG(.5)
@@ -42,8 +42,8 @@ public final class ElevatorConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(20)
-                  .withMotionMagicCruiseVelocity(5))
+                  .withMotionMagicAcceleration(36)
+                  .withMotionMagicCruiseVelocity(5.4))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
@@ -63,7 +63,7 @@ public final class ElevatorConstants {
   public static final int kEncoderATeethCount = 29;
   public static final int kEncoderBTeethCount = 31;
 
-  public static final Angle armSafePosition = Rotations.of(2);
+  public static final Angle armSafePosition = Rotations.of(2.5);
 
   public static final CANcoderConfiguration kEncoderAConfig =
       new CANcoderConfiguration()
@@ -105,10 +105,10 @@ public final class ElevatorConstants {
 
   public static final Angle[] kDealgaePositions = {Rotations.of(0.0), Rotations.of(0.0)};
 
-  public static final Angle sourcePosition = Rotations.of(0.0);
+  public static final Angle sourcePosition = Rotations.of(3);
   public static final Angle bargePosition = Rotations.of(0.0);
 
-  public static final Angle homePosition = Rotations.of(0.0);
+  public static final Angle homePosition = Rotations.of(0.1);
 
   public static class SimulationConstants {
     public static final Mass kCarriageMass = Pounds.of(2.5).plus(ArmConstants.Sim.armMass);

@@ -42,10 +42,10 @@ public final class ArmConstants {
   public static final Angle dealgaeRightPosition = Rotations.of(0.0);
   public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
 
-  public static final Angle sourceLeftPositions = Rotations.of(0.0);
-  public static final Angle sourceRightPositions = Rotations.of(0.0);
+  public static final Angle sourceLeftPositions = Rotations.of(.8);
+  public static final Angle sourceRightPositions = Rotations.of(.8);
 
-  public static final Angle homePosition = Rotations.of(0.0);
+  public static final Angle homePosition = Rotations.of(.25);
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
@@ -53,7 +53,7 @@ public final class ArmConstants {
               new Slot0Configs()
                   .withKS(0)
                   .withKV(17)
-                  .withKP(6.5)
+                  .withKP(100)
                   .withKI(0)
                   .withKD(0)
                   .withKG(.4)
@@ -70,7 +70,7 @@ public final class ArmConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(120))
+                  .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)

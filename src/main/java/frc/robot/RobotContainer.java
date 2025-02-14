@@ -144,6 +144,9 @@ public class RobotContainer {
         .b("a")
         .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));
     m_operatorController
+        .x()
+        .onTrue(superstructure.setState(Superstructure.StructureState.PRESOURCE));
+    m_operatorController
         .rightBumper()
         .onTrue(endEffector.setVoltage(0, 3).until(endEffector.leftBeamBreak));
     m_operatorController
@@ -418,5 +421,6 @@ public class RobotContainer {
     Logger.recordOutput(
         "AutoAim/AlgaeIntakeTarget",
         AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+    superstructure.periodic();
   }
 }
