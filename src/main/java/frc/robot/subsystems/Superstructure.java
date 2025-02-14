@@ -139,6 +139,7 @@ public class Superstructure {
         .onTrue(elevator.toArmSafePosition())
         .and(elevator.isSafeForArm)
         .onTrue(arm.toHome())
+        .debounce(.05)
         .and(arm.reachedPosition)
         .onTrue(this.setState(StructureState.HOME));
     stateTriggers
