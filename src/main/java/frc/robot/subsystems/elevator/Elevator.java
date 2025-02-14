@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.Util;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends DisableSubsystem {
@@ -31,6 +32,7 @@ public class Elevator extends DisableSubsystem {
   private double requestedPosition = 0;
 
   public final Trigger reachedPosition = new Trigger(this::isAtPosition);
+  public final Trigger isSafeForArm = new Trigger(this::isSafePosition);
 
   public Elevator(boolean enabled, ElevatorIO motorIO) {
     super(enabled);
@@ -55,6 +57,7 @@ public class Elevator extends DisableSubsystem {
   @Override
   public void periodic() {
     super.periodic();
+    Logger.recordOutput(this.getClass().getSimpleName() + "/requestedPosition", requestedPosition);
     motorIO.updateInputs(motorIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), motorIOAutoLogged);
   }
@@ -62,8 +65,8 @@ public class Elevator extends DisableSubsystem {
   public Command setPosition(double position) {
     return this.run(
         () -> {
-          requestedPosition = position * ElevatorConstants.SimulationConstants.kGearRatio;
-          motorIO.setPosition(position * ElevatorConstants.SimulationConstants.kGearRatio);
+          requestedPosition = position;
+          motorIO.setPosition(position);
         });
   }
 
@@ -116,8 +119,18 @@ public class Elevator extends DisableSubsystem {
                 / (ElevatorConstants.kEncoderBTeethCount - ElevatorConstants.kEncoderATeethCount)));
   }
 
+  public Command toArmSafePosition() {
+    return this.setPosition(ElevatorConstants.armSafePosition.in(Rotations));
+  }
+
+  @AutoLogOutput
   public boolean isAtPosition() {
-    return Util.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.05);
+    return Util.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.1);
+  }
+
+  @AutoLogOutput
+  public boolean isSafePosition() {
+    return motorIOAutoLogged.motorPosition > ElevatorConstants.armSafePosition.in(Rotations);
   }
 
   public Command toHome() {

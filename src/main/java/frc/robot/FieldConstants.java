@@ -7,8 +7,11 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Distance;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -171,5 +174,21 @@ public class FieldConstants {
 
     public final double height;
     public final double pitch;
+  }
+
+  public static enum BranchHeights {
+    PRACTICE_FIELD(
+        new Distance[] {Inches.of(18), Inches.of(31.875), Inches.of(47.625), Inches.of(72)}),
+    PALY(new Distance[] {Inches.of(18), Inches.of(31.875), Inches.of(47.625), Inches.of(72)}),
+    VENTURA(new Distance[] {Inches.of(18), Inches.of(31.875), Inches.of(47.625), Inches.of(72)}),
+    SFR(new Distance[] {Inches.of(18), Inches.of(31.875), Inches.of(47.625), Inches.of(72)}),
+    CONTRA(new Distance[] {Inches.of(18), Inches.of(31.875), Inches.of(47.625), Inches.of(72)}),
+    WORLDS(new Distance[] {Inches.of(18), Inches.of(31.875), Inches.of(47.625), Inches.of(72)}),
+    EINSTEINS(new Distance[] {Inches.of(18), Inches.of(31.875), Inches.of(47.625), Inches.of(72)});
+    public final Distance[] distances;
+
+    BranchHeights(Distance[] distances) {
+      this.distances = distances;
+    }
   }
 }

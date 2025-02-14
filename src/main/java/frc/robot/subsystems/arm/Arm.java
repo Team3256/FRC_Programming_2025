@@ -14,6 +14,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,7 +28,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import org.json.simple.JSONObject;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends DisableSubsystem {
@@ -42,29 +47,33 @@ public class Arm extends DisableSubsystem {
   private Iterator<Map<String, Double>> trajIterator = null;
 
   private ArrayList<Map<String, Double>> selectedTraj = null;
-  public final Trigger reachedPosition = new Trigger(() -> isAtPosition());
-  private Angle requestedPosition = Rotations.of(0.0);
+  public final Trigger reachedPosition = new Trigger(this::isAtPosition);
+  public final Trigger isSafePosition = new Trigger(this::isSafePosition);
+  private final MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
     super(enabled);
 
     this.armIO = armIO;
+    armIO.resetPosition(Rotations.of(0.25));
     loadAllTraj();
   }
 
   @Override
   public void periodic() {
     super.periodic();
+    Logger.recordOutput(
+        this.getClass().getSimpleName() + "/requestedPosition", requestedPosition.in(Rotations));
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
 
-    if (trajIterator != null && trajIterator.hasNext()) {
-      armIO.setPosition(
-          Radians.of(trajIterator.next().get("position")),
-          RadiansPerSecond.of(trajIterator.next().get("velocity")));
-    } else if (selectedTraj != null) {
-      trajIterator = selectedTraj.iterator();
-    }
+    //    if (trajIterator != null && trajIterator.hasNext()) {
+    //      armIO.setPosition(
+    //          Radians.of(trajIterator.next().get("position")),
+    //          RadiansPerSecond.of(trajIterator.next().get("velocity")));
+    //    } else if (selectedTraj != null) {
+    //      trajIterator = selectedTraj.iterator();
+    //    }
   }
 
   public Command runTraj(String trajName) {
@@ -109,53 +118,93 @@ public class Arm extends DisableSubsystem {
     //    System.out.println(o.toString());
   }
 
-  public Command setPosition(Angle position) {
+  public Command setPosition(Supplier<Angle> position, boolean continuous) {
     return this.run(
         () -> {
-          armIO.setPosition(position);
-          requestedPosition = position;
+          requestedPosition.mut_replace(
+              continuous ? continuousWrapAtHome(position.get()) : position.get());
+          armIO.setPosition(requestedPosition);
         });
+  }
+
+  public Command setPosition(Angle position, boolean continuous) {
+    return setPosition(() -> position, continuous);
+  }
+
+  public Command setPosition(double position, boolean continuous) {
+    return setPosition(() -> Rotations.of(position), continuous);
+  }
+
+  public Command setPosition(DoubleSupplier position, boolean continuous) {
+    return setPosition(() -> Rotations.of(position.getAsDouble()), continuous);
   }
 
   public Command setVoltage(Voltage voltage) {
     return this.run(() -> armIO.setVoltage(voltage));
   }
 
-  public Command toRightReefLevel(int level) {
-    return this.setPosition(ArmConstants.reefRightPositions[level]);
+  public Command toReefLevel(int level, BooleanSupplier rightSide) {
+    return setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.reefRightPositions[level]
+                : ArmConstants.reefLeftPositions[level],
+        true);
   }
 
-  public Command toLeftReefLevel(int level) {
-    return this.setPosition(ArmConstants.reefLeftPositions[level]);
+  public Command toDealgaeLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.dealgaeRightPosition
+                : ArmConstants.dealgaeLeftPosition,
+        true);
   }
 
-  public Command toRightDealgaeLevel() {
-    return this.setPosition(ArmConstants.dealgaeRightPosition);
+  @AutoLogOutput
+  public boolean isSafePosition() {
+    return Util.inRange((armIOAutoLogged.armMotorPosition + 5) % 1, 0.15, .35);
   }
 
-  public Command toLeftDealgaeLevel() {
-    return this.setPosition(ArmConstants.dealgaeLeftPosition);
+  public Command toSourceLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.sourceRightPositions
+                : ArmConstants.sourceLeftPositions,
+        true);
   }
 
-  public Command toRightSourceLevel() {
-    return this.setPosition(ArmConstants.sourceRightPositions);
-  }
-
-  public Command toLeftSourceLevel() {
-    return this.setPosition(ArmConstants.sourceLeftPositions);
-  }
-
+  @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(
-        armIOAutoLogged.armEncoderAbsolutePosition, requestedPosition.in(Rotations), 0.01);
+        armIOAutoLogged.armMotorPosition, requestedPosition.in(Rotations), 0.01);
   }
 
   public Command toHome() {
-    return this.setPosition(ArmConstants.homePosition);
+    return this.setPosition(() -> ArmConstants.homePosition, true);
   }
 
   public Command off() {
-
     return this.runOnce(armIO::off);
+  }
+
+  public Angle continuousWrapAtHome(Angle angle) {
+    return Rotations.of(continuousWrapAtHome(angle.in(Rotations)));
+  }
+
+  public double continuousWrapAtHome(double angle) {
+    return continuousWrapAtHome(angle, armIOAutoLogged.armMotorPosition);
+  }
+
+  public static double continuousWrapAtHome(double reqAbsAngle, double currentAngle) {
+    int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+    int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+
+    int nIdeal = (int) Math.round(currentAngle - reqAbsAngle);
+
+    int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
+
+    return reqAbsAngle + nCandidate;
   }
 }

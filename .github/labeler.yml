@@ -1,0 +1,36 @@
+'type: ci':
+  - changed-files:
+      - any-glob-to-any-file: .github/*
+'component: drivers':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/drivers/**
+'component: arm':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/arm/**
+'component: climb':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/climb/**
+'component: coralground':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/coralground/**
+'component: elevator':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/elevator/**
+'component: endeffector':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/endeffector/**
+'component: swerve':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/swerve/**
+'component: vision':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/vision/**
+'component: superstructure':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/subsystems/Superstructure.java
+'utils: autoaim':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/utils/autoaim/**
+'type: utils':
+  - changed-files:
+      - any-glob-to-any-file: src/main/java/frc/robot/utils/**

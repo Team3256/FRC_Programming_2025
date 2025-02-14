@@ -102,8 +102,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
     inputs.coralMotorStatorCurrent = coralMotorStatorCurrent.getValue();
     inputs.coralMotorSupplyCurrent = coralMotorSupplyCurrent.getValue();
 
-    inputs.leftBeamBreak = leftBeamBreak.getValue();
-    inputs.rightBeamBreak = rightBeamBreak.getValue();
+    inputs.rightBeamBreak = leftBeamBreak.getValue();
+    inputs.leftBeamBreak = rightBeamBreak.getValue();
   }
 
   @Override

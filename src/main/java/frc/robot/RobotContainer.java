@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
@@ -18,6 +17,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -27,21 +27,30 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
-import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
-import frc.robot.subsystems.rollers.Roller;
-import frc.robot.subsystems.rollers.RollerIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.endeffector.EndEffectorIOSim;
+import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.ResetPose;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
+import frc.robot.utils.autoaim.AlgaeIntakeTargets;
+import frc.robot.utils.autoaim.AutoAim;
+import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+import java.util.stream.Stream;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -64,11 +73,16 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
   private Rotation2d finalAutoHeading = new Rotation2d();
 
-  private final Roller roller = new Roller(true, new RollerIOTalonFX());
+  private final Elevator elevator =
+      new Elevator(true, Utils.isSimulation() ? new ElevatorIOSim() : new ElevatorIOTalonFX());
 
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
+  private final EndEffector endEffector =
+      new EndEffector(
+          true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
+  private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -90,7 +104,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    m_autoRoutines = new AutoRoutines(drivetrain.createAutoFactory(drivetrain::trajLogger), roller);
+    m_autoRoutines = new AutoRoutines(drivetrain.createAutoFactory(drivetrain::trajLogger));
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
     configureSwerve();
@@ -117,15 +131,36 @@ public class RobotContainer {
     // m_driverController.b("Example
     // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
 
+    //
+    // m_operatorController.a("hge").onTrue(elevator.setPosition(4.68)).onTrue(arm.setPosition(.18)); // L4
+    //
+    // m_operatorController.a("hge").onTrue(elevator.setPosition(2.652)).onTrue(arm.setPosition(.18)); // L3
+    //    m_operatorController
+    //        .a("hge")
+    //        .onTrue(elevator.setPosition(1.26))
+    //        .onTrue(arm.setPosition(.18, true)); // L2
+    //    m_operatorController.b("a").onTrue(arm.setPosition(.25, true));
+    //    m_operatorController.y().onTrue(arm.off()).onTrue(elevator.off());
+    //    m_operatorController.x().onTrue(elevator.setPosition(0));
+    m_operatorController.a("hge").onTrue(superstructure.setState(Superstructure.StructureState.L4));
     m_operatorController
-        .rightBumper("s")
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+        .b("a")
+        .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));
+    m_operatorController
+        .x()
+        .onTrue(superstructure.setState(Superstructure.StructureState.PRESOURCE));
+    m_operatorController
+        .rightBumper()
+        .onTrue(endEffector.setVoltage(0, 3).until(endEffector.leftBeamBreak));
+    m_operatorController
+        .leftBumper()
+        .onTrue(endEffector.setVoltage(0, -3).until(endEffector.rightBeamBreak));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());
     // m_operatorController
     //     .rightBumper("s")
-    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPoseAndQuest(new Pose2d())));
   }
 
   private void configureChoreoAutoChooser() {
@@ -238,7 +273,7 @@ public class RobotContainer {
     }
 
     m_driverController
-        .leftBumper()
+        .povDown() // TODO: remodify this
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
@@ -318,6 +353,93 @@ public class RobotContainer {
 
     m_driverController.y("reset heading").onTrue(new ResetPose(drivetrain));
 
+    // Auto Align Begin
+    // preferably a check to make sure we're not in ALGAE state....
+    m_driverController
+        .leftBumper()
+        .whileTrue(
+            Commands.parallel( // Both run AutoAlign & check tolerance
+                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto alignment.
+                    drivetrain.repulsorCommand(
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, true);
+                        }),
+                    AutoAim.translateToPose(
+                        drivetrain,
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, true);
+                        }),
+                    () -> {
+                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
+                    }),
+                Commands.waitUntil(
+                        () ->
+                            AutoAim.isInToleranceCoral(
+                                drivetrain.getState()
+                                    .Pose)) // Additionally, once we're in tolerance, rumble the
+                    // controller
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
+                        })
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
+                        })));
+
+    // Same as prev, except find the NOT righthanded one.
+    m_driverController
+        .rightBumper()
+        .whileTrue(
+            Commands.parallel(
+                Commands.either(
+                    drivetrain.repulsorCommand(
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, false);
+                        }),
+                    AutoAim.translateToPose(
+                        drivetrain,
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, false);
+                        }),
+                    () -> {
+                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
+                    }),
+                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
+                        })
+                    .andThen(
+                        () -> {
+                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
+                        })));
+    // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public void periodic() {
+    Logger.recordOutput(
+        "AutoAim/Targets/Coral",
+        Stream.of(CoralTargets.values())
+            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+            .toArray(Pose2d[]::new));
+    // Log locations of all autoaim targets
+    Logger.recordOutput(
+        "AutoAim/Targets/Algae",
+        Stream.of(AlgaeIntakeTargets.values())
+            .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
+            .toArray(Pose2d[]::new));
+
+    Logger.recordOutput(
+        "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
+    Logger.recordOutput(
+        "AutoAim/AlgaeIntakeTarget",
+        AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+    superstructure.periodic();
   }
 }

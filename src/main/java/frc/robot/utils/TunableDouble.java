@@ -1,0 +1,59 @@
+// Copyright (c) 2025 FRC 3256
+// https://github.com/Team3256
+//
+// Use of this source code is governed by a 
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
+package frc.robot.utils;
+
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants;
+import java.util.Date;
+import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
+public class TunableDouble extends Tunable<Double> implements DoubleSupplier {
+  private LoggedNetworkNumber loggedNetworkNumber;
+
+  private TunableDouble(
+      Double value, Date tunedDate, String author, String notes, Constants.RobotType robotType) {
+    super(value, tunedDate, author, notes, robotType);
+    loggedNetworkNumber = null;
+  }
+
+  public TunableDouble toLive(String key) {
+    loggedNetworkNumber =
+        value == null
+            ? new LoggedNetworkNumber("/Tunable/" + key)
+            : new LoggedNetworkNumber("/Tunable/" + key, value);
+    return this;
+  }
+
+  @Override
+  public Double get() {
+    if (loggedNetworkNumber != null) {
+      return loggedNetworkNumber.get();
+    }
+    return super.get();
+  }
+
+  public Trigger onChange(Consumer<Double> consumer) {
+    if (loggedNetworkNumber == null) {
+      throw new IllegalStateException("onChange cannot be called on a non-live Tunable");
+    }
+    return new Trigger(() -> value != loggedNetworkNumber.get())
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  value = loggedNetworkNumber.get();
+                  consumer.accept(value);
+                }));
+  }
+
+  public double getAsDouble() {
+    return get();
+  }
+}

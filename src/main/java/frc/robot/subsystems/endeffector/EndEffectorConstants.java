@@ -15,21 +15,22 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
-  public static int algaeMotorID = 43;
-  public static int coralMotorID = 48;
+  public static int algaeMotorID = 45;
+  public static int coralMotorID = 43;
 
-  public static AngularVelocity l1Velocity = RotationsPerSecond.of(0.0);
-  public static AngularVelocity l2l3Velocity = RotationsPerSecond.of(0.0);
-  public static AngularVelocity l4Velocity = RotationsPerSecond.of(0.0);
+  public static AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
+  public static AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
+  public static AngularVelocity l4Velocity = RotationsPerSecond.of(20.0);
 
+  // algae first then coral
   public static AngularVelocity[] sourceVelocity = {
-    RotationsPerSecond.of(0.0), RotationsPerSecond.of(0)
+    RotationsPerSecond.of(10.0), RotationsPerSecond.of(50.0)
   };
 
   public static TalonFXConfiguration algaeMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.15).withKA(0).withKP(8).withKI(0).withKD(0.1))
+              new Slot0Configs().withKS(0).withKV(0.17).withKA(0).withKP(.5).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
@@ -45,7 +46,7 @@ public final class EndEffectorConstants {
   public static TalonFXConfiguration coralMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.15).withKA(0).withKP(8).withKI(0).withKD(0.1))
+              new Slot0Configs().withKS(0).withKV(0.14).withKA(0).withKP(.25).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
@@ -62,15 +63,15 @@ public final class EndEffectorConstants {
               new HardwareLimitSwitchConfigs()
                   .withForwardLimitSource(ForwardLimitSourceValue.RemoteCANdiS1)
                   .withReverseLimitSource(ReverseLimitSourceValue.RemoteCANdiS2)
-                  .withForwardLimitEnable(true)
-                  .withReverseLimitEnable(true));
+                  .withForwardLimitEnable(false)
+                  .withReverseLimitEnable(false));
 
   public static final CANdiConfiguration canDiConfigs =
       new CANdiConfiguration()
           .withDigitalInputs(
               new DigitalInputsConfigs()
-                  .withS1CloseState(S1CloseStateValue.CloseWhenHigh)
-                  .withS2CloseState(S2CloseStateValue.CloseWhenLow));
+                  .withS1CloseState(S1CloseStateValue.CloseWhenFloating)
+                  .withS2CloseState(S2CloseStateValue.CloseWhenFloating));
 
   public static final int candiID = 21;
 

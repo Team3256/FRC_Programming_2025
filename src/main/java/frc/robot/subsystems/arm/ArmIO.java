@@ -34,6 +34,8 @@ public interface ArmIO {
 
   public default void setPosition(Angle position) {}
 
+  public default void setPosition(double position) {}
+
   public default void setVoltage(Voltage voltage) {}
 
   public default TalonFX getMotor() {
@@ -43,6 +45,8 @@ public interface ArmIO {
   public default CANcoder getEncoder() {
     return new CANcoder(0);
   }
+
+  public default void resetPosition(Angle angle) {}
 
   public default void off() {}
 }

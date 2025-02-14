@@ -20,6 +20,12 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
@@ -28,6 +34,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -42,6 +50,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.FeatureFlags;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -89,9 +98,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.ApplyFieldSpeeds()
           .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
-  private final PIDController m_pathXController = new PIDController(10, 0, 0);
-  private final PIDController m_pathYController = new PIDController(10, 0, 0);
-  private final PIDController m_pathThetaController = new PIDController(7, 0, 0);
+  private final PIDController m_pathXController = new PIDController(25, 0, 0);
+  private final PIDController m_pathYController = new PIDController(25, 0, 0);
+  private final PIDController m_pathThetaController = new PIDController(6, 0, 0);
+
+  private final PIDController xController = new PIDController(5.0, 0.0, 0.1);
+  private final PIDController yController = new PIDController(5.0, 0.0, 0.1);
+  private final PIDController headingController = new PIDController(6, 0, 0);
 
   /* Swerve requests to apply during SysId characterization */
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =
@@ -100,6 +113,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
+
+  private final SwerveSetpointGenerator setpointGenerator =
+      new SwerveSetpointGenerator(
+          SwerveConstants.ppRobotConfig, SwerveConstants.maxSteerModuleSpeed);
+  private SwerveSetpoint previousSetpoint =
+      new SwerveSetpoint(
+          new ChassisSpeeds(0, 0, 0),
+          new SwerveModuleState[] {
+            new SwerveModuleState(0, new Rotation2d(0)),
+            new SwerveModuleState(0, new Rotation2d(0)),
+            new SwerveModuleState(0, new Rotation2d(0)),
+            new SwerveModuleState(0, new Rotation2d(0))
+          },
+          new DriveFeedforwards(
+              new double[] {0},
+              new double[] {0},
+              new double[] {0},
+              new double[] {0},
+              new double[] {0}));
 
   /*
    * SysId routine for characterizing translation. This is used to find PID gains
@@ -168,6 +200,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
   private int _calculatedOffsetToRobotCenterCount = 0;
 
+  private final SwerveDriveKinematics kinematics =
+      new SwerveDriveKinematics(
+          SwerveConstants.frontLeft,
+          SwerveConstants.frontRight,
+          SwerveConstants.backLeft,
+          SwerveConstants.backRight);
   /* WPILib Alerts start */
 
   private final Alert a_questNavNotConnected =
@@ -189,7 +227,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // resetPose(new Pose2d());
+    configurePathPlanner();
+    // resetPoseAndQuest(new Pose2d());
   }
 
   /**
@@ -211,7 +250,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // resetPose(new Pose2d());
+    configurePathPlanner();
+    // resetPoseAndQuest(new Pose2d());
   }
 
   /**
@@ -244,7 +284,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // resetPose(new Pose2d());
+    configurePathPlanner();
+    // resetPoseAndQuest(new Pose2d());
   }
 
   public Pose2d targetPose() {
@@ -454,6 +495,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     Logger.recordOutput("Swerve/pose", this.getState().Pose);
+  }
+
+  private void configurePathPlanner() {
+    AutoBuilder.configure(
+        () -> this.getState().Pose,
+        this::resetPoseAndQuest,
+        () -> this.getState().Speeds,
+        this::driveRobotRelativeWithFF,
+        new PPHolonomicDriveController(
+            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+        SwerveConstants.ppRobotConfig,
+        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+        this);
   }
 
   public Rotation2d getCurrentHeading() {

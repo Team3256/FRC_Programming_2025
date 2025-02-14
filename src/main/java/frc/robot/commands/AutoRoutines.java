@@ -10,16 +10,12 @@ package frc.robot.commands;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import frc.robot.subsystems.rollers.Roller;
 
 public class AutoRoutines {
   private final AutoFactory m_factory;
 
-  private final Roller roller;
-
-  public AutoRoutines(AutoFactory factory, Roller roller) {
+  public AutoRoutines(AutoFactory factory) {
     m_factory = factory;
-    this.roller = roller;
   }
 
   public AutoRoutine simplePathAuto() {

@@ -65,6 +65,8 @@ public final class Constants {
     public static final boolean kSwerveEnabled = true;
     public static final boolean kVisionEnabled = false;
     public static final boolean kSwerveAccelerationLimitingEnabled = false;
+    public static final boolean kAutoAlignEnabled = false; // safety switch
+    public static final boolean kAutoAlignPreferRepulsorPF = true;
   }
 
   public static class Logging {
@@ -77,5 +79,29 @@ public final class Constants {
 
   public static class SimulationConstants {
     public static final Distance kDrivebaseWidth = Inches.of(27);
+  }
+
+  public enum RobotType {
+    COMPETITION("TODO: TUne"),
+    PRACTICE("TODO: Tune"),
+    SIMULATION("no label");
+
+    public final String serialNumber;
+
+    RobotType(String serialNumber) {
+      this.serialNumber = serialNumber;
+    }
+  }
+
+  public static final FieldConstants.BranchHeights branchHeights =
+      FieldConstants.BranchHeights.PRACTICE_FIELD;
+
+  /*
+   * Robot Constants.
+   */
+
+  public static class RobotConstants {
+    public static final int bumperLength = 22; // should be right?
+    public static final int bumperWidth = 22;
   }
 }

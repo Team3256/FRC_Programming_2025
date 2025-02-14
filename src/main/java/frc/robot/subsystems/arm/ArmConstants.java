@@ -17,64 +17,65 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Mass;
 
 public final class ArmConstants {
-  public static final int armMotorId = 38;
+  public static final int armMotorId = 42;
 
-  public static final int armMotorEncoderId = 39;
+  public static final int armMotorEncoderId = 40;
 
   // max value is 8, min is 0
 
   /* Misc */
   public static final boolean kUseFOC = false;
-  public static final boolean kUseMotionMagic = false; // idk
+  public static final boolean kUseMotionMagic = true; // idk
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
+  public static final Angle maxRotations = Rotations.of(3);
+
   public static final Angle[] reefLeftPositions = {
-    Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
+    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(0.32)
   };
 
   public static final Angle[] reefRightPositions = {
-    Rotations.of(0.0), Rotations.of(0.0), Rotations.of(0.0)
+    Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.18)
   };
 
   public static final Angle dealgaeRightPosition = Rotations.of(0.0);
   public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
 
-  public static final Angle sourceLeftPositions = Rotations.of(0.0);
-  public static final Angle sourceRightPositions = Rotations.of(0.0);
+  public static final Angle sourceLeftPositions = Rotations.of(.8);
+  public static final Angle sourceRightPositions = Rotations.of(.8);
 
-  public static final Angle homePosition = Rotations.of(0.0);
+  public static final Angle homePosition = Rotations.of(.25);
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
                   .withKS(0)
-                  .withKV(3)
+                  .withKV(17)
                   .withKP(100)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(10)
+                  .withKG(.4)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
-                  .withInverted(InvertedValue.Clockwise_Positive))
+                  .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(400)
-                  .withMotionMagicCruiseVelocity(50))
+                  .withMotionMagicAcceleration(2)
+                  .withMotionMagicCruiseVelocity(.7))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(120))
+                  .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackRemoteSensorID(39)
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                  .withSensorToMechanismRatio(1)
-                  .withRotorToSensorRatio(168));
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                  .withSensorToMechanismRatio(142.22)
+                  .withRotorToSensorRatio(1));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()
@@ -85,7 +86,7 @@ public final class ArmConstants {
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
 
   public static final class Sim {
-    public static final double simGearing = 168;
+    public static final double simGearing = 142.22;
 
     public static final Distance armLength = Inches.of(22);
     public static final Mass armMass = Kilograms.of(2);

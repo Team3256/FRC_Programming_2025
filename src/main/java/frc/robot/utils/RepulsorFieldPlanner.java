@@ -306,6 +306,10 @@ public class RepulsorFieldPlanner {
     updateArrows();
   }
 
+  public Translation2d getGoal() {
+    return goalOpt.orElse(new Translation2d());
+  }
+
   public SwerveSample getCmd(
       Pose2d pose, ChassisSpeeds currentSpeeds, double maxSpeed, boolean useGoal) {
     return getCmd(pose, currentSpeeds, maxSpeed, useGoal, pose.getRotation());

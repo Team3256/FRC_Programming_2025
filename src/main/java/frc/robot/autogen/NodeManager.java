@@ -57,13 +57,14 @@ public class NodeManager {
               routine.trajectory(
                   node.intakeLocation().name() + "-" + node.scoringLocation().name());
           nextTrajTrigger.toggleOnTrue(preloadTraj.resetOdometry().andThen(preloadTraj.cmd()));
-          TrajTriggers.atTimeToEnd(preloadTraj, .5)
-              .toggleOnTrue(elevator.toReefLevel(3).alongWith(arm.toRightReefLevel(2)));
+          preloadTraj
+              .atTimeBeforeEnd(.5)
+              .toggleOnTrue(elevator.toReefLevel(3).alongWith(arm.toReefLevel(2, () -> true)));
           Command scoreCmd =
               Commands.waitUntil(elevator.reachedPosition.and(arm.reachedPosition))
                   .andThen(
                       endEffector
-                          .setL4Velocity()
+                          .setL4Velocity(() -> true)
                           .until(routine.observe(endEffector.rightBeamBreak))
                           .andThen(arm.toHome().alongWith(elevator.toHome())));
           preloadTraj.done().toggleOnTrue(scoreCmd);
@@ -76,12 +77,13 @@ public class NodeManager {
               routine.trajectory(lastScoringLocation.name() + "-" + node.intakeLocation().name());
           // Wait for whatever finished last to be done then trigger next traj
           nextTrajTrigger.toggleOnTrue(intakeTraj.cmd());
-          TrajTriggers.atTimeToEnd(intakeTraj, 1)
+          intakeTraj
+              .atTimeBeforeEnd(1)
               .toggleOnTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)));
-          TrajTriggers.atTimeToEnd(intakeTraj, .5).toggleOnTrue(arm.toRightSourceLevel());
+          intakeTraj.atTimeBeforeEnd(.5).toggleOnTrue(arm.toSourceLevel(() -> true));
           Command intakeCmd =
               endEffector
-                  .setSourceVelocity()
+                  .setSourceVelocity(() -> true)
                   .until(endEffector.rightBeamBreak.debounce(.1))
                   .andThen(
                       arm.toHome().alongWith(Commands.waitSeconds(.2).andThen(elevator.toHome())));
@@ -95,41 +97,45 @@ public class NodeManager {
           Command scoreCmd = Commands.none();
           switch (node.scoringType()) {
             case L1 -> {
-              TrajTriggers.atTimeToEnd(scoringTraj, .5)
-                  .toggleOnTrue(arm.toRightReefLevel(0).alongWith(elevator.toReefLevel(0)));
+              scoringTraj
+                  .atTimeBeforeEnd(.5)
+                  .toggleOnTrue(arm.toReefLevel(0, () -> true).alongWith(elevator.toReefLevel(0)));
               scoreCmd =
                   endEffector
-                      .setL1Velocity()
+                      .setL1Velocity(() -> true)
                       .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
             }
             case L2 -> {
-              TrajTriggers.atTimeToEnd(scoringTraj, .5)
-                  .toggleOnTrue(arm.toRightReefLevel(1).alongWith(elevator.toReefLevel(1)));
+              scoringTraj
+                  .atTimeBeforeEnd(.5)
+                  .toggleOnTrue(arm.toReefLevel(1, () -> true).alongWith(elevator.toReefLevel(1)));
               scoreCmd =
                   endEffector
-                      .setL2L3Velocity()
+                      .setL2L3Velocity(() -> true)
                       .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
             }
             case L3 -> {
-              TrajTriggers.atTimeToEnd(scoringTraj, .5)
-                  .toggleOnTrue(arm.toRightReefLevel(1).alongWith(elevator.toReefLevel(2)));
+              scoringTraj
+                  .atTimeBeforeEnd(.5)
+                  .toggleOnTrue(arm.toReefLevel(1, () -> true).alongWith(elevator.toReefLevel(2)));
               scoreCmd =
                   endEffector
-                      .setL2L3Velocity()
+                      .setL2L3Velocity(() -> true)
                       .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
             }
             case L4 -> {
-              TrajTriggers.atTimeToEnd(scoringTraj, .5)
-                  .toggleOnTrue(arm.toRightReefLevel(2).alongWith(elevator.toReefLevel(3)));
+              scoringTraj
+                  .atTimeBeforeEnd(.5)
+                  .toggleOnTrue(arm.toReefLevel(2, () -> true).alongWith(elevator.toReefLevel(3)));
               scoreCmd =
                   endEffector
-                      .setL4Velocity()
+                      .setL4Velocity(() -> true)
                       .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
