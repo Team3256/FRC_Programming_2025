@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.Util;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends DisableSubsystem {
@@ -56,6 +57,7 @@ public class Elevator extends DisableSubsystem {
   @Override
   public void periodic() {
     super.periodic();
+    Logger.recordOutput(this.getClass().getSimpleName() + "/requestedPosition", requestedPosition);
     motorIO.updateInputs(motorIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), motorIOAutoLogged);
   }
@@ -121,10 +123,12 @@ public class Elevator extends DisableSubsystem {
     return this.setPosition(ElevatorConstants.armSafePosition.in(Rotations));
   }
 
+  @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(motorIOAutoLogged.motorPosition, requestedPosition, 0.1);
   }
 
+  @AutoLogOutput
   public boolean isSafePosition() {
     return motorIOAutoLogged.motorPosition > ElevatorConstants.armSafePosition.in(Rotations);
   }

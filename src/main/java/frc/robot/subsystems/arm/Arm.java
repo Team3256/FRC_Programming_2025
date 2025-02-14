@@ -32,6 +32,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.json.simple.JSONObject;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends DisableSubsystem {
@@ -48,7 +49,7 @@ public class Arm extends DisableSubsystem {
   private ArrayList<Map<String, Double>> selectedTraj = null;
   public final Trigger reachedPosition = new Trigger(this::isAtPosition);
   public final Trigger isSafePosition = new Trigger(this::isSafePosition);
-  private MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
+  private final MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
     super(enabled);
@@ -61,7 +62,8 @@ public class Arm extends DisableSubsystem {
   @Override
   public void periodic() {
     super.periodic();
-    Logger.recordOutput(this.getClass().getSimpleName() + "/requestedPosition", requestedPosition);
+    Logger.recordOutput(
+        this.getClass().getSimpleName() + "/requestedPosition", requestedPosition.in(Rotations));
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
 
@@ -159,6 +161,7 @@ public class Arm extends DisableSubsystem {
         true);
   }
 
+  @AutoLogOutput
   public boolean isSafePosition() {
     return Util.inRange((armIOAutoLogged.armMotorPosition + 5) % 1, 0.15, .35);
   }
@@ -172,6 +175,7 @@ public class Arm extends DisableSubsystem {
         true);
   }
 
+  @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(
         armIOAutoLogged.armMotorPosition, requestedPosition.in(Rotations), 0.01);
