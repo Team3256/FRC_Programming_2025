@@ -97,6 +97,7 @@ public class RobotContainer {
 
   private final AutoRoutines m_autoRoutines;
   private AutoChooser autoChooser = new AutoChooser();
+  private Rotation2d finalAutoHeading;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -220,7 +221,11 @@ public class RobotContainer {
     RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
   }
 
-  private void configureSwerve() {
+  public void updateAngles() {
+    this.finalAutoHeading = finalAutoHeading.plus(this.drivetrain.getCurrentHeading());
+  }
+
+  public void configureSwerve() {
     // LinearVelocity is a vector, so we need to get the magnitude
     final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
     final double MaxAngularRate = 1.5 * Math.PI;
@@ -331,6 +336,18 @@ public class RobotContainer {
                             .withTargetDirection(
                                 getStickAngle(m_driverController).plus(new Rotation2d(90))))
                 .withTimeout(3));
+
+    m_driverController
+        .povUp()
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(finalAutoHeading))
+                .withTimeout(aziTimeout));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 

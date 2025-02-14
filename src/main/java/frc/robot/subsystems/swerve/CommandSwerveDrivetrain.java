@@ -15,6 +15,7 @@ import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -65,6 +66,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
+  public final Pigeon2 m_pigeon2 = new Pigeon2(0, "mani");
   public static final double driveBaseRadius =
       Math.max(
           Math.max(
@@ -519,6 +521,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     Logger.recordOutput("Swerve/pose", this.getState().Pose);
+  }
+
+  public Rotation2d getCurrentHeading() {
+    if (!Utils.isSimulation() && questNav.isConnected()) {
+      return this.questNav.getRobotPose().getRotation();
+    } else {
+      a_questNavNotConnected.set(true);
+      return this.m_pigeon2.getRotation2d();
+    }
+  }
+
+  public Pose2d getCurrentPose() {
+    return questNav.getRobotPose();
   }
 
   private void configurePathPlanner() {
