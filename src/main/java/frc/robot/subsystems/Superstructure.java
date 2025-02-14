@@ -165,7 +165,7 @@ public class Superstructure {
   public Command setState(StructureState state) {
     return Commands.runOnce(
         () -> {
-          this.prevState = this.state;
+          this.prevState = this.state == state ? this.prevState : this.state;
           this.state = state;
           this.stateTimer.restart();
         });
