@@ -13,6 +13,10 @@ public class ContinuousWrapTest {
         assertEquals(1.1, Arm.continuousWrapAtHome(.1, .9));
     }
     @Test
+    public void testWrapZero() {
+        assertEquals(0.2, Arm.continuousWrapAtHome(0.2, 0.0));
+    }
+    @Test
     public void testWrapNegative() {
         assertEquals(-2.1, Arm.continuousWrapAtHome(-.1, -1.8));
     }

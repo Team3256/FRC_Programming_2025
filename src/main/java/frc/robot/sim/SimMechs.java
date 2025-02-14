@@ -92,7 +92,7 @@ public final class SimMechs {
   }
 
   public void updateElevator(Distance height) {
-    elevatorViz.setLength(height.in(Meters) / 2);
+    elevatorViz.setLength(height.in(Meters) / 4);
   }
 
   public void updateClimb(Angle angle) {

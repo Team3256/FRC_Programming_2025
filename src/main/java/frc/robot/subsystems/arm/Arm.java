@@ -61,6 +61,7 @@ public class Arm extends DisableSubsystem {
   @Override
   public void periodic() {
     super.periodic();
+    Logger.recordOutput(this.getClass().getSimpleName() + "/requestedPosition", requestedPosition);
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
 

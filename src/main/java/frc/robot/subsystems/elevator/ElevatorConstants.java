@@ -115,7 +115,7 @@ public final class ElevatorConstants {
     public static final double kGearRatio = 20;
     public static final Distance kDrumRadius = Inches.of(2);
     public static final Distance kMinHeight = Inches.of(0);
-    public static final Distance kMaxHeight = Inches.of(69.422);
+    public static final Distance kMaxHeight = Inches.of(100);
     public static final boolean kSimulateGravity = true;
     // Drivebase to minHeight
     public static final Distance kStartingHeight = Inches.of(1.75);
