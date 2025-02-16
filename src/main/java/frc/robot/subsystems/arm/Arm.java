@@ -221,13 +221,11 @@ public class Arm extends DisableSubsystem {
     int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
     double candidate = reqAbsAngle + nCandidate;
     double diff = candidate - currentAngle;
-    int nLong;
-    if (diff > 0) {
-      nLong = nCandidate - 1;
-    } else {
-      nLong = nCandidate + 1;
-    }
+    double adjustment = -Math.signum(diff) + (1 - Math.abs(Math.signum(diff)));
+
+    int nLong = nCandidate + (int) adjustment;
     nLong = Math.min(n_max, Math.max(n_min, nLong));
+
     return reqAbsAngle + nLong;
   }
 }
