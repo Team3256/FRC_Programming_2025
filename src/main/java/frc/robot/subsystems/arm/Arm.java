@@ -118,25 +118,25 @@ public class Arm extends DisableSubsystem {
     //    System.out.println(o.toString());
   }
 
-  public Command setPosition(Supplier<Angle> position, boolean continuous) {
+  public Command setPosition(Supplier<Angle> position, boolean continuous, boolean longPath) {
     return this.run(
         () -> {
           requestedPosition.mut_replace(
-              continuous ? continuousWrapAtHome(position.get()) : position.get());
+              continuous ? continuousWrapAtHome(position.get(), longPath) : position.get());
           armIO.setPosition(requestedPosition);
         });
   }
 
-  public Command setPosition(Angle position, boolean continuous) {
-    return setPosition(() -> position, continuous);
+  public Command setPosition(Angle position, boolean continuous, boolean longPath) {
+    return setPosition(() -> position, continuous, longPath);
   }
 
-  public Command setPosition(double position, boolean continuous) {
-    return setPosition(() -> Rotations.of(position), continuous);
+  public Command setPosition(double position, boolean continuous, boolean longPath) {
+    return setPosition(() -> Rotations.of(position), continuous, longPath);
   }
 
-  public Command setPosition(DoubleSupplier position, boolean continuous) {
-    return setPosition(() -> Rotations.of(position.getAsDouble()), continuous);
+  public Command setPosition(DoubleSupplier position, boolean continuous, boolean longPath) {
+    return setPosition(() -> Rotations.of(position.getAsDouble()), continuous, longPath);
   }
 
   public Command setVoltage(Voltage voltage) {
@@ -149,7 +149,8 @@ public class Arm extends DisableSubsystem {
             rightSide.getAsBoolean()
                 ? ArmConstants.reefRightPositions[level]
                 : ArmConstants.reefLeftPositions[level],
-        true);
+        true,
+        false);
   }
 
   public Command toDealgaeLevel(BooleanSupplier rightSide) {
@@ -158,7 +159,8 @@ public class Arm extends DisableSubsystem {
             rightSide.getAsBoolean()
                 ? ArmConstants.dealgaeRightPosition
                 : ArmConstants.dealgaeLeftPosition,
-        true);
+        true,
+        false);
   }
 
   @AutoLogOutput
@@ -173,6 +175,7 @@ public class Arm extends DisableSubsystem {
             rightSide.getAsBoolean()
                 ? ArmConstants.sourceRightPositions
                 : ArmConstants.sourceLeftPositions,
+        true,
         true);
   }
 
@@ -183,19 +186,21 @@ public class Arm extends DisableSubsystem {
   }
 
   public Command toHome() {
-    return this.setPosition(() -> ArmConstants.homePosition, true);
+    return this.setPosition(() -> ArmConstants.homePosition, true, false);
   }
 
   public Command off() {
     return this.runOnce(armIO::off);
   }
 
-  public Angle continuousWrapAtHome(Angle angle) {
-    return Rotations.of(continuousWrapAtHome(angle.in(Rotations)));
+  public Angle continuousWrapAtHome(Angle angle, boolean longPath) {
+    return Rotations.of(continuousWrapAtHome(angle.in(Rotations), longPath));
   }
 
-  public double continuousWrapAtHome(double angle) {
-    return continuousWrapAtHome(angle, armIOAutoLogged.armMotorPosition);
+  public double continuousWrapAtHome(double angle, boolean longPath) {
+    return longPath
+        ? continuousWrapLongPath(angle, armIOAutoLogged.armMotorPosition)
+        : continuousWrapAtHome(angle, armIOAutoLogged.armMotorPosition);
   }
 
   public static double continuousWrapAtHome(double reqAbsAngle, double currentAngle) {
@@ -207,5 +212,22 @@ public class Arm extends DisableSubsystem {
     int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
 
     return reqAbsAngle + nCandidate;
+  }
+
+  public static double continuousWrapLongPath(double reqAbsAngle, double currentAngle) {
+    int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+    int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+    int nIdeal = (int) Math.round(currentAngle - reqAbsAngle);
+    int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
+    double candidate = reqAbsAngle + nCandidate;
+    double diff = candidate - currentAngle;
+    int nLong;
+    if (diff > 0) {
+      nLong = nCandidate - 1;
+    } else {
+      nLong = nCandidate + 1;
+    }
+    nLong = Math.min(n_max, Math.max(n_min, nLong));
+    return reqAbsAngle + nLong;
   }
 }

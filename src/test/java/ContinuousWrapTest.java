@@ -21,4 +21,13 @@ public class ContinuousWrapTest {
         assertEquals(-2.1, Arm.continuousWrapAtHome(-.1, -1.8));
     }
 
+    @Test
+    public void testWrapLongPathPositive() {
+        assertEquals(2.1, Arm.continuousWrapLongPath(.1, 1.2));
+    }
+    @Test
+    public void testWrapLongPathNegative() {
+        assertEquals(-.9, Arm.continuousWrapLongPath(.1, -.3));
+    }
+
 }
