@@ -163,7 +163,8 @@ public class Arm extends DisableSubsystem {
 
   @AutoLogOutput
   public boolean isSafePosition() {
-    return Util.inRange((armIOAutoLogged.armMotorPosition + 5) % 1, 0.15, .35);
+    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= 0.15
+        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= .35;
   }
 
   public Command toSourceLevel(BooleanSupplier rightSide) {
@@ -178,7 +179,7 @@ public class Arm extends DisableSubsystem {
   @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(
-        armIOAutoLogged.armMotorPosition, requestedPosition.in(Rotations), 0.01);
+        armIOAutoLogged.armMotorPosition, requestedPosition.in(Rotations), 0.05);
   }
 
   public Command toHome() {

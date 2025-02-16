@@ -31,19 +31,19 @@ public final class ArmConstants {
 
   public static final Angle maxRotations = Rotations.of(3);
 
-  public static final Angle[] reefLeftPositions = {
+  public static final Angle[] reefRightPositions = {
     Rotations.of(0.32), Rotations.of(0.32), Rotations.of(0.32)
   };
 
-  public static final Angle[] reefRightPositions = {
+  public static final Angle[] reefLeftPositions = {
     Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.18)
   };
 
   public static final Angle dealgaeRightPosition = Rotations.of(0.0);
   public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
 
+  public static final Angle sourceRightPositions = Rotations.of(.7);
   public static final Angle sourceLeftPositions = Rotations.of(.8);
-  public static final Angle sourceRightPositions = Rotations.of(.8);
 
   public static final Angle homePosition = Rotations.of(.25);
 

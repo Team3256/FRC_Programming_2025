@@ -130,7 +130,7 @@ public class Elevator extends DisableSubsystem {
 
   @AutoLogOutput
   public boolean isSafePosition() {
-    return motorIOAutoLogged.motorPosition > ElevatorConstants.armSafePosition.in(Rotations);
+    return motorIOAutoLogged.motorPosition > ElevatorConstants.armSafePosition.in(Rotations) - .1;
   }
 
   public Command toHome() {

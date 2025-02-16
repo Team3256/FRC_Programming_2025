@@ -68,8 +68,8 @@ public class EndEffector extends DisableSubsystem {
         () -> RotationsPerSecond.of(1),
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.l1Velocity
-                : EndEffectorConstants.l1Velocity.times(-1));
+                ? EndEffectorConstants.l1Velocity.times(-1)
+                : EndEffectorConstants.l1Velocity);
   }
 
   public Command setL2L3Velocity(BooleanSupplier rightSide) {
@@ -77,8 +77,8 @@ public class EndEffector extends DisableSubsystem {
         () -> RotationsPerSecond.of(1),
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.l2l3Velocity
-                : EndEffectorConstants.l2l3Velocity.times(-1));
+                ? EndEffectorConstants.l2l3Velocity.times(-1)
+                : EndEffectorConstants.l2l3Velocity);
   }
 
   public Command setL4Velocity(BooleanSupplier rightSide) {
@@ -86,8 +86,8 @@ public class EndEffector extends DisableSubsystem {
         () -> RotationsPerSecond.of(1),
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.l4Velocity
-                : EndEffectorConstants.l4Velocity.times(-1));
+                ? EndEffectorConstants.l4Velocity.times(-1)
+                : EndEffectorConstants.l4Velocity);
   }
 
   public Command setSourceVelocity(BooleanSupplier rightSide) {
@@ -95,8 +95,8 @@ public class EndEffector extends DisableSubsystem {
         () -> EndEffectorConstants.sourceVelocity[0],
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.sourceVelocity[1]
-                : EndEffectorConstants.sourceVelocity[1].times(-1));
+                ? EndEffectorConstants.sourceVelocity[1].times(-1)
+                : EndEffectorConstants.sourceVelocity[1]);
   }
 
   public Command off() {

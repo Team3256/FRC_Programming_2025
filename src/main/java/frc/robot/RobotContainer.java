@@ -17,7 +17,6 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -45,7 +44,6 @@ import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AlgaeIntakeTargets;
-import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
 import java.util.stream.Stream;
@@ -139,7 +137,9 @@ public class RobotContainer {
     //    m_operatorController.b("a").onTrue(arm.setPosition(.25, true));
     //    m_operatorController.y().onTrue(arm.off()).onTrue(elevator.off());
     //    m_operatorController.x().onTrue(elevator.setPosition(0));
-    m_operatorController.a("hge").onTrue(superstructure.setState(Superstructure.StructureState.L4));
+    m_operatorController.a("hge").onTrue(superstructure.setState(Superstructure.StructureState.L3));
+    m_operatorController.y().onTrue(superstructure.setState(Superstructure.StructureState.L2));
+    m_operatorController.povUp().onTrue(superstructure.setState(Superstructure.StructureState.L4));
     m_operatorController
         .b("a")
         .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));
@@ -147,11 +147,14 @@ public class RobotContainer {
         .x()
         .onTrue(superstructure.setState(Superstructure.StructureState.PRESOURCE));
     m_operatorController
-        .rightBumper()
-        .onTrue(endEffector.setVoltage(0, 3).until(endEffector.leftBeamBreak));
+        .povRight()
+        .onTrue(superstructure.setManipulatorSide(Superstructure.ManipulatorSide.RIGHT));
     m_operatorController
-        .leftBumper()
-        .onTrue(endEffector.setVoltage(0, -3).until(endEffector.rightBeamBreak));
+        .povLeft()
+        .onTrue(superstructure.setManipulatorSide(Superstructure.ManipulatorSide.LEFT));
+    m_operatorController
+        .rightTrigger()
+        .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_CORAL));
     // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
     // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
     // m_operatorController.y("off").onTrue(roller.off());
@@ -238,7 +241,7 @@ public class RobotContainer {
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
     azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    azimuth.HeadingController.setPID(6, 250, 2);
+    azimuth.HeadingController.setPID(6, 0, 0);
 
     if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
       drivetrain.setDefaultCommand(
@@ -250,7 +253,7 @@ public class RobotContainer {
                               m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
                       .withVelocityY(
                           swerveVelYRateLimiter.calculate(m_driverController.getLeftX() * MaxSpeed))
-                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
+                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
 
     } else {
       drivetrain.setDefaultCommand(
@@ -262,11 +265,11 @@ public class RobotContainer {
                           -m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
                       .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
+                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
 
     m_driverController
-        .povDown() // TODO: remodify this
+        .leftBumper() // TODO: remodify this
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
@@ -278,7 +281,7 @@ public class RobotContainer {
                             -m_driverController.getLeftX()
                                 * SlowMaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(
-                            m_driverController.getTriggerAxes()
+                            -m_driverController.getTriggerAxes()
                                 * SlowMaxAngular) // Drive counterclockwise with negative X
                 // (left)
                 ));
@@ -329,76 +332,79 @@ public class RobotContainer {
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withTargetDirection(
-                                getStickAngle(m_driverController).plus(new Rotation2d(90))))
+                                getStickAngle(m_driverController).plus(new Rotation2d(105))))
                 .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
-    m_driverController
-        .leftBumper()
-        .whileTrue(
-            Commands.parallel( // Both run AutoAlign & check tolerance
-                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto alignment.
-                    drivetrain.repulsorCommand(
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, true);
-                        }),
-                    AutoAim.translateToPose(
-                        drivetrain,
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, true);
-                        }),
-                    () -> {
-                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
-                    }),
-                Commands.waitUntil(
-                        () ->
-                            AutoAim.isInToleranceCoral(
-                                drivetrain.getState()
-                                    .Pose)) // Additionally, once we're in tolerance, rumble the
-                    // controller
-                    .andThen(
-                        () -> {
-                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
-                        })
-                    .andThen(
-                        () -> {
-                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
-                        })));
-
-    // Same as prev, except find the NOT righthanded one.
-    m_driverController
-        .rightBumper()
-        .whileTrue(
-            Commands.parallel(
-                Commands.either(
-                    drivetrain.repulsorCommand(
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, false);
-                        }),
-                    AutoAim.translateToPose(
-                        drivetrain,
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, false);
-                        }),
-                    () -> {
-                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
-                    }),
-                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
-                    .andThen(
-                        () -> {
-                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
-                        })
-                    .andThen(
-                        () -> {
-                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
-                        })));
+    //    m_driverController
+    //        .leftBumper()
+    //        .whileTrue(
+    //            Commands.parallel( // Both run AutoAlign & check tolerance
+    //                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto
+    // alignment.
+    //                    drivetrain.repulsorCommand(
+    //                        () -> {
+    //                          return CoralTargets.getHandedClosestTarget(
+    //                              drivetrain.getState().Pose, true);
+    //                        }),
+    //                    AutoAim.translateToPose(
+    //                        drivetrain,
+    //                        () -> {
+    //                          return CoralTargets.getHandedClosestTarget(
+    //                              drivetrain.getState().Pose, true);
+    //                        }),
+    //                    () -> {
+    //                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
+    //                    }),
+    //                Commands.waitUntil(
+    //                        () ->
+    //                            AutoAim.isInToleranceCoral(
+    //                                drivetrain.getState()
+    //                                    .Pose)) // Additionally, once we're in tolerance, rumble
+    // the
+    //                    // controller
+    //                    .andThen(
+    //                        () -> {
+    //                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
+    //                        })
+    //                    .andThen(
+    //                        () -> {
+    //                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
+    //                        })));
+    //
+    //    // Same as prev, except find the NOT righthanded one.
+    //    m_driverController
+    //        .rightBumper()
+    //        .whileTrue(
+    //            Commands.parallel(
+    //                Commands.either(
+    //                    drivetrain.repulsorCommand(
+    //                        () -> {
+    //                          return CoralTargets.getHandedClosestTarget(
+    //                              drivetrain.getState().Pose, false);
+    //                        }),
+    //                    AutoAim.translateToPose(
+    //                        drivetrain,
+    //                        () -> {
+    //                          return CoralTargets.getHandedClosestTarget(
+    //                              drivetrain.getState().Pose, false);
+    //                        }),
+    //                    () -> {
+    //                      return Featur]eFlags.kAutoAlignPreferRepulsorPF;
+    //                    }),
+    //                Commands.waitUntil(() ->
+    // AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
+    //                    .andThen(
+    //                        () -> {
+    //                          m_driverController.setRumble(RumbleType.kBothRumble, 0.5);
+    //                        })
+    //                    .andThen(
+    //                        () -> {
+    //                          m_driverController.setRumble(RumbleType.kBothRumble, 0);
+    //                        })));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
   }

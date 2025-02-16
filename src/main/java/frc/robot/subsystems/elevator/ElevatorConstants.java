@@ -63,7 +63,7 @@ public final class ElevatorConstants {
   public static final int kEncoderATeethCount = 29;
   public static final int kEncoderBTeethCount = 31;
 
-  public static final Angle armSafePosition = Rotations.of(2.5);
+  public static final Angle armSafePosition = Rotations.of(2.1);
 
   public static final CANcoderConfiguration kEncoderAConfig =
       new CANcoderConfiguration()
@@ -84,7 +84,7 @@ public final class ElevatorConstants {
   // Please tune
 
   public static final Angle[] kReefPositionsPracticeField = {
-    Rotations.of(0.0), Rotations.of(1.26), Rotations.of(2.652), Rotations.of(4.68)
+    Rotations.of(0.0), Rotations.of(1.26), Rotations.of(2.652), Rotations.of(5)
   };
   public static final Distance[] kReefPositionsMeters = Constants.branchHeights.distances;
 
@@ -105,10 +105,10 @@ public final class ElevatorConstants {
 
   public static final Angle[] kDealgaePositions = {Rotations.of(0.0), Rotations.of(0.0)};
 
-  public static final Angle sourcePosition = Rotations.of(3);
+  public static final Angle sourcePosition = Rotations.of(3.5);
   public static final Angle bargePosition = Rotations.of(0.0);
 
-  public static final Angle homePosition = Rotations.of(0.1);
+  public static final Angle homePosition = Rotations.of(0.15);
 
   public static class SimulationConstants {
     public static final Mass kCarriageMass = Pounds.of(2.5).plus(ArmConstants.Sim.armMass);

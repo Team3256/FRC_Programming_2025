@@ -125,12 +125,20 @@ public class Superstructure {
         .onTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)))
         .and(elevator.isSafeForArm)
         .onTrue(this.setState(StructureState.SOURCE));
-    stateTriggers.get(StructureState.SOURCE).onTrue(arm.toSourceLevel(rightManipulatorSide));
+    stateTriggers
+        .get(StructureState.SOURCE)
+        .onTrue(arm.toSourceLevel(rightManipulatorSide))
+        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide));
 
     stateTriggers
         .get(StructureState.SOURCE)
-        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
-        .and(endEffector.leftBeamBreak.or(endEffector.rightBeamBreak))
+        .and(rightManipulatorSide)
+        .and(endEffector.rightBeamBreak)
+        .onTrue(this.setState(StructureState.PREHOME));
+    stateTriggers
+        .get(StructureState.SOURCE)
+        .and(rightManipulatorSide.negate())
+        .and(endEffector.leftBeamBreak)
         .onTrue(this.setState(StructureState.PREHOME));
 
     stateTriggers
@@ -143,15 +151,16 @@ public class Superstructure {
         .onTrue(this.setState(StructureState.HOME));
     stateTriggers
         .get(StructureState.HOME)
+        .and(prevStateTriggers.get(StructureState.PREHOME))
         .onTrue(arm.toHome())
         .onTrue(elevator.toHome())
         .onTrue(endEffector.off())
         .and(arm.reachedPosition.and(elevator.reachedPosition))
         .onTrue(this.setState(StructureState.IDLE));
-    stateTriggers
-        .get(StructureState.HOME)
-        .and(prevStateTriggers.get(StructureState.PREHOME).negate())
-        .onTrue(this.setState(StructureState.PREHOME));
+    //    stateTriggers
+    //        .get(StructureState.HOME)
+    //        .and(prevStateTriggers.get(StructureState.PREHOME).negate())
+    //        .onTrue(this.setState(StructureState.PREHOME));
   }
 
   // call manually
