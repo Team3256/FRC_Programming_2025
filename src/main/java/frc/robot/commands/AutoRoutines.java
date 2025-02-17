@@ -34,12 +34,14 @@ public class AutoRoutines {
    */
   public AutoRoutine ds2MobilityAuto() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
-    final AutoTrajectory path = routine.trajectory("Source2-A");
+    final AutoTrajectory path = routine.trajectory("DS2-Mobility");
 
     routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
 
     return routine;
   }
+
+
 
   private static class AutoCommands {
     private AutoCommands() {
