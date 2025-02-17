@@ -18,11 +18,26 @@ public class AutoRoutines {
     m_factory = factory;
   }
 
+  /*
+   * Demo auto
+   */
   public AutoRoutine simplePathAuto() {
     final AutoRoutine routine = m_factory.newRoutine("Source2 - A");
     final AutoTrajectory simplePath = routine.trajectory("Source2-A");
 
     routine.active().onTrue(simplePath.resetOdometry().andThen(simplePath.cmd()));
+    return routine;
+  }
+
+  /*
+   * A mobility auto.
+   */
+  public AutoRoutine ds2MobilityAuto() {
+    final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
+    final AutoTrajectory path = routine.trajectory("Source2-A");
+
+    routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
+
     return routine;
   }
 
