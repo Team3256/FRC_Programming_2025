@@ -13,7 +13,14 @@ Optionally, install the pre-commit hook:
 ```shell
 cat << 'EOF' > .git/hooks/pre-commit
 #!/bin/sh
+stagedFiles=$(git diff --staged --name-only)
+echo "Running spotlessApply. Formatting code..."
 ./gradlew spotlessApply
+for file in $stagedFiles; do
+  if test -f "$file"; then
+    git add $file
+  fi
+done
 EOF
 ```
 
