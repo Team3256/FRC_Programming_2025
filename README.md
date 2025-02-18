@@ -11,7 +11,7 @@ git clone https://github.com/Team3256/FRC_Programming_2025.git
 Optionally, install the pre-commit hook:
 
 ```shell
-cat << 'EOF' > .git/hooks/pre-commit
+cat <<EOF > .git/hooks/pre-commit
 #!/bin/sh
 stagedFiles=$(git diff --staged --name-only)
 echo "Running spotlessApply. Formatting code..."
