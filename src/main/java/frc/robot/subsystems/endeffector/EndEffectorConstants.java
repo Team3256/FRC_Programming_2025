@@ -15,17 +15,18 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
-  public static int algaeMotorID = 45;
-  public static int coralMotorID = 43;
+  public static final int algaeMotorID = 45;
+  public static final int coralMotorID = 43;
 
-  public static AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
-  public static AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
-  public static AngularVelocity l4Velocity = RotationsPerSecond.of(20);
+  public static final AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
+  public static final AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
+  public static final AngularVelocity l4Velocity = RotationsPerSecond.of(20);
 
   // algae first then coral
-  public static AngularVelocity[] sourceVelocity = {
-    RotationsPerSecond.of(50), RotationsPerSecond.of(30)
-  };
+  public static final AngularVelocity sourceVelocity = RotationsPerSecond.of(30);
+
+  public static final AngularVelocity algaeIntakeVelocity = RotationsPerSecond.of(50);
+  public static final AngularVelocity algaeOuttakeVelocity = RotationsPerSecond.of(-50);
 
   public static TalonFXConfiguration algaeMotorConfigs =
       new TalonFXConfiguration()

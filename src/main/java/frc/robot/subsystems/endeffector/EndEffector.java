@@ -7,8 +7,6 @@
 
 package frc.robot.subsystems.endeffector;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -37,63 +35,60 @@ public class EndEffector extends DisableSubsystem {
     Logger.processInputs(this.getClass().getSimpleName(), endEffectorIOInputsAutoLogged);
   }
 
-  public Command setVoltage(double algaeVoltage, double coralVoltage) {
-    return this.run(
-            () -> {
-              endEffectorIO.setAlgaeVoltage(algaeVoltage);
-              endEffectorIO.setCoralVoltage(coralVoltage);
-            })
-        .finallyDo(endEffectorIO::off);
+  public Command setCoralVoltage(double voltage) {
+    return this.run(() -> endEffectorIO.setCoralVoltage(voltage));
   }
 
-  public Command setVelocity(
-      Supplier<AngularVelocity> algaeVelocity, Supplier<AngularVelocity> coralVelocity) {
-    return this.run(
-            () -> {
-              endEffectorIO.setAlgaeVelocity(algaeVelocity.get());
-              endEffectorIO.setCoralVelocity(coralVelocity.get());
-            })
-        .finallyDo(endEffectorIO::off);
+  public Command setCoralVelocity(Supplier<AngularVelocity> velocity) {
+    return this.run(() -> endEffectorIO.setCoralVelocity(velocity.get()));
   }
 
-  public Command setVelocity(AngularVelocity algaeVelocity, AngularVelocity coralVelocity) {
-    return setVelocity(() -> algaeVelocity, () -> coralVelocity);
+  public Command setAlgaeVoltage(double voltage) {
+    return this.run(() -> endEffectorIO.setAlgaeVoltage(voltage));
+  }
+
+  public Command setAlgaeVelocity(Supplier<AngularVelocity> velocity) {
+    return this.run(() -> endEffectorIO.setAlgaeVelocity(velocity.get()));
   }
 
   public Command setL1Velocity(BooleanSupplier rightSide) {
-    return setVelocity(
-        () -> RotationsPerSecond.of(1),
+    return setCoralVelocity(
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.l1Velocity.times(-1)
-                : EndEffectorConstants.l1Velocity);
+                ? EndEffectorConstants.l1Velocity
+                : EndEffectorConstants.l1Velocity.times(-1));
   }
 
   public Command setL2L3Velocity(BooleanSupplier rightSide) {
-    return setVelocity(
-        () -> RotationsPerSecond.of(1),
+    return setCoralVelocity(
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.l2l3Velocity.times(-1)
-                : EndEffectorConstants.l2l3Velocity);
+                ? EndEffectorConstants.l2l3Velocity
+                : EndEffectorConstants.l2l3Velocity.times(-1));
   }
 
   public Command setL4Velocity(BooleanSupplier rightSide) {
-    return setVelocity(
-        () -> RotationsPerSecond.of(1),
+    return setCoralVelocity(
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.l4Velocity.times(-1)
-                : EndEffectorConstants.l4Velocity);
+                ? EndEffectorConstants.l4Velocity
+                : EndEffectorConstants.l4Velocity.times(-1));
   }
 
   public Command setSourceVelocity(BooleanSupplier rightSide) {
-    return setVelocity(
-        () -> EndEffectorConstants.sourceVelocity[0],
+    return setCoralVelocity(
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.sourceVelocity[1].times(-1)
-                : EndEffectorConstants.sourceVelocity[1]);
+                ? EndEffectorConstants.sourceVelocity
+                : EndEffectorConstants.sourceVelocity.times(-1));
+  }
+
+  public Command setAlgaeIntakeVelocity() {
+    return setAlgaeVelocity(() -> EndEffectorConstants.algaeIntakeVelocity);
+  }
+
+  public Command setAlgaeOuttakeVelocity() {
+    return setAlgaeVelocity(() -> EndEffectorConstants.algaeOuttakeVelocity);
   }
 
   public Command off() {
