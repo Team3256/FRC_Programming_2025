@@ -68,7 +68,8 @@ public final class ArmConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(2)
+                  .withMotionMagicJerk(16)
+                  .withMotionMagicAcceleration(4.5)
                   .withMotionMagicCruiseVelocity(.7))
           .withCurrentLimits(
               new CurrentLimitsConfigs()

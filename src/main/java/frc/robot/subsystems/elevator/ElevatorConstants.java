@@ -30,9 +30,8 @@ public final class ElevatorConstants {
               new Slot0Configs()
                   .withKS(0.1)
                   .withKV(1.9)
-                  .withKP(12)
-                  .withKI(0)
-                  .withKD(0)
+                  .withKP(25)
+                  .withKD(2)
                   .withKG(.5)
                   .withGravityType(GravityTypeValue.Elevator_Static) // Original 0.145
               )
@@ -42,8 +41,9 @@ public final class ElevatorConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(36)
-                  .withMotionMagicCruiseVelocity(5.4))
+                  .withMotionMagicAcceleration(45)
+                  .withMotionMagicCruiseVelocity(5.4)
+                  .withMotionMagicJerk(200))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
