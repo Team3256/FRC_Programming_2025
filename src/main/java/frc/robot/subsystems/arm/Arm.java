@@ -50,6 +50,8 @@ public class Arm extends DisableSubsystem {
   private ArrayList<Map<String, Double>> selectedTraj = null;
   public final Trigger reachedPosition = new Trigger(this::isAtPosition);
   public final Trigger isSafePosition = new Trigger(this::isSafePosition);
+
+  private double cachedArmMotorPosition = 0.0;
   private final MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
@@ -120,13 +122,14 @@ public class Arm extends DisableSubsystem {
 
   public Command setPosition(Supplier<Angle> position, boolean continuous, IntSupplier direction) {
     return this.run(
-        () -> {
-          requestedPosition.mut_replace(
-              continuous
-                  ? continuousWrapAtHome(position.get(), direction.getAsInt())
-                  : position.get());
-          armIO.setPosition(requestedPosition);
-        });
+            () -> {
+              requestedPosition.mut_replace(
+                  continuous
+                      ? continuousWrapAtHome(position.get(), direction.getAsInt())
+                      : position.get());
+              armIO.setPosition(requestedPosition);
+            })
+        .beforeStarting(() -> cachedArmMotorPosition = armIOAutoLogged.armMotorPosition);
   }
 
   public Command setPosition(Angle position, boolean continuous, int direction) {
@@ -215,7 +218,7 @@ public class Arm extends DisableSubsystem {
   }
 
   public double continuousWrapAtHome(double angle, int direction) {
-    return continuousWrapAtHome(angle, armIOAutoLogged.armMotorPosition, direction);
+    return continuousWrapAtHome(angle, cachedArmMotorPosition, direction);
   }
 
   public static double continuousWrapAtHome(

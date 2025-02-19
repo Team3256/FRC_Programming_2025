@@ -38,7 +38,7 @@ public class ArmIOTalonFX implements ArmIO {
   private final StatusSignal<Current> armMotorStatorCurrent = armMotor.getStatorCurrent();
   private final StatusSignal<Current> armMotorSupplyCurrent = armMotor.getSupplyCurrent();
 
-  private final CANcoder cancoder = new CANcoder(ArmConstants.armMotorEncoderId);
+  private final CANcoder cancoder = new CANcoder(ArmConstants.armMotorEncoderId, "bruh");
 
   private final StatusSignal<Angle> cancoderAbsolutePosition = cancoder.getAbsolutePosition();
   private final StatusSignal<Angle> cancoderPosition = cancoder.getPosition();
@@ -83,7 +83,6 @@ public class ArmIOTalonFX implements ArmIO {
     inputs.armMotorPosition = armMotorPosition.getValue().in(Rotations);
     inputs.armMotorStatorCurrent = armMotorStatorCurrent.getValue().in(Amps);
     inputs.armMotorSupplyCurrent = armMotorSupplyCurrent.getValue().in(Amps);
-
     inputs.armEncoderPosition = cancoderPosition.getValue().in(Rotations);
     inputs.armEncoderVelocity = cancoderVelocity.getValue().in(RotationsPerSecond);
     inputs.armEncoderAbsolutePosition = cancoderAbsolutePosition.getValue().in(Rotations);

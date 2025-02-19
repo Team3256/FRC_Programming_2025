@@ -52,6 +52,7 @@ public class Elevator extends DisableSubsystem {
                         .setControl(motorIO.getVoltageRequest().withOutput(volts.in(Volts))),
                 null,
                 this));
+    motorIO.zero();
   }
 
   @Override

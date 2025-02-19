@@ -30,4 +30,9 @@ public class ContinuousWrapTest {
         assertEquals(-.9, Arm.continuousWrapAtHome(.1, -.3, -1));
     }
 
+    @Test
+    public void testWrapLongPathPositive2() {
+        assertEquals(.8, Arm.continuousWrapAtHome(.8, .25, 1));
+    }
+
 }

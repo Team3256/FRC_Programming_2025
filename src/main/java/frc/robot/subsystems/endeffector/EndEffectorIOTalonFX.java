@@ -45,7 +45,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<Current> coralMotorStatorCurrent = coralMotor.getStatorCurrent();
   private final StatusSignal<Current> coralMotorSupplyCurrent = coralMotor.getSupplyCurrent();
 
-  private final CANdi candi = new CANdi(EndEffectorConstants.candiID);
+  private final CANdi candi = new CANdi(EndEffectorConstants.candiID, "bruh");
 
   private final StatusSignal<Boolean> beamBreak = candi.getS1Closed();
 
