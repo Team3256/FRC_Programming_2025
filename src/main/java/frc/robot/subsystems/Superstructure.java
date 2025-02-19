@@ -128,17 +128,8 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.SOURCE)
         .onTrue(arm.toSourceLevel(rightManipulatorSide))
-        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide));
-
-    stateTriggers
-        .get(StructureState.SOURCE)
-        .and(rightManipulatorSide)
-        .and(endEffector.rightBeamBreak)
-        .onTrue(this.setState(StructureState.PREHOME));
-    stateTriggers
-        .get(StructureState.SOURCE)
-        .and(rightManipulatorSide.negate())
-        .and(endEffector.leftBeamBreak)
+        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
+        .and(endEffector.beamBreak)
         .onTrue(this.setState(StructureState.PREHOME));
 
     stateTriggers
