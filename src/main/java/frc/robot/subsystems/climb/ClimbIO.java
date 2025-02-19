@@ -9,6 +9,7 @@ package frc.robot.subsystems.climb;
 
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface ClimbIO {
@@ -25,7 +26,7 @@ public interface ClimbIO {
 
   public default void updateInputs(ClimbIOInputs inputs) {}
 
-  public default void setPosition(double position) {}
+  public default void setPosition(Angle position) {}
 
   public default void setVoltage(double voltage) {}
 

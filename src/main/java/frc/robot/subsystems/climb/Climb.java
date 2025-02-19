@@ -7,13 +7,24 @@
 
 package frc.robot.subsystems.climb;
 
+import static edu.wpi.first.units.Units.Rotations;
+
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
+import frc.robot.utils.Util;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Climb extends DisableSubsystem {
   private final ClimbIO climbIO;
   private final ClimbIOInputsAutoLogged climbIOAutoLogged = new ClimbIOInputsAutoLogged();
+
+  private final MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
+
+  public final Trigger reachedPosition = new Trigger(this::isAtPosition);
 
   public Climb(boolean enabled, ClimbIO climbIO) {
     super(enabled);
@@ -28,7 +39,25 @@ public class Climb extends DisableSubsystem {
   }
 
   public Command setPosition(double position) {
-    return this.run(() -> climbIO.setPosition(position));
+    return this.run(
+        () -> {
+          requestedPosition.mut_replace(position, Rotations);
+          climbIO.setPosition(requestedPosition);
+        });
+  }
+
+  public Command setPosition(Angle position) {
+    return this.run(
+        () -> {
+          requestedPosition.mut_replace(position);
+          climbIO.setPosition(requestedPosition);
+        });
+  }
+
+  @AutoLogOutput
+  public boolean isAtPosition() {
+    return Util.epsilonEquals(
+        climbIOAutoLogged.climbMotorPosition, requestedPosition.in(Rotations), 0.05);
   }
 
   public Command setVoltage(double voltage) {

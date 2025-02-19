@@ -62,7 +62,7 @@ public class ClimbIOTalonFX implements ClimbIO {
   }
 
   @Override
-  public void setPosition(double position) {
+  public void setPosition(Angle position) {
     if (ClimbConstants.kUseMotionMagic) {
       climbMotor.setControl(motionMagicRequest.withPosition(position));
     } else {
