@@ -181,6 +181,16 @@ public class Arm extends DisableSubsystem {
         () -> rightSide.getAsBoolean() ? -1 : 1);
   }
 
+  public Command toBargeLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.bargeRightPosition
+                : ArmConstants.bargeLeftPosition,
+        true,
+        () -> 0);
+  }
+
   @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(

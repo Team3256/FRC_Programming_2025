@@ -105,7 +105,7 @@ public final class ElevatorConstants {
   public static final Angle[] kDealgaePositions = {Rotations.of(0.0), Rotations.of(0.0)};
 
   public static final Angle sourcePosition = Rotations.of(3.5);
-  public static final Angle bargePosition = Rotations.of(0.0);
+  public static final Angle bargePosition = Rotations.of(5);
 
   public static final Angle homePosition = Rotations.of(0.15);
 

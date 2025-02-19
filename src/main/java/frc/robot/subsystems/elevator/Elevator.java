@@ -108,6 +108,10 @@ public class Elevator extends DisableSubsystem {
     }
   }
 
+  public Command toBargePosition() {
+    return this.setPosition(ElevatorConstants.bargePosition.in(Rotations));
+  }
+
   public Angle getModulusPosition() {
     return Rotations.of(
         MathUtil.inputModulus(

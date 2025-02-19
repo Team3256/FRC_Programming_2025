@@ -45,6 +45,9 @@ public final class ArmConstants {
   public static final Angle sourceRightPositions = Rotations.of(.7);
   public static final Angle sourceLeftPositions = Rotations.of(.8);
 
+  public static final Angle bargeLeftPosition = Rotations.of(0.32);
+  public static final Angle bargeRightPosition = Rotations.of(0.18);
+
   public static final Angle homePosition = Rotations.of(.25);
 
   public static final TalonFXConfiguration motorConfigs =

@@ -32,7 +32,8 @@ public class Superstructure {
     DEALGAE_L2,
     PRESOURCE,
     SOURCE,
-    Barge,
+    BARGE,
+    SCORE_ALGAE,
     CLIMB,
     PROCESSOR,
     SCORE_CORAL,
@@ -81,7 +82,7 @@ public class Superstructure {
   }
 
   public void configStateTransitions() {
-    stateTriggers.get(StructureState.IDLE).onTrue(endEffector.off());
+    stateTriggers.get(StructureState.IDLE).onTrue(endEffector.coralOff());
 
     stateTriggers
         .get(StructureState.L1)
@@ -134,8 +135,22 @@ public class Superstructure {
         .onTrue(this.setState(StructureState.PREHOME));
 
     stateTriggers
+        .get(StructureState.BARGE)
+        .onTrue(elevator.toBargePosition())
+        .and(elevator.isSafeForArm)
+        .onTrue(arm.toBargeLevel(rightManipulatorSide));
+
+    stateTriggers
+        .get(StructureState.SCORE_ALGAE)
+        .and(prevStateTriggers.get(StructureState.BARGE))
+        .onTrue(endEffector.setAlgaeOuttakeVelocity())
+        .debounce(1)
+        .onTrue(endEffector.algaeOff())
+        .onTrue(this.setState(StructureState.PREHOME));
+
+    stateTriggers
         .get(StructureState.PREHOME)
-        .onTrue(endEffector.off())
+        .onTrue(endEffector.coralOff())
         .onTrue(elevator.toArmSafePosition());
     stateTriggers
         .get(StructureState.PREHOME)
@@ -155,7 +170,7 @@ public class Superstructure {
         .get(StructureState.HOME)
         .and(prevStateTriggers.get(StructureState.PREHOME))
         .onTrue(elevator.toHome())
-        .onTrue(endEffector.off())
+        .onTrue(endEffector.coralOff())
         .and(arm.reachedPosition.and(elevator.reachedPosition))
         .onTrue(this.setState(StructureState.IDLE));
     //    stateTriggers
