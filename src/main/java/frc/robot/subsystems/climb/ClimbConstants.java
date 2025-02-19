@@ -48,7 +48,7 @@ public class ClimbConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(375) // this is actually the ratio lol
+                  .withSensorToMechanismRatio(400) // this is actually the ratio lol
                   .withRotorToSensorRatio(1));
 
   public static final class sim {
