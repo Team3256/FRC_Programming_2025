@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.sim.SimMechs;
 import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.Logger;
 
 public class ClimbIOSim extends ClimbIOTalonFX {
   private final SingleJointedArmSim climbSimModel =
@@ -60,6 +59,5 @@ public class ClimbIOSim extends ClimbIOTalonFX {
         RadiansPerSecond.of(climbSimModel.getVelocityRadPerSec()).in(RotationsPerSecond));
     super.updateInputs(inputs);
     SimMechs.getInstance().updateClimb(Radians.of(climbSimModel.getAngleRads()));
-    Logger.recordOutput("/ClimbSim/angleRadians", climbSimModel.getAngleRads());
   }
 }

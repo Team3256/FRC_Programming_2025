@@ -62,20 +62,11 @@ public final class SimMechs {
               "Coral End Effector Flywheel", .1, 0.0, 2.5, new Color8Bit(Color.kYellow)));
 
   private final MechanismRoot2d climbRoot =
-      mech.getRoot(
-          "Climb",
-          Constants.SimulationConstants.kDrivebaseWidth.in(Meters) / 2,
-          ClimbConstants.sim.startingHeight.in(Meters));
+      mech.getRoot("Climb", Constants.SimulationConstants.kDrivebaseWidth.in(Meters) / 2, 1);
 
   private final MechanismLigament2d climbViz =
       climbRoot.append(
-          new MechanismLigament2d(
-              "Climb",
-              ClimbConstants.sim
-                  .startingHeight
-                  .plus(Inches.of(ClimbConstants.kClimbLength))
-                  .in(Meters),
-              180));
+          new MechanismLigament2d("Climb", ClimbConstants.sim.climbLength.in(Meters), 180));
   private static SimMechs instance = null;
 
   private SimMechs() {}
