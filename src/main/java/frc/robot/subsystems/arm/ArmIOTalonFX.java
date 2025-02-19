@@ -25,7 +25,7 @@ import frc.robot.utils.PhoenixUtil;
 
 public class ArmIOTalonFX implements ArmIO {
 
-  private final TalonFX armMotor = new TalonFX(ArmConstants.armMotorId);
+  private final TalonFX armMotor = new TalonFX(ArmConstants.armMotorId, "bruh");
   private final PositionVoltage positionRequest =
       new PositionVoltage(0).withSlot(0).withEnableFOC(ArmConstants.kUseFOC);
   private final MotionMagicVoltage motionMagicRequest =

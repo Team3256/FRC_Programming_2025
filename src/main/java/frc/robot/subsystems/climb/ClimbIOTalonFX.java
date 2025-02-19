@@ -21,7 +21,7 @@ import edu.wpi.first.units.measure.*;
 import frc.robot.utils.PhoenixUtil;
 
 public class ClimbIOTalonFX implements ClimbIO {
-  private final TalonFX climbMotor = new TalonFX(ClimbConstants.kClimbMotorID);
+  private final TalonFX climbMotor = new TalonFX(ClimbConstants.kClimbMotorID, "bruh");
   private final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
   private final MotionMagicVoltage motionMagicRequest =
       new MotionMagicVoltage(0).withSlot(0).withEnableFOC(ClimbConstants.kUseFOC);

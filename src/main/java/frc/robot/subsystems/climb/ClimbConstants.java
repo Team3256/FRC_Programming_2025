@@ -22,7 +22,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
 
 public class ClimbConstants {
-  public static final int kClimbMotorID = 0;
+  public static final int kClimbMotorID = 49;
 
   public static final double kUpdateFrequency = 0;
   public static final boolean kUseMotionMagic = true;

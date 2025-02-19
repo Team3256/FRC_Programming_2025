@@ -20,7 +20,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.PhoenixUtil;
 
 public class EndEffectorIOTalonFX implements EndEffectorIO {
-  private final TalonFX algaeMotor = new TalonFX(EndEffectorConstants.algaeMotorID);
+  private final TalonFX algaeMotor = new TalonFX(EndEffectorConstants.algaeMotorID, "bruh");
 
   private final VelocityVoltage algaeVelocityRequest =
       new VelocityVoltage(0).withSlot(0).withEnableFOC(EndEffectorConstants.kUseFOC);
@@ -33,7 +33,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<Current> algaeMotorStatorCurrent = algaeMotor.getStatorCurrent();
   private final StatusSignal<Current> algaeMotorSupplyCurrent = algaeMotor.getSupplyCurrent();
 
-  private final TalonFX coralMotor = new TalonFX(EndEffectorConstants.coralMotorID);
+  private final TalonFX coralMotor = new TalonFX(EndEffectorConstants.coralMotorID, "bruh");
   final VelocityVoltage coralVelocityRequest =
       new VelocityVoltage(0).withSlot(0).withEnableFOC(EndEffectorConstants.kUseFOC);
 
