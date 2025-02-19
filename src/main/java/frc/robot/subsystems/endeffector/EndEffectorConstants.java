@@ -51,7 +51,7 @@ public final class EndEffectorConstants {
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
-                  .withInverted(InvertedValue.CounterClockwise_Positive))
+                  .withInverted(InvertedValue.Clockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicAcceleration(1600)

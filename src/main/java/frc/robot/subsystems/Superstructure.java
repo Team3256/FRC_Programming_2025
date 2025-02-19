@@ -181,6 +181,9 @@ public class Superstructure {
 
   // call manually
   public void periodic() {
+    Logger.recordOutput(
+        this.getClass().getSimpleName() + "/ManipulatorSide",
+        this.manipulatorSide.toString()); // TODO: remove
     Logger.recordOutput(this.getClass().getSimpleName() + "/State", this.state.toString());
     Logger.recordOutput(this.getClass().getSimpleName() + "/PrevState", this.prevState.toString());
     Logger.recordOutput(this.getClass().getSimpleName() + "/StateTime", this.stateTimer.get());
