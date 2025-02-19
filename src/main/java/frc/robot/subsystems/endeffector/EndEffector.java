@@ -91,7 +91,11 @@ public class EndEffector extends DisableSubsystem {
     return setAlgaeVelocity(() -> EndEffectorConstants.algaeOuttakeVelocity);
   }
 
-  public Command off() {
-    return this.runOnce(endEffectorIO::off);
+  public Command algaeOff() {
+    return this.runOnce(endEffectorIO::algaeOff);
+  }
+
+  public Command coralOff() {
+    return this.runOnce(endEffectorIO::coralOff);
   }
 }

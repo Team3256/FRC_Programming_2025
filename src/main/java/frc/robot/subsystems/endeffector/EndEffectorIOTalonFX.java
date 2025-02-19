@@ -147,8 +147,12 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   }
 
   @Override
-  public void off() {
+  public void algaeOff() {
     algaeMotor.setControl(new NeutralOut());
+  }
+
+  @Override
+  public void coralOff() {
     coralMotor.setControl(new NeutralOut());
   }
 

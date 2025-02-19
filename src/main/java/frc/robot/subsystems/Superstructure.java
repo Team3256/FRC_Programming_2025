@@ -57,7 +57,7 @@ public class Superstructure {
   private final Trigger rightManipulatorSide =
       new Trigger(() -> this.manipulatorSide == ManipulatorSide.RIGHT);
 
-  private Timer stateTimer = new Timer();
+  private final Timer stateTimer = new Timer();
 
   private final Elevator elevator;
   private final EndEffector endEffector;
@@ -118,7 +118,8 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
-        .onTrue(arm.toDealgaeLevel(rightManipulatorSide));
+        .onTrue(arm.toDealgaeLevel(rightManipulatorSide))
+        .onTrue(endEffector.setAlgaeIntakeVelocity());
 
     stateTriggers
         .get(StructureState.PRESOURCE)
