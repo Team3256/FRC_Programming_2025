@@ -65,7 +65,7 @@ public enum CoralTargets {
     // 0.248 for trough
     return original.transformBy(
         new Transform2d(
-            0.291 + (RobotConstants.bumperLength / 2), // TODO: TUNE This!!
+            0.291 + ((double) RobotConstants.bumperLength / 2), // TODO: TUNE This!!
             0,
             Rotation2d.fromDegrees(180.0)));
   }

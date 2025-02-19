@@ -18,7 +18,6 @@ public class CoralGroundIntake extends DisableSubsystem {
       new CoralIntakeIOInputsAutoLogged();
 
   private final Trigger debouncedBeamBreak = new Trigger(this::isBeamBroken).debounce(0.1);
-  ;
 
   public CoralGroundIntake(boolean disabled, CoralIntakeIO intakeIO) {
     super(disabled);

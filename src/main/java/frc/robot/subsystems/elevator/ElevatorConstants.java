@@ -53,7 +53,6 @@ public final class ElevatorConstants {
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                   .withSensorToMechanismRatio(16)
                   .withRotorToSensorRatio(1));
-  ;
   public static final boolean kUseMotionMagic = true;
   public static final double kStatusSignalUpdateFrequency = 50.0; // Hz
 

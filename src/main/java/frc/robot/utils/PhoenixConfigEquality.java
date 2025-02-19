@@ -248,7 +248,7 @@ public class PhoenixConfigEquality {
   public static boolean isEqual(HardwareLimitSwitchConfigs a, HardwareLimitSwitchConfigs b) {
     boolean val =
         a.ForwardLimitAutosetPositionEnable == b.ForwardLimitAutosetPositionEnable
-            && b.ForwardLimitEnable == b.ForwardLimitEnable
+            && a.ForwardLimitEnable == b.ForwardLimitEnable
             && a.ReverseLimitAutosetPositionEnable == b.ReverseLimitAutosetPositionEnable
             && a.ReverseLimitEnable == b.ReverseLimitEnable
             && epsilonEquals(

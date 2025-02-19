@@ -193,7 +193,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   private final QuestNav questNav = new QuestNav();
 
-  public RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
+  public final RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
 
   private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
   private int _calculatedOffsetToRobotCenterCount = 0;

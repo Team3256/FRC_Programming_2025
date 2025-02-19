@@ -57,7 +57,6 @@ public class Arm extends DisableSubsystem {
 
     this.armIO = armIO;
     armIO.resetPosition(Rotations.of(0.25));
-    loadAllTraj();
   }
 
   @Override

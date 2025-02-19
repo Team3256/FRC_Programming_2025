@@ -117,23 +117,6 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-    // pressed,
-    // cancelling on release.
-    // m_driverController.b("Example
-    // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
-
-    //
-    // m_operatorController.a("hge").onTrue(elevator.setPosition(4.68)).onTrue(arm.setPosition(.18)); // L4
-    //
-    // m_operatorController.a("hge").onTrue(elevator.setPosition(2.652)).onTrue(arm.setPosition(.18)); // L3
-    //    m_operatorController
-    //        .a("hge")
-    //        .onTrue(elevator.setPosition(1.26))
-    //        .onTrue(arm.setPosition(.18, true)); // L2
-    //    m_operatorController.b("a").onTrue(arm.setPosition(.25, true));
-    //    m_operatorController.y().onTrue(arm.off()).onTrue(elevator.off());
-    //    m_operatorController.x().onTrue(elevator.setPosition(0));
     m_operatorController.a("hge").onTrue(superstructure.setState(Superstructure.StructureState.L3));
     m_operatorController.y().onTrue(superstructure.setState(Superstructure.StructureState.L2));
     m_operatorController.povUp().onTrue(superstructure.setState(Superstructure.StructureState.L4));
@@ -152,12 +135,6 @@ public class RobotContainer {
     m_operatorController
         .rightTrigger()
         .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_CORAL));
-    // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
-    // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
-    // m_operatorController.y("off").onTrue(roller.off());
-    // m_operatorController
-    //     .rightBumper("s")
-    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPoseAndQuest(new Pose2d())));
   }
 
   private void configureChoreoAutoChooser() {
