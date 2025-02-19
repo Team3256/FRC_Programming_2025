@@ -23,7 +23,7 @@ import frc.robot.utils.PhoenixUtil;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
-  private final TalonFX motor = new TalonFX(ElevatorConstants.kMotorID, "bruh");
+  private final TalonFX motor = new TalonFX(ElevatorConstants.kMotorID);
   private final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
   private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0).withSlot(0);
   private final VoltageOut voltageReq = new VoltageOut(0);

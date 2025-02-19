@@ -31,7 +31,7 @@ public final class EndEffectorConstants {
   public static TalonFXConfiguration algaeMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.17).withKA(0).withKP(.5).withKI(0).withKD(0))
+              new Slot0Configs().withKS(0).withKV(.12).withKA(0).withKP(.3).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
@@ -47,7 +47,7 @@ public final class EndEffectorConstants {
   public static TalonFXConfiguration coralMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.14).withKA(0).withKP(.25).withKI(0).withKD(0))
+              new Slot0Configs().withKS(0).withKV(.117).withKA(0).withKP(.6).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
