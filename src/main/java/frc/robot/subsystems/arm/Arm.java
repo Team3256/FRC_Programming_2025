@@ -223,19 +223,18 @@ public class Arm extends DisableSubsystem {
 
   public static double continuousWrapAtHome(
       double reqAbsAngle, double currentAngle, double forcedDirection) {
-    // forcedDirection should be nonzero; its sign determines the rotation adjustment.
-    // Compute the allowed range for the integer offset.
     int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
     int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
-
-    // Compute the short-path candidate.
     int nIdeal = (int) Math.round(currentAngle - reqAbsAngle);
     int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
+    double candidate = reqAbsAngle + nCandidate;
+    double diff = candidate - currentAngle;
 
-    // Use the sign of forcedDirection to determine the adjustment.
-    int adjustment = (int) Math.signum(forcedDirection);
+    int adjustment =
+        (int)
+            ((1 - Math.max(Math.signum(diff) * Math.signum(forcedDirection), 0))
+                * Math.signum(forcedDirection));
 
-    // Add the adjustment to force the long path.
     int nLong = nCandidate + adjustment;
     nLong = Math.min(n_max, Math.max(n_min, nLong));
 
