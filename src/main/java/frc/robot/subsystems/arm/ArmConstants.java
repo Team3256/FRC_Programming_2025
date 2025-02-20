@@ -50,6 +50,9 @@ public final class ArmConstants {
 
   public static final Angle homePosition = Rotations.of(.25);
 
+  public static final double safeRightPosition = .37;
+  public static final double safeLeftPosition = .13;
+
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
           .withSlot0(

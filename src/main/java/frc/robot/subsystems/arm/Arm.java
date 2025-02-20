@@ -170,8 +170,8 @@ public class Arm extends DisableSubsystem {
 
   @AutoLogOutput
   public boolean isSafePosition() {
-    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= 0.12
-        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= .37;
+    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= ArmConstants.safeLeftPosition
+        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= ArmConstants.safeRightPosition;
   }
 
   public Command toSourceLevel(BooleanSupplier rightSide) {
@@ -207,6 +207,16 @@ public class Arm extends DisableSubsystem {
   public Command toHome(BooleanSupplier preferRightSide) {
     return this.setPosition(
         () -> ArmConstants.homePosition, true, () -> preferRightSide.getAsBoolean() ? -1 : 1);
+  }
+
+  public Command toSafePosition(BooleanSupplier towardsRight) {
+    return this.setPosition(
+        () ->
+            towardsRight.getAsBoolean()
+                ? ArmConstants.safeRightPosition
+                : ArmConstants.safeLeftPosition,
+        true,
+        () -> towardsRight.getAsBoolean() ? 1 : -1);
   }
 
   public Command off() {
