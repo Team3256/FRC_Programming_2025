@@ -117,9 +117,16 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    m_operatorController.a("hge").onTrue(superstructure.setState(Superstructure.StructureState.L3));
-    m_operatorController.y().onTrue(superstructure.setState(Superstructure.StructureState.L2));
+    m_operatorController
+        .a("hge")
+        .onTrue(superstructure.setState(Superstructure.StructureState.BARGE));
+    m_operatorController
+        .y()
+        .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_ALGAE));
     m_operatorController.povUp().onTrue(superstructure.setState(Superstructure.StructureState.L4));
+    m_operatorController
+        .povDown()
+        .onTrue(superstructure.setState(Superstructure.StructureState.DEALGAE_L2));
     m_operatorController
         .b("a")
         .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));

@@ -113,13 +113,19 @@ public class Superstructure {
         .and(prevStateTriggers.get(StructureState.L4))
         .onTrue(endEffector.setL4Velocity(rightManipulatorSide));
 
-    stateTriggers.get(StructureState.DEALGAE_L2).onTrue(elevator.toDealgaeLevel(0));
+    stateTriggers
+        .get(StructureState.DEALGAE_L2)
+        .onTrue(elevator.toDealgaeLevel(0))
+        .and(elevator.reachedPosition)
+        .onTrue(arm.toDealgaeLevel(0, rightManipulatorSide));
 
-    stateTriggers.get(StructureState.DEALGAE_L3).onTrue(elevator.toDealgaeLevel(1));
+    stateTriggers
+        .get(StructureState.DEALGAE_L3)
+        .onTrue(elevator.toDealgaeLevel(1))
+        .onTrue(arm.toDealgaeLevel(1, rightManipulatorSide));
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
-        .onTrue(arm.toDealgaeLevel(rightManipulatorSide))
         .onTrue(endEffector.setAlgaeIntakeVelocity());
 
     stateTriggers
@@ -129,6 +135,7 @@ public class Superstructure {
         .onTrue(this.setState(StructureState.SOURCE));
     stateTriggers
         .get(StructureState.SOURCE)
+        .and(elevator.isSafeForArm)
         .onTrue(arm.toSourceLevel(rightManipulatorSide))
         .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
         .and(endEffector.beamBreak)
@@ -148,13 +155,11 @@ public class Superstructure {
         .onTrue(endEffector.algaeOff())
         .onTrue(this.setState(StructureState.PREHOME));
 
-    stateTriggers
-        .get(StructureState.PREHOME)
-        .onTrue(endEffector.coralOff())
-        .onTrue(elevator.toArmSafePosition());
+    stateTriggers.get(StructureState.PREHOME).onTrue(endEffector.coralOff());
     stateTriggers
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SOURCE))
+        .onTrue(elevator.toArmSafePosition())
         .and(elevator.isSafeForArm)
         .onTrue(arm.toHome(rightManipulatorSide.negate()))
         .and(arm.isSafePosition)
@@ -162,7 +167,6 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SOURCE).negate())
-        .and(elevator.isSafeForArm)
         .onTrue(arm.toHome())
         .and(arm.isSafePosition)
         .onTrue(this.setState(StructureState.HOME));

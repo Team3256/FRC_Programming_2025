@@ -29,24 +29,24 @@ public final class ArmConstants {
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
-  public static final Angle maxRotations = Rotations.of(3);
+  public static final Angle maxRotations = Rotations.of(2);
 
   public static final Angle[] reefRightPositions = {
-    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(0.32)
+    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(.288)
   };
 
   public static final Angle[] reefLeftPositions = {
     Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.18)
   };
 
-  public static final Angle dealgaeRightPosition = Rotations.of(0.0);
-  public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
+  public static final Angle[] dealgaeRightPosition = {Rotations.of(.43), Rotations.of(.361)};
+  public static final Angle[] dealgaeLeftPosition = {Rotations.of(.07), Rotations.of(.139)};
 
-  public static final Angle sourceRightPositions = Rotations.of(.7);
-  public static final Angle sourceLeftPositions = Rotations.of(.8);
+  public static final Angle sourceRightPositions = Rotations.of(.66);
+  public static final Angle sourceLeftPositions = Rotations.of(.84);
 
-  public static final Angle bargeLeftPosition = Rotations.of(0.32);
-  public static final Angle bargeRightPosition = Rotations.of(0.18);
+  public static final Angle bargeLeftPosition = Rotations.of(.25);
+  public static final Angle bargeRightPosition = Rotations.of(.25);
 
   public static final Angle homePosition = Rotations.of(.25);
 

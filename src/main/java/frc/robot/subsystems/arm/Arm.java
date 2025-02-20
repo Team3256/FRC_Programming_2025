@@ -158,20 +158,20 @@ public class Arm extends DisableSubsystem {
         () -> 0);
   }
 
-  public Command toDealgaeLevel(BooleanSupplier rightSide) {
+  public Command toDealgaeLevel(int level, BooleanSupplier rightSide) {
     return this.setPosition(
         () ->
             rightSide.getAsBoolean()
-                ? ArmConstants.dealgaeRightPosition
-                : ArmConstants.dealgaeLeftPosition,
+                ? ArmConstants.dealgaeRightPosition[level]
+                : ArmConstants.dealgaeLeftPosition[level],
         true,
         () -> 0);
   }
 
   @AutoLogOutput
   public boolean isSafePosition() {
-    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= 0.15
-        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= .35;
+    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= 0.12
+        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= .37;
   }
 
   public Command toSourceLevel(BooleanSupplier rightSide) {

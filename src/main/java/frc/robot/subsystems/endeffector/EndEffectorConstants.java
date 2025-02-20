@@ -20,7 +20,7 @@ public final class EndEffectorConstants {
 
   public static final AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
   public static final AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
-  public static final AngularVelocity l4Velocity = RotationsPerSecond.of(20);
+  public static final AngularVelocity l4Velocity = RotationsPerSecond.of(9);
 
   // algae first then coral
   public static final AngularVelocity sourceVelocity = RotationsPerSecond.of(30);
@@ -35,7 +35,7 @@ public final class EndEffectorConstants {
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
-                  .withInverted(InvertedValue.Clockwise_Positive))
+                  .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicAcceleration(1600)
