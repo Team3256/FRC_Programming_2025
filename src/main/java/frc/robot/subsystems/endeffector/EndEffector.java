@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,8 +36,8 @@ public class EndEffector extends DisableSubsystem {
     Logger.processInputs(this.getClass().getSimpleName(), endEffectorIOInputsAutoLogged);
   }
 
-  public Command setCoralVoltage(double voltage) {
-    return this.run(() -> endEffectorIO.setCoralVoltage(voltage));
+  public Command setCoralVoltage(DoubleSupplier voltage) {
+    return this.run(() -> endEffectorIO.setCoralVoltage(voltage.getAsDouble()));
   }
 
   public Command setCoralVelocity(Supplier<AngularVelocity> velocity) {
@@ -67,12 +68,12 @@ public class EndEffector extends DisableSubsystem {
                 : EndEffectorConstants.l2l3Velocity.times(-1));
   }
 
-  public Command setL4Velocity(BooleanSupplier rightSide) {
-    return setCoralVelocity(
+  public Command setL4Voltage(BooleanSupplier rightSide) {
+    return setCoralVoltage(
         () ->
             rightSide.getAsBoolean()
-                ? EndEffectorConstants.l4Velocity
-                : EndEffectorConstants.l4Velocity.times(-1));
+                ? EndEffectorConstants.l4Voltage
+                : EndEffectorConstants.l4Voltage * -1);
   }
 
   public Command setSourceVelocity(BooleanSupplier rightSide) {

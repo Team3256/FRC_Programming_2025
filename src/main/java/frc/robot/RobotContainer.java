@@ -157,11 +157,11 @@ public class RobotContainer {
         .leftTrigger("Score Algae")
         .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_ALGAE));
 
-    new Trigger(() -> m_operatorController.getLeftY() > .5)
+    new Trigger(() -> -m_operatorController.getLeftY() > .5)
         .onTrue(superstructure.setState(Superstructure.StructureState.BARGE));
-    new Trigger(() -> m_operatorController.getLeftY() < -.5)
+    new Trigger(() -> -m_operatorController.getLeftY() < -.5)
         .onTrue(superstructure.setState(Superstructure.StructureState.PROCESSOR));
-    new Trigger(() -> m_operatorController.getRightY() > .5)
+    new Trigger(() -> -m_operatorController.getRightY() > .5)
         .onTrue(superstructure.setState(Superstructure.StructureState.CLIMB));
   }
 
@@ -338,7 +338,6 @@ public class RobotContainer {
                 .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
     //    m_driverController

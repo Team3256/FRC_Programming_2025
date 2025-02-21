@@ -32,7 +32,7 @@ public class ContinuousWrapTest {
 
     @Test
     public void testSourceRightToSourceLeft() {
-        assertEquals(.84, Arm.continuousWrapAtHome(.84, .66, 1));
+        assertEquals(-.16, Arm.continuousWrapAtHome(.84, -.34, 1));
     }
     @Test
     public void testSourceLeftToSourceRight() {

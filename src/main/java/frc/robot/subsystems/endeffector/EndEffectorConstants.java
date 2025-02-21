@@ -20,7 +20,7 @@ public final class EndEffectorConstants {
 
   public static final AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
   public static final AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
-  public static final AngularVelocity l4Velocity = RotationsPerSecond.of(9);
+  public static final double l4Voltage = 3.522;
 
   // algae first then coral
   public static final AngularVelocity sourceVelocity = RotationsPerSecond.of(30);

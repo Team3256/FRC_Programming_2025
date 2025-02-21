@@ -52,6 +52,7 @@ public class Arm extends DisableSubsystem {
   public final Trigger isSafePosition = new Trigger(this::isSafePosition);
 
   private double cachedArmMotorPosition = 0.0;
+  private int cachedDirection = 0;
   private final MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
@@ -123,11 +124,16 @@ public class Arm extends DisableSubsystem {
   public Command setPosition(Supplier<Angle> position, boolean continuous, IntSupplier direction) {
     return this.run(
             () -> {
+              cachedArmMotorPosition =
+                  direction.getAsInt() == cachedDirection
+                      ? cachedArmMotorPosition
+                      : armIOAutoLogged.armMotorPosition;
               requestedPosition.mut_replace(
                   continuous
                       ? continuousWrapAtHome(position.get(), direction.getAsInt())
                       : position.get());
               armIO.setPosition(requestedPosition);
+              cachedDirection = direction.getAsInt();
             })
         .beforeStarting(() -> cachedArmMotorPosition = armIOAutoLogged.armMotorPosition);
   }
@@ -248,6 +254,16 @@ public class Arm extends DisableSubsystem {
     int nLong = nCandidate + adjustment;
     nLong = Math.min(n_max, Math.max(n_min, nLong));
 
+    System.out.println(
+        "Req "
+            + reqAbsAngle
+            + " Current Angle "
+            + currentAngle
+            + " forced direction "
+            + forcedDirection
+            + " angle "
+            + reqAbsAngle
+            + nLong);
     return reqAbsAngle + nLong;
   }
 }

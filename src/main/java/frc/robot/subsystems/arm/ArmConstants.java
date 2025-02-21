@@ -32,11 +32,11 @@ public final class ArmConstants {
   public static final Angle maxRotations = Rotations.of(2);
 
   public static final Angle[] reefRightPositions = {
-    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(.288)
+    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(.35)
   };
 
   public static final Angle[] reefLeftPositions = {
-    Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.18)
+    Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.15)
   };
 
   public static final Angle[] dealgaeRightPosition = {Rotations.of(.43), Rotations.of(.361)};

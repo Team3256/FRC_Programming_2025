@@ -116,7 +116,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.SCORE_CORAL)
         .and(prevStateTriggers.get(StructureState.L4))
-        .onTrue(endEffector.setL4Velocity(rightManipulatorSide));
+        .onTrue(endEffector.setL4Voltage(rightManipulatorSide));
 
     // Dealgae levels, no safety limits (yet, since they might need to be retuned)
     stateTriggers
@@ -200,6 +200,7 @@ public class Superstructure {
         .get(StructureState.HOME)
         .and(prevStateTriggers.get(StructureState.PREHOME))
         .onTrue(elevator.toHome())
+        .onTrue(arm.toHome())
         .and(arm.reachedPosition.and(elevator.reachedPosition))
         .onTrue(this.setState(StructureState.IDLE));
     //    stateTriggers

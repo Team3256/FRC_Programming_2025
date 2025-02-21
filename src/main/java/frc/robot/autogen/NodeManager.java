@@ -64,7 +64,7 @@ public class NodeManager {
               Commands.waitUntil(elevator.reachedPosition.and(arm.reachedPosition))
                   .andThen(
                       endEffector
-                          .setL4Velocity(() -> true)
+                          .setL4Voltage(() -> true)
                           .until(routine.observe(endEffector.beamBreak))
                           .andThen(arm.toHome().alongWith(elevator.toHome())));
           preloadTraj.done().toggleOnTrue(scoreCmd);
@@ -135,7 +135,7 @@ public class NodeManager {
                   .toggleOnTrue(arm.toReefLevel(2, () -> true).alongWith(elevator.toReefLevel(3)));
               scoreCmd =
                   endEffector
-                      .setL4Velocity(() -> true)
+                      .setL4Voltage(() -> true)
                       .until(endEffector.beamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
