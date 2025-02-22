@@ -253,17 +253,6 @@ public class Arm extends DisableSubsystem {
 
     int nLong = nCandidate + adjustment;
     nLong = Math.min(n_max, Math.max(n_min, nLong));
-
-    System.out.println(
-        "Req "
-            + reqAbsAngle
-            + " Current Angle "
-            + currentAngle
-            + " forced direction "
-            + forcedDirection
-            + " angle "
-            + reqAbsAngle
-            + nLong);
     return reqAbsAngle + nLong;
   }
 }

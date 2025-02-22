@@ -46,7 +46,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.FeatureFlags;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -226,7 +225,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configurePathPlanner();
-    questNav.resetPose();
+    questNav.resetPose(
+        new Pose3d(
+            new Translation3d(0.40679097175598145, 6.375413417816162, 0),
+            new Rotation3d(new Rotation2d())));
     // resetPoseAndQuest(new Pose2d());
   }
 
@@ -295,33 +297,39 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command repulsorCommand(Supplier<Pose2d> target) {
-    if (!FeatureFlags.kAutoAlignEnabled) {
-      System.out.println("**** repulsorCommand disabled because of kAutoAlignEnabled = false");
-      return Commands.none();
-    }
+    //    if (!FeatureFlags.kAutoAlignEnabled) {
+    //      System.out.println("**** repulsorCommand disabled because of kAutoAlignEnabled =
+    // false");
+    //      return Commands.none();
+    //    }
     return run(
         () -> {
-          m_repulsor.setGoal(target.get().getTranslation());
-          if (this.getState().Pose.getTranslation().getDistance(target.get().getTranslation())
-              < .3) {
-            this.setControl(
-                m_pathApplyFieldSpeeds.withSpeeds(
-                    new ChassisSpeeds(
-                        xController.calculate(this.getState().Pose.getX(), target.get().getX()),
-                        yController.calculate(this.getState().Pose.getY(), target.get().getY()),
-                        headingController.calculate(
-                            this.getState().Pose.getRotation().getRadians(),
-                            target.get().getRotation().getRadians()))));
-          } else {
-            followPathRepulsor(
-                this.getState().Pose,
-                m_repulsor.getCmd(
-                    this.getState().Pose,
-                    this.getState().Speeds,
-                    4.2,
-                    true,
-                    target.get().getRotation()));
-          }
+          Logger.recordOutput("Target", target.get());
+          //          m_repulsor.setGoal(target.get().getTranslation());
+          //          if
+          // (questNav.getRobotPose().get().toPose2d().getTranslation().getDistance(target.get().getTranslation())
+          //              < .3) {
+          //          ;
+          this.setControl(
+              m_pathApplyFieldSpeeds.withSpeeds(
+                  new ChassisSpeeds(
+                      xController.calculate(
+                          questNav.getRobotPose().get().getX(), target.get().getX()),
+                      yController.calculate(
+                          questNav.getRobotPose().get().getY(), target.get().getY()),
+                      headingController.calculate(
+                          questNav.getRobotPose().get().getRotation().toRotation2d().getRadians(),
+                          target.get().getRotation().getRadians()))));
+          //          } else {
+          //            followPathRepulsor(
+          //                    questNav.getRobotPose().get().toPose2d(),
+          //                m_repulsor.getCmd(
+          //                        questNav.getRobotPose().get().toPose2d(),
+          //                    this.getState().Speeds,
+          //                    4,
+          //                    true,
+          //                    target.get().getRotation()));
+          //          }
         });
   }
 
@@ -446,7 +454,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command driveVelocityFieldRelative(Supplier<ChassisSpeeds> speeds) {
-    return this.applyRequest(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds.get()));
+    return this.applyRequest(m_pathApplyFieldSpeeds.withSpeeds(speeds.get()))
+        .alongWith(Commands.print(speeds.get().toString()));
   }
 
   public ChassisSpeeds getVelocityFieldRelative() {

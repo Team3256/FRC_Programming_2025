@@ -59,7 +59,11 @@ public final class EndEffectorConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(60))
+                  .withStatorCurrentLimit(40)
+                  .withSupplyCurrentLimit(60)
+                  .withSupplyCurrentLimitEnable(true)
+                  .withSupplyCurrentLowerTime(1)
+                  .withSupplyCurrentLowerLimit(40))
           .withHardwareLimitSwitch(
               new HardwareLimitSwitchConfigs()
                   .withForwardLimitSource(ForwardLimitSourceValue.RemoteCANdiS1)
