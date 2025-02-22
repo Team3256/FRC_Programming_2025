@@ -82,8 +82,7 @@ public class Superstructure {
   }
 
   public void configStateTransitions() {
-    stateTriggers.get(StructureState.IDLE).onTrue(endEffector.coralOff());
-
+    stateTriggers.get(StructureState.IDLE).onTrue(endEffector.coralOff()).onTrue(elevator.off());
     // Move elevator and reef to L1, no safety limits since arm is still safe
     stateTriggers
         .get(StructureState.L1)
