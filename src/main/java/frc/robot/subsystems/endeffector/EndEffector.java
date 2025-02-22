@@ -88,7 +88,7 @@ public class EndEffector extends DisableSubsystem {
     return setAlgaeVelocity(() -> EndEffectorConstants.algaeIntakeVelocity);
   }
 
-  public Command setAlgaeOuttakeVelocity() {
+  public Command setAlgaeOuttakeVoltage() {
     return setAlgaeVelocity(() -> EndEffectorConstants.algaeOuttakeVelocity);
   }
 

@@ -17,7 +17,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Robot;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.Util;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -85,28 +84,15 @@ public class Elevator extends DisableSubsystem {
 
   // Level must be between 0 to 3
   public Command toReefLevel(int level) {
-    if (Robot.isReal()) {
-      return this.setPosition(ElevatorConstants.kReefPositions[level].in(Rotations));
-    } else {
-      return this.setPosition(
-          ElevatorConstants.SimulationConstants.kReefPositions[level]
-                  .div(ElevatorConstants.SimulationConstants.kDrumRadius)
-                  .magnitude()
-              / (2 * Math.PI));
-    }
+    return this.setPosition(ElevatorConstants.kReefPositions[level].in(Rotations));
   }
 
   public Command toDealgaeLevel(int level) {
-    if (Robot.isReal()) {
-      return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations));
-    } else {
-      return this.setPosition(
-          ElevatorConstants.SimulationConstants.kReefPositions[level]
-                  .div(ElevatorConstants.SimulationConstants.kDrumRadius)
-                  .magnitude()
-              / (2 * Math.PI)
-              * ElevatorConstants.SimulationConstants.kGearRatio);
-    }
+    return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations));
+  }
+
+  public Command toDealgaePrehomeLevel(int level) {
+    return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations) + .5);
   }
 
   public Command toBargePosition() {

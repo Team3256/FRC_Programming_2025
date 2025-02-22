@@ -96,12 +96,16 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.L2)
         .or(stateTriggers.get(StructureState.L3))
+        .and(elevator.reachedPosition)
+        .debounce(.025)
         .onTrue(arm.toReefLevel(1, rightManipulatorSide));
 
     // L4 reef level, no safety limits
     stateTriggers
         .get(StructureState.L4)
         .onTrue(elevator.toReefLevel(3))
+        .and(elevator.reachedPosition)
+        .debounce(.025)
         .onTrue(arm.toReefLevel(2, rightManipulatorSide));
 
     // Scoring coral, depending on previous state it changes endEffector velocity
@@ -163,10 +167,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.SCORE_ALGAE)
         .and(prevStateTriggers.get(StructureState.BARGE))
-        .onTrue(endEffector.setAlgaeOuttakeVelocity())
-        .debounce(1)
-        .onTrue(endEffector.algaeOff())
-        .onTrue(this.setState(StructureState.PREHOME));
+        .onTrue(endEffector.setAlgaeOuttakeVoltage());
 
     // Turn coral motor off (helpful for transitioning from SCORE_CORAL), do not turn algae motor
     // off since you might be holding one
@@ -183,11 +184,37 @@ public class Superstructure {
         .and(arm.isSafePosition)
         .onTrue(this.setState(StructureState.HOME));
 
+    stateTriggers
+        .get(StructureState.PREHOME)
+        .and(prevStateTriggers.get(StructureState.DEALGAE_L2))
+        .onTrue(arm.toHome())
+        .onTrue(elevator.toDealgaePrehomeLevel(0))
+        .and(arm.isSafePosition)
+        .and(elevator.reachedPosition)
+        .debounce(.025)
+        .onTrue(this.setState(StructureState.HOME));
+    stateTriggers
+        .get(StructureState.PREHOME)
+        .and(prevStateTriggers.get(StructureState.DEALGAE_L3))
+        .onTrue(arm.toHome())
+        .onTrue(elevator.toDealgaePrehomeLevel(1))
+        .and(arm.isSafePosition)
+        .and(elevator.reachedPosition)
+        .debounce(.025)
+        .onTrue(this.setState(StructureState.HOME));
+
+    stateTriggers
+        .get(StructureState.PREHOME)
+        .and(prevStateTriggers.get(StructureState.SCORE_ALGAE))
+        .onTrue(endEffector.algaeOff());
+
     // Since everything else is non-source and arm doesn't need to be towards the bellypan, you can
     // assume that moving the arm towards home is safe and that you don't need to move the elevator.
     stateTriggers
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SOURCE).negate())
+        .and(prevStateTriggers.get(StructureState.DEALGAE_L2).negate())
+        .and(prevStateTriggers.get(StructureState.DEALGAE_L3).negate())
         .onTrue(arm.toHome())
         .and(arm.isSafePosition)
         .onTrue(this.setState(StructureState.HOME));

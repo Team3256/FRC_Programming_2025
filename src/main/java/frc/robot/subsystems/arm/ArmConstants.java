@@ -45,8 +45,8 @@ public final class ArmConstants {
   public static final Angle sourceRightPositions = Rotations.of(.66);
   public static final Angle sourceLeftPositions = Rotations.of(.84);
 
-  public static final Angle bargeLeftPosition = Rotations.of(.25);
-  public static final Angle bargeRightPosition = Rotations.of(.25);
+  public static final Angle bargeLeftPosition = Rotations.of(.33);
+  public static final Angle bargeRightPosition = Rotations.of(.17);
 
   public static final Angle homePosition = Rotations.of(.25);
 

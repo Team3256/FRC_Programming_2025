@@ -26,7 +26,7 @@ public final class EndEffectorConstants {
   public static final AngularVelocity sourceVelocity = RotationsPerSecond.of(30);
 
   public static final AngularVelocity algaeIntakeVelocity = RotationsPerSecond.of(50);
-  public static final AngularVelocity algaeOuttakeVelocity = RotationsPerSecond.of(-50);
+  public static final AngularVelocity algaeOuttakeVelocity = RotationsPerSecond.of(-100);
 
   public static TalonFXConfiguration algaeMotorConfigs =
       new TalonFXConfiguration()
@@ -63,13 +63,7 @@ public final class EndEffectorConstants {
                   .withSupplyCurrentLimit(60)
                   .withSupplyCurrentLimitEnable(true)
                   .withSupplyCurrentLowerTime(1)
-                  .withSupplyCurrentLowerLimit(40))
-          .withHardwareLimitSwitch(
-              new HardwareLimitSwitchConfigs()
-                  .withForwardLimitSource(ForwardLimitSourceValue.RemoteCANdiS1)
-                  .withReverseLimitSource(ReverseLimitSourceValue.RemoteCANdiS2)
-                  .withForwardLimitEnable(false)
-                  .withReverseLimitEnable(false));
+                  .withSupplyCurrentLowerLimit(40));
 
   public static final CANdiConfiguration canDiConfigs =
       new CANdiConfiguration()
