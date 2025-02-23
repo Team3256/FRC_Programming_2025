@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotController;
@@ -41,7 +42,8 @@ public class Robot extends LoggedRobot {
   public Robot() {
     super();
     RobotController.setBrownoutVoltage(4.75);
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     if (Constants.FeatureFlags.kAdvKitEnabled) {
@@ -146,9 +148,12 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled
+    // commands, running already-scheduled commands, removing finished or
+    // interrupted commands,
+    // and running subsystem periodic() methods. This must be called from the
+    // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     m_robotContainer.periodic();
@@ -177,6 +182,16 @@ public class Robot extends LoggedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    }
+  }
+
+  @Override
+  public void teleopExit() {
+    super.teleopExit();
+    if (!DriverStation.isFMSAttached()) {
+      // Ensures that enabling after a disable doesn't cause the superstructure to
+      // move.
+      m_robotContainer.superstructureForceIdle();
     }
   }
 

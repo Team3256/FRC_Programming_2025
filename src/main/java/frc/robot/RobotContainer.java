@@ -30,6 +30,7 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
@@ -415,6 +416,10 @@ public class RobotContainer {
                         })));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public void superstructureForceIdle() {
+    superstructure.setState(StructureState.IDLE);
   }
 
   public void periodic() {
