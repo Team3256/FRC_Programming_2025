@@ -199,27 +199,28 @@ public class RobotContainer {
         () -> drivetrain.sysIdRotationQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addCmd("Start Signal Logger", () -> Commands.runOnce(SignalLogger::start));
     autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
-    //    SmartDashboard.updateValues();
+    // SmartDashboard.updateValues();
     // Put the auto chooser on the dashboard
-    //    NodeManager nodeManager =
-    //        new NodeManager(drivetrain, , drivetrain.createAutoFactory(drivetrain::trajLogger));
-    //    ArrayList<Node> nodes = new ArrayList<>();
-    //    nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H,
+    // NodeManager nodeManager =
+    // new NodeManager(drivetrain, ,
+    // drivetrain.createAutoFactory(drivetrain::trajLogger));
+    // ArrayList<Node> nodes = new ArrayList<>();
+    // nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H,
     // ScoringTypes.L1));
-    //    nodes.add(
-    //        new Node(
-    //            NodeType.SCORE_AND_INTAKE,
-    //            IntakeLocations.Source2,
-    //            ScoringLocations.A,
-    //            ScoringTypes.L1));
-    //    nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
-    //    nodes.add(
-    //        new Node(
-    //            NodeType.SCORE_AND_INTAKE,
-    //            IntakeLocations.Source2,
-    //            ScoringLocations.B,
-    //            ScoringTypes.L1));
-    //    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
+    // nodes.add(
+    // new Node(
+    // NodeType.SCORE_AND_INTAKE,
+    // IntakeLocations.Source2,
+    // ScoringLocations.A,
+    // ScoringTypes.L1));
+    // nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
+    // nodes.add(
+    // new Node(
+    // NodeType.SCORE_AND_INTAKE,
+    // IntakeLocations.Source2,
+    // ScoringLocations.B,
+    // ScoringTypes.L1));
+    // autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
 
     SmartDashboard.putData("auto chooser", autoChooser);
 
@@ -266,10 +267,10 @@ public class RobotContainer {
               () ->
                   drive
                       .withVelocityX(
-                          -m_driverController.getLeftY()
+                          m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
-                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
+                      .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
 
     m_driverController
@@ -365,7 +366,8 @@ public class RobotContainer {
                         () ->
                             AutoAim.isInToleranceCoral(
                                 drivetrain.getState()
-                                    .Pose)) // Additionally, once we're in tolerance, rumble
+                                    .Pose)) // Additionally, once we're in tolerance,
+                    // rumble
                     // controller
                     .andThen(
                         () -> {
@@ -380,17 +382,29 @@ public class RobotContainer {
     m_driverController
         .povRight()
         .whileTrue(
-            Commands.parallel(
-                Commands.either(
+            Commands.parallel( // Both run AutoAlign & check tolerance
+                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto
                     drivetrain.repulsorCommand(
-                        () -> new Pose2d(3.127164363861084, 4.170262336730957, new Rotation2d(0))),
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, false);
+                        }),
                     AutoAim.translateToPose(
                         drivetrain,
-                        () -> new Pose2d(3.127164363861084, 4.170262336730957, new Rotation2d(0))),
+                        () -> {
+                          return CoralTargets.getHandedClosestTarget(
+                              drivetrain.getState().Pose, false);
+                        }),
                     () -> {
                       return FeatureFlags.kAutoAlignPreferRepulsorPF;
                     }),
-                Commands.waitUntil(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose))
+                Commands.waitUntil(
+                        () ->
+                            AutoAim.isInToleranceCoral(
+                                drivetrain.getState()
+                                    .Pose)) // Additionally, once we're in tolerance,
+                    // rumble
+                    // controller
                     .andThen(
                         () -> {
                           m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
@@ -418,6 +432,18 @@ public class RobotContainer {
 
     Logger.recordOutput(
         "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
+    Logger.recordOutput(
+        "AutoAim/LeftHandedCoralTarget",
+        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
+    Logger.recordOutput(
+        "AutoAim/RightHandedCoralTarget",
+        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
+    Logger.recordOutput(
+        "AutoAim/NameOfLHCoralTarget",
+        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());
+    Logger.recordOutput(
+        "AutoAim/NameOfRHCoralTarget",
+        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, false).name());
     Logger.recordOutput(
         "AutoAim/AlgaeIntakeTarget",
         AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));

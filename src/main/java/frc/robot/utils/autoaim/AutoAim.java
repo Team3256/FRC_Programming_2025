@@ -51,20 +51,20 @@ public class AutoAim {
     final ProfiledPIDController headingController =
         // This PID is basically the same as the PID for azimuth's HEADING_CONTROLLER.
         new ProfiledPIDController(
-            6,
+            100,
             0.0,
             0.0,
             new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCELERATION));
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     final ProfiledPIDController vxController =
         new ProfiledPIDController(
-            6.0,
+            100,
             0.01,
             0.0,
             new TrapezoidProfile.Constraints(MAX_AUTOAIM_SPEED, MAX_AUTOAIM_ACCELERATION));
     final ProfiledPIDController vyController =
         new ProfiledPIDController(
-            6.0,
+            100,
             0.01,
             0.0,
             new TrapezoidProfile.Constraints(MAX_AUTOAIM_SPEED, MAX_AUTOAIM_ACCELERATION));
@@ -122,67 +122,70 @@ public class AutoAim {
   }
 
   /*
-   * 8033 exclusively uses this to score in Barge. Commented out because may be useful later (?)
+   * 8033 exclusively uses this to score in Barge. Commented out because may be
+   * useful later (?)
    */
-  //   public static Command translateToXCoord(
-  //       SwerveSubsystem swerve,
-  //       DoubleSupplier x,
-  //       DoubleSupplier yVel,
-  //       Supplier<Rotation2d> headingTarget) {
-  //     // This feels like a horrible way of getting around lambda final requirements
-  //     // Is there a cleaner way of doing this?
-  //     // The y of this isn't used
-  //     final Pose2d cachedTarget[] = {new Pose2d()};
-  //     final ProfiledPIDController headingController =
-  //         // assume we can accelerate to max in 2/3 of a second
-  //         new ProfiledPIDController(
-  //             Robot.ROBOT_HARDWARE.swerveConstants.getHeadingVelocityKP(),
-  //             0.0,
-  //             0.0,
-  //             new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED, MAX_ANGULAR_ACCELERATION));
-  //     headingController.enableContinuousInput(-Math.PI, Math.PI);
-  //     final ProfiledPIDController vxController =
-  //         new ProfiledPIDController(
-  //             6.0,
-  //             0.0,
-  //             0.0,
-  //             new TrapezoidProfile.Constraints(MAX_AUTOAIM_SPEED, MAX_AUTOAIM_ACCELERATION));
-  //     return Commands.runOnce(
-  //             () -> {
-  //               cachedTarget[0] = new Pose2d(x.getAsDouble(), 0, headingTarget.get());
-  //               Logger.recordOutput("AutoAim/Cached Target", cachedTarget[0]);
-  //               headingController.reset(swerve.getPose().getRotation().getRadians(), 0.0);
-  //               vxController.reset(swerve.getPose().getX(), 0.0);
-  //             })
-  //         .andThen(
-  //             swerve.driveVelocityFieldRelative(
-  //                 () -> {
-  //                   final var diff = swerve.getPose().minus(cachedTarget[0]);
-  //                   final var speeds =
-  //                       MathUtil.isNear(0.0, diff.getX(), Units.inchesToMeters(0.25))
-  //                               && MathUtil.isNear(0.0, diff.getY(), Units.inchesToMeters(0.25))
-  //                               && MathUtil.isNear(0.0, diff.getRotation().getDegrees(), 0.5)
-  //                           ? new ChassisSpeeds()
-  //                           : new ChassisSpeeds(
-  //                               vxController.calculate(
-  //                                       swerve.getPose().getX(), cachedTarget[0].getX())
-  //                                   + vxController.getSetpoint().velocity,
-  //                               // Use the inputted y velocity target
-  //                               yVel.getAsDouble(),
-  //                               headingController.calculate(
-  //                                       swerve.getPose().getRotation().getRadians(),
-  //                                       cachedTarget[0].getRotation().getRadians())
-  //                                   + headingController.getSetpoint().velocity);
-  //                   Logger.recordOutput(
-  //                       "AutoAim/Target Pose",
-  //                       new Pose2d(
-  //                           vxController.getSetpoint().position,
-  //                           0,
-  //                           Rotation2d.fromRadians(headingController.getSetpoint().position)));
-  //                   Logger.recordOutput("AutoAim/Target Speeds", speeds);
-  //                   return speeds;
-  //                 }));
-  //   }
+  // public static Command translateToXCoord(
+  // SwerveSubsystem swerve,
+  // DoubleSupplier x,
+  // DoubleSupplier yVel,
+  // Supplier<Rotation2d> headingTarget) {
+  // // This feels like a horrible way of getting around lambda final requirements
+  // // Is there a cleaner way of doing this?
+  // // The y of this isn't used
+  // final Pose2d cachedTarget[] = {new Pose2d()};
+  // final ProfiledPIDController headingController =
+  // // assume we can accelerate to max in 2/3 of a second
+  // new ProfiledPIDController(
+  // Robot.ROBOT_HARDWARE.swerveConstants.getHeadingVelocityKP(),
+  // 0.0,
+  // 0.0,
+  // new TrapezoidProfile.Constraints(MAX_ANGULAR_SPEED,
+  // MAX_ANGULAR_ACCELERATION));
+  // headingController.enableContinuousInput(-Math.PI, Math.PI);
+  // final ProfiledPIDController vxController =
+  // new ProfiledPIDController(
+  // 6.0,
+  // 0.0,
+  // 0.0,
+  // new TrapezoidProfile.Constraints(MAX_AUTOAIM_SPEED,
+  // MAX_AUTOAIM_ACCELERATION));
+  // return Commands.runOnce(
+  // () -> {
+  // cachedTarget[0] = new Pose2d(x.getAsDouble(), 0, headingTarget.get());
+  // Logger.recordOutput("AutoAim/Cached Target", cachedTarget[0]);
+  // headingController.reset(swerve.getPose().getRotation().getRadians(), 0.0);
+  // vxController.reset(swerve.getPose().getX(), 0.0);
+  // })
+  // .andThen(
+  // swerve.driveVelocityFieldRelative(
+  // () -> {
+  // final var diff = swerve.getPose().minus(cachedTarget[0]);
+  // final var speeds =
+  // MathUtil.isNear(0.0, diff.getX(), Units.inchesToMeters(0.25))
+  // && MathUtil.isNear(0.0, diff.getY(), Units.inchesToMeters(0.25))
+  // && MathUtil.isNear(0.0, diff.getRotation().getDegrees(), 0.5)
+  // ? new ChassisSpeeds()
+  // : new ChassisSpeeds(
+  // vxController.calculate(
+  // swerve.getPose().getX(), cachedTarget[0].getX())
+  // + vxController.getSetpoint().velocity,
+  // // Use the inputted y velocity target
+  // yVel.getAsDouble(),
+  // headingController.calculate(
+  // swerve.getPose().getRotation().getRadians(),
+  // cachedTarget[0].getRotation().getRadians())
+  // + headingController.getSetpoint().velocity);
+  // Logger.recordOutput(
+  // "AutoAim/Target Pose",
+  // new Pose2d(
+  // vxController.getSetpoint().position,
+  // 0,
+  // Rotation2d.fromRadians(headingController.getSetpoint().position)));
+  // Logger.recordOutput("AutoAim/Target Speeds", speeds);
+  // return speeds;
+  // }));
+  // }
 
   public static boolean isInToleranceCoral(Pose2d pose) {
     final var diff = pose.minus(CoralTargets.getClosestTarget(pose));

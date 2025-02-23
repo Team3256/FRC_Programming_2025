@@ -46,6 +46,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Robot;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -297,40 +298,63 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command repulsorCommand(Supplier<Pose2d> target) {
-    //    if (!FeatureFlags.kAutoAlignEnabled) {
-    //      System.out.println("**** repulsorCommand disabled because of kAutoAlignEnabled =
+    if (target == null) {
+      System.out.println("**** repulsorCommand disabled because of null target");
+      return Commands.none();
+    }
+    // if (!FeatureFlags.kAutoAlignEnabled) {
+    // System.out.println("**** repulsorCommand disabled because of
+    // kAutoAlignEnabled =
     // false");
-    //      return Commands.none();
-    //    }
-    return run(
-        () -> {
-          Logger.recordOutput("Target", target.get());
-          //          m_repulsor.setGoal(target.get().getTranslation());
-          //          if
+    // return Commands.none();
+    // }
+    return run(() -> {
+          Logger.recordOutput("Repuslor/RepulsorTarget", target.get());
+          Logger.recordOutput("Repuslor/Setpoint", targetPose());
+          Logger.recordOutput("Repuslor/RobotPose", this.getState().Pose);
+          Logger.recordOutput("Repuslor/Speeds", this.getState().Speeds);
+          Logger.recordOutput("Repuslor/Running", true);
+          // m_repulsor.setGoal(target.get().getTranslation());
+          // if
           // (questNav.getRobotPose().get().toPose2d().getTranslation().getDistance(target.get().getTranslation())
-          //              < .3) {
-          //          ;
-          this.setControl(
-              m_pathApplyFieldSpeeds.withSpeeds(
-                  new ChassisSpeeds(
-                      xController.calculate(
-                          questNav.getRobotPose().get().getX(), target.get().getX()),
-                      yController.calculate(
-                          questNav.getRobotPose().get().getY(), target.get().getY()),
-                      headingController.calculate(
-                          questNav.getRobotPose().get().getRotation().toRotation2d().getRadians(),
-                          target.get().getRotation().getRadians()))));
-          //          } else {
-          //            followPathRepulsor(
-          //                    questNav.getRobotPose().get().toPose2d(),
-          //                m_repulsor.getCmd(
-          //                        questNav.getRobotPose().get().toPose2d(),
-          //                    this.getState().Speeds,
-          //                    4,
-          //                    true,
-          //                    target.get().getRotation()));
-          //          }
-        });
+          // < .3) {
+          // ;\
+          if (Robot.isReal()) {
+            this.setControl(
+                m_pathApplyFieldSpeeds.withSpeeds(
+                    new ChassisSpeeds(
+                        xController.calculate(
+                            questNav.getRobotPose().get().getX(), target.get().getX()),
+                        yController.calculate(
+                            questNav.getRobotPose().get().getY(), target.get().getY()),
+                        headingController.calculate(
+                            questNav.getRobotPose().get().getRotation().toRotation2d().getRadians(),
+                            target.get().getRotation().getRadians()))));
+          } else {
+            this.setControl(
+                m_pathApplyFieldSpeeds.withSpeeds(
+                    new ChassisSpeeds(
+                        xController.calculate(this.getState().Pose.getX(), target.get().getX()),
+                        yController.calculate(this.getState().Pose.getY(), target.get().getY()),
+                        headingController.calculate(
+                            this.getState().Pose.getRotation().getRadians(),
+                            target.get().getRotation().getRadians()))));
+          }
+          // } else {
+          // followPathRepulsor(
+          // questNav.getRobotPose().get().toPose2d(),
+          // m_repulsor.getCmd(
+          // questNav.getRobotPose().get().toPose2d(),
+          // this.getState().Speeds,
+          // 4,
+          // true,
+          // target.get().getRotation()));
+          // }
+        })
+        .andThen(
+            () -> {
+              Logger.recordOutput("Repuslor/Running", false);
+            });
   }
 
   /**
@@ -360,7 +384,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public void resetPoseAndQuest(Pose2d pose) {
     System.out.println("**reset pose and quest called");
     super.resetPose(pose);
-    //    questNav.resetPose(pose);
+    // questNav.resetPose(pose);
   }
 
   public void followPathRepulsor(Pose2d pose, SwerveSample sample) {

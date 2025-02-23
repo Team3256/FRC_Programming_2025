@@ -101,7 +101,7 @@ public final class Constants {
    */
 
   public static class RobotConstants {
-    public static final int bumperLength = 22; // should be right?
-    public static final int bumperWidth = 22;
+    public static final double bumperLength = 0.1; // should be right?
+    public static final double bumperWidth = 22;
   }
 }
