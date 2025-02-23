@@ -56,20 +56,25 @@ public enum CoralTargets {
     this.leftHanded = leftHanded;
   }
 
-  private static final List<Pose2d> transformedPoses =
-      Arrays.stream(values())
-          .map(
-              (CoralTargets targets) -> {
-                return CoralTargets.getRobotTargetLocation(targets.location);
-              })
-          .toList();
+  private static final List<Pose2d> transformedPoses = Arrays.stream(values())
+      .map(
+          (CoralTargets targets) -> {
+            return CoralTargets.getRobotTargetLocation(targets.location);
+          })
+      .toList();
 
   public static Pose2d getRobotTargetLocation(Pose2d original) {
     // return original.transformBy();
     // 0.248 for trough
+    // tested values
+    // 0.291
+    // 0.3955 ((0.291 + 0.5) / 2)
+    // 0.4705 ((0.291 + 0.65) / 2)
+    // 3.625 is bumper length
+    // maybe add a bit more to account for robot not aligning perfectly
     return original.transformBy(
         new Transform2d(
-            0.291 + Units.inchesToMeters(3.625), // TODO: TUNE This!!
+            0.4705 + Units.inchesToMeters(3.625) + 0.25, // TODO: TUNE This!!
             0,
             Rotation2d.fromDegrees(180.0)));
   }
@@ -100,10 +105,9 @@ public enum CoralTargets {
         .filter((target) -> target.leftHanded == leftHanded)
         .min(
             Comparator.comparingDouble(
-                (CoralTargets target) ->
-                    pose.getTranslation()
-                        .getDistance(
-                            CoralTargets.getRobotTargetLocation(target.location).getTranslation())))
+                (CoralTargets target) -> pose.getTranslation()
+                    .getDistance(
+                        CoralTargets.getRobotTargetLocation(target.location).getTranslation())))
         .get();
   }
 }
