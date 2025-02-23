@@ -56,12 +56,13 @@ public enum CoralTargets {
     this.leftHanded = leftHanded;
   }
 
-  private static final List<Pose2d> transformedPoses = Arrays.stream(values())
-      .map(
-          (CoralTargets targets) -> {
-            return CoralTargets.getRobotTargetLocation(targets.location);
-          })
-      .toList();
+  private static final List<Pose2d> transformedPoses =
+      Arrays.stream(values())
+          .map(
+              (CoralTargets targets) -> {
+                return CoralTargets.getRobotTargetLocation(targets.location);
+              })
+          .toList();
 
   public static Pose2d getRobotTargetLocation(Pose2d original) {
     // return original.transformBy();
@@ -105,9 +106,10 @@ public enum CoralTargets {
         .filter((target) -> target.leftHanded == leftHanded)
         .min(
             Comparator.comparingDouble(
-                (CoralTargets target) -> pose.getTranslation()
-                    .getDistance(
-                        CoralTargets.getRobotTargetLocation(target.location).getTranslation())))
+                (CoralTargets target) ->
+                    pose.getTranslation()
+                        .getDistance(
+                            CoralTargets.getRobotTargetLocation(target.location).getTranslation())))
         .get();
   }
 }
