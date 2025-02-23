@@ -20,7 +20,7 @@ import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.PhoenixUtil;
 
 public class EndEffectorIOTalonFX implements EndEffectorIO {
-  private final TalonFX algaeMotor = new TalonFX(EndEffectorConstants.algaeMotorID, "bruh");
+  private final TalonFX algaeMotor = new TalonFX(EndEffectorConstants.algaeMotorID);
 
   private final VelocityVoltage algaeVelocityRequest =
       new VelocityVoltage(0).withSlot(0).withEnableFOC(EndEffectorConstants.kUseFOC);
@@ -33,7 +33,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<Current> algaeMotorStatorCurrent = algaeMotor.getStatorCurrent();
   private final StatusSignal<Current> algaeMotorSupplyCurrent = algaeMotor.getSupplyCurrent();
 
-  private final TalonFX coralMotor = new TalonFX(EndEffectorConstants.coralMotorID, "bruh");
+  private final TalonFX coralMotor = new TalonFX(EndEffectorConstants.coralMotorID);
   final VelocityVoltage coralVelocityRequest =
       new VelocityVoltage(0).withSlot(0).withEnableFOC(EndEffectorConstants.kUseFOC);
 
@@ -45,7 +45,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<Current> coralMotorStatorCurrent = coralMotor.getStatorCurrent();
   private final StatusSignal<Current> coralMotorSupplyCurrent = coralMotor.getSupplyCurrent();
 
-  private final CANdi candi = new CANdi(EndEffectorConstants.candiID, "bruh");
+  private final CANdi candi = new CANdi(EndEffectorConstants.candiID);
 
   private final StatusSignal<Boolean> beamBreak = candi.getS1Closed();
 

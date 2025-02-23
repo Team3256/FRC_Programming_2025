@@ -20,7 +20,7 @@ public final class EndEffectorConstants {
 
   public static final AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
   public static final AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
-  public static final double l4Voltage = 3.522;
+  public static final double l4Voltage = 2.592;
 
   // algae first then coral
   public static final AngularVelocity sourceVelocity = RotationsPerSecond.of(30);
@@ -59,7 +59,7 @@ public final class EndEffectorConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(40)
+                  .withStatorCurrentLimit(80)
                   .withSupplyCurrentLimit(60)
                   .withSupplyCurrentLimitEnable(true)
                   .withSupplyCurrentLowerTime(1)

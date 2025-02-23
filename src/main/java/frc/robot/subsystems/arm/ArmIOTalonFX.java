@@ -25,7 +25,7 @@ import frc.robot.utils.PhoenixUtil;
 
 public class ArmIOTalonFX implements ArmIO {
 
-  private final TalonFX armMotor = new TalonFX(ArmConstants.armMotorId, "bruh");
+  private final TalonFX armMotor = new TalonFX(ArmConstants.armMotorId);
   private final PositionVoltage positionRequest =
       new PositionVoltage(0).withSlot(0).withEnableFOC(ArmConstants.kUseFOC);
   private final MotionMagicVoltage motionMagicRequest =
@@ -38,7 +38,7 @@ public class ArmIOTalonFX implements ArmIO {
   private final StatusSignal<Current> armMotorStatorCurrent = armMotor.getStatorCurrent();
   private final StatusSignal<Current> armMotorSupplyCurrent = armMotor.getSupplyCurrent();
 
-  private final CANcoder cancoder = new CANcoder(ArmConstants.armMotorEncoderId, "bruh");
+  private final CANcoder cancoder = new CANcoder(ArmConstants.armMotorEncoderId);
 
   private final StatusSignal<Angle> cancoderAbsolutePosition = cancoder.getAbsolutePosition();
   private final StatusSignal<Angle> cancoderPosition = cancoder.getPosition();

@@ -92,7 +92,7 @@ public class Elevator extends DisableSubsystem {
   }
 
   public Command toDealgaePrehomeLevel(int level) {
-    return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations) + .5);
+    return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations) + .6);
   }
 
   public Command toBargePosition() {

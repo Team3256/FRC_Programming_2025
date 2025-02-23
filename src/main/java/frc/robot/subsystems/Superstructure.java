@@ -82,7 +82,7 @@ public class Superstructure {
   }
 
   public void configStateTransitions() {
-    stateTriggers.get(StructureState.IDLE).onTrue(endEffector.coralOff()).onTrue(elevator.off());
+    stateTriggers.get(StructureState.IDLE).onTrue(endEffector.coralOff());
     // Move elevator and reef to L1, no safety limits since arm is still safe
     stateTriggers
         .get(StructureState.L1)
@@ -95,16 +95,12 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.L2)
         .or(stateTriggers.get(StructureState.L3))
-        .and(elevator.reachedPosition)
-        .debounce(.025)
         .onTrue(arm.toReefLevel(1, rightManipulatorSide));
 
     // L4 reef level, no safety limits
     stateTriggers
         .get(StructureState.L4)
         .onTrue(elevator.toReefLevel(3))
-        .and(elevator.reachedPosition)
-        .debounce(.025)
         .onTrue(arm.toReefLevel(2, rightManipulatorSide));
 
     // Scoring coral, depending on previous state it changes endEffector velocity
@@ -207,6 +203,14 @@ public class Superstructure {
         .and(prevStateTriggers.get(StructureState.SCORE_ALGAE))
         .onTrue(endEffector.algaeOff());
 
+    stateTriggers
+        .get(StructureState.PREHOME)
+        .and(prevStateTriggers.get(StructureState.SCORE_CORAL))
+        .onTrue(arm.toHome())
+        .and(arm.reachedPosition)
+        .debounce(.025)
+        .onTrue(this.setState(StructureState.HOME));
+
     // Since everything else is non-source and arm doesn't need to be towards the bellypan, you can
     // assume that moving the arm towards home is safe and that you don't need to move the elevator.
     stateTriggers
@@ -214,6 +218,7 @@ public class Superstructure {
         .and(prevStateTriggers.get(StructureState.SOURCE).negate())
         .and(prevStateTriggers.get(StructureState.DEALGAE_L2).negate())
         .and(prevStateTriggers.get(StructureState.DEALGAE_L3).negate())
+        .and(prevStateTriggers.get(StructureState.SCORE_CORAL).negate())
         .onTrue(arm.toHome())
         .and(arm.isSafePosition)
         .onTrue(this.setState(StructureState.HOME));
