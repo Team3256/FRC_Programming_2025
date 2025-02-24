@@ -515,6 +515,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
       // Utils.getCurrentTimeSeconds());
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose().get());
+      Logger.recordOutput(
+          "QuestNav/fixedPose",
+          new Pose2d(
+              questNav.getRobotPose().get().getX(),
+              questNav.getRobotPose().get().getY(),
+              questNav.getRobotPose().get().getRotation().toRotation2d()));
       Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
       Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
     } else {

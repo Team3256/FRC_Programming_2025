@@ -1,0 +1,4 @@
+./gradlew spotlessApply
+git add .
+git commit -m "spotless"
+git push

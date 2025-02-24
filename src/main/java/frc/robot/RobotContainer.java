@@ -441,7 +441,7 @@ public class RobotContainer {
         Stream.of(SourceIntakeTargets.values())
             .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
             .toArray(Pose2d[]::new));
-    
+
     Logger.recordOutput(
         "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
     Logger.recordOutput(
