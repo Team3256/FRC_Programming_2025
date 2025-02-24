@@ -23,7 +23,8 @@
         90,
         88,
         67,
-        86
+        86,
+        -1
       ],
       "povConfig": [
         {
@@ -90,10 +91,6 @@
     }
   ],
   "robotJoysticks": [
-    {
-      "guid": "030000005e040000fd02000003090000",
-      "useGamepad": true
-    },
     {
       "guid": "Keyboard0"
     }

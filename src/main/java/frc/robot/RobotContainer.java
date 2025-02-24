@@ -46,6 +46,7 @@ import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AlgaeIntakeTargets;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
+import frc.robot.utils.autoaim.SourceIntakeTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
 import java.util.stream.Stream;
 import org.littletonrobotics.junction.Logger;
@@ -435,6 +436,12 @@ public class RobotContainer {
             .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
             .toArray(Pose2d[]::new));
 
+    Logger.recordOutput(
+        "AutoAim/Targets/SourceIntakes",
+        Stream.of(SourceIntakeTargets.values())
+            .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
+            .toArray(Pose2d[]::new));
+    
     Logger.recordOutput(
         "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
     Logger.recordOutput(
