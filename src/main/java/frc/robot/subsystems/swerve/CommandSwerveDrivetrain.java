@@ -30,9 +30,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -45,12 +43,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.FeatureFlags;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -193,9 +189,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
-  private final QuestNav questNav = new QuestNav();
+  public final QuestNav questNav =
+      new QuestNav(
+          new Transform3d(
+              new Translation3d(-0.221, 0.314, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
 
-  public RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
+  public final RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
 
   private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
   private int _calculatedOffsetToRobotCenterCount = 0;
@@ -228,6 +227,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configurePathPlanner();
+    questNav.resetPose(
+        new Pose3d(
+            new Translation3d(0.40679097175598145, 6.375413417816162, 0),
+            new Rotation3d(new Rotation2d())));
     // resetPoseAndQuest(new Pose2d());
   }
 
@@ -296,34 +299,67 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command repulsorCommand(Supplier<Pose2d> target) {
-    if (!FeatureFlags.kAutoAlignEnabled) {
-      System.out.println("**** repulsorCommand disabled because of kAutoAlignEnabled = false");
-      return Commands.none();
-    }
-    return run(
-        () -> {
-          m_repulsor.setGoal(target.get().getTranslation());
-          if (this.getState().Pose.getTranslation().getDistance(target.get().getTranslation())
-              < .3) {
-            this.setControl(
-                m_pathApplyFieldSpeeds.withSpeeds(
-                    new ChassisSpeeds(
-                        xController.calculate(this.getState().Pose.getX(), target.get().getX()),
-                        yController.calculate(this.getState().Pose.getY(), target.get().getY()),
-                        headingController.calculate(
-                            this.getState().Pose.getRotation().getRadians(),
-                            target.get().getRotation().getRadians()))));
-          } else {
-            followPathRepulsor(
-                this.getState().Pose,
-                m_repulsor.getCmd(
-                    this.getState().Pose,
-                    this.getState().Speeds,
-                    4.2,
-                    true,
-                    target.get().getRotation()));
-          }
-        });
+    //    if (target == null) {
+    //      System.out.println("**** repulsorCommand disabled because of null target");
+    //      return Commands.none();
+    //    }
+    // if (!FeatureFlags.kAutoAlignEnabled) {
+    // System.out.println("**** repulsorCommand disabled because of
+    // kAutoAlignEnabled =
+    // false");
+    // return Commands.none();
+    // }
+    return run(() -> {
+          Logger.recordOutput("Repuslor/RepulsorTarget", target.get());
+          Logger.recordOutput("Repuslor/Setpoint", targetPose());
+          Logger.recordOutput("Repuslor/RobotPose", this.getState().Pose);
+          Logger.recordOutput("Repuslor/Speeds", this.getState().Speeds);
+          Logger.recordOutput("Repuslor/Running", true);
+          Logger.recordOutput("TargetX", target.get().getX());
+          Logger.recordOutput("TargetY", target.get().getY());
+          // m_repulsor.setGoal(target.get().getTranslation());
+          // if
+          // (questNav.getRobotPose().get().toPose2d().getTranslation().getDistance(target.get().getTranslation())
+          // < .3) {
+          // ;\
+          //          if (Robot.isReal()) {
+          this.setControl(
+              m_pathApplyFieldSpeeds.withSpeeds(
+                  new ChassisSpeeds(
+                      xController.calculate(
+                          questNav.getRobotPose().get().getX(), target.get().getX()),
+                      yController.calculate(
+                          questNav.getRobotPose().get().getY(), target.get().getY()),
+                      headingController.calculate(
+                          questNav.getRobotPose().get().getRotation().toRotation2d().getRadians(),
+                          target.get().getRotation().getRadians()))));
+          //          } else {
+          //            this.setControl(
+          //                m_pathApplyFieldSpeeds.withSpeeds(
+          //                    new ChassisSpeeds(
+          //                        xController.calculate(this.getState().Pose.getX(),
+          // target.get().getX()),
+          //                        yController.calculate(this.getState().Pose.getY(),
+          // target.get().getY()),
+          //                        headingController.calculate(
+          //                            this.getState().Pose.getRotation().getRadians(),
+          //                            target.get().getRotation().getRadians()))));
+          //          }
+          // } else {
+          // followPathRepulsor(
+          // questNav.getRobotPose().get().toPose2d(),
+          // m_repulsor.getCmd(
+          // questNav.getRobotPose().get().toPose2d(),
+          // this.getState().Speeds,
+          // 4,
+          // true,
+          // target.get().getRotation()));
+          // }
+        })
+        .andThen(
+            () -> {
+              Logger.recordOutput("Repuslor/Running", false);
+            });
   }
 
   /**
@@ -351,40 +387,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public void resetPoseAndQuest(Pose2d pose) {
+    System.out.println("**reset pose and quest called");
     super.resetPose(pose);
-    questNav.resetPose(pose);
-  }
-
-  public Command determineOffsetToRobotCenter() {
-    return Commands.repeatingSequence(
-            this.runOnce(
-                    () -> {
-                      this.setControl(
-                          new SwerveRequest.ApplyRobotSpeeds()
-                              .withSpeeds(new ChassisSpeeds(0, 0, .314)));
-                    })
-                .withTimeout(2.0),
-            Commands.runOnce(
-                () -> {
-                  // Update current offset
-                  Translation2d offset =
-                      questNav.calculateOffsetToRobotCenter(this.getState().Pose);
-
-                  _calculatedOffsetToRobotCenter =
-                      _calculatedOffsetToRobotCenter
-                          .times(
-                              (double) _calculatedOffsetToRobotCenterCount
-                                  / (_calculatedOffsetToRobotCenterCount + 1))
-                          .plus(offset.div(_calculatedOffsetToRobotCenterCount + 1));
-                  _calculatedOffsetToRobotCenterCount++;
-
-                  SmartDashboard.putNumberArray(
-                      "Quest Calculated Offset to Robot Center",
-                      new double[] {
-                        _calculatedOffsetToRobotCenter.getX(), _calculatedOffsetToRobotCenter.getY()
-                      });
-                }))
-        .withTimeout(10.0);
+    // questNav.resetPose(pose);
   }
 
   public void followPathRepulsor(Pose2d pose, SwerveSample sample) {
@@ -478,7 +483,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command driveVelocityFieldRelative(Supplier<ChassisSpeeds> speeds) {
-    return this.applyRequest(new SwerveRequest.ApplyFieldSpeeds().withSpeeds(speeds.get()));
+    return this.applyRequest(m_pathApplyFieldSpeeds.withSpeeds(speeds.get()))
+        .alongWith(Commands.print(speeds.get().toString()));
   }
 
   public ChassisSpeeds getVelocityFieldRelative() {
@@ -509,13 +515,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
               });
     }
-    if (!Utils.isSimulation() && questNav.isConnected()) {
+    if (!Utils.isSimulation() && questNav.isActive()) {
       // this.addVisionMeasurement(
       // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
       // Utils.getCurrentTimeSeconds());
-      Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
-      Logger.recordOutput("QuestNav/quaternion", questNav.getQuaternion());
-      Logger.recordOutput("QuestNav/batteryPercent", questNav.getBatteryPercent());
+      Logger.recordOutput("QuestNav/pose", questNav.getRobotPose().get());
+      Logger.recordOutput(
+          "QuestNav/fixedPose",
+          new Pose2d(
+              questNav.getRobotPose().get().getX(),
+              questNav.getRobotPose().get().getY(),
+              questNav.getRobotPose().get().getRotation().toRotation2d()));
+      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
+      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
     } else {
       a_questNavNotConnected.set(true);
     }
@@ -524,8 +536,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Rotation2d getCurrentHeading() {
-    if (!Utils.isSimulation() && questNav.isConnected()) {
-      return this.questNav.getRobotPose().getRotation();
+    if (!Utils.isSimulation() && questNav.isActive()) {
+      return this.questNav.getRotation().toRotation2d();
     } else {
       a_questNavNotConnected.set(true);
       return this.m_pigeon2.getRotation2d();
@@ -533,7 +545,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Pose2d getCurrentPose() {
-    return questNav.getRobotPose();
+    return questNav.getRobotPose().get().toPose2d();
   }
 
   private void configurePathPlanner() {

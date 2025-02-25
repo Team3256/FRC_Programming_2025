@@ -29,23 +29,29 @@ public final class ArmConstants {
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
-  public static final Angle maxRotations = Rotations.of(3);
-
-  public static final Angle[] reefLeftPositions = {
-    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(0.32)
-  };
+  public static final Angle maxRotations = Rotations.of(2);
 
   public static final Angle[] reefRightPositions = {
-    Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.18)
+    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(.343)
   };
 
-  public static final Angle dealgaeRightPosition = Rotations.of(0.0);
-  public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
+  public static final Angle[] reefLeftPositions = {
+    Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.157)
+  };
 
-  public static final Angle sourceLeftPositions = Rotations.of(.8);
-  public static final Angle sourceRightPositions = Rotations.of(.8);
+  public static final Angle[] dealgaeRightPosition = {Rotations.of(.43), Rotations.of(.361)};
+  public static final Angle[] dealgaeLeftPosition = {Rotations.of(.07), Rotations.of(.139)};
+
+  public static final Angle sourceRightPositions = Rotations.of(.66);
+  public static final Angle sourceLeftPositions = Rotations.of(.84);
+
+  public static final Angle bargeLeftPosition = Rotations.of(.17);
+  public static final Angle bargeRightPosition = Rotations.of(.33);
 
   public static final Angle homePosition = Rotations.of(.25);
+
+  public static final double safeRightPosition = .37;
+  public static final double safeLeftPosition = .13;
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
@@ -65,7 +71,8 @@ public final class ArmConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(2)
+                  .withMotionMagicJerk(16)
+                  .withMotionMagicAcceleration(4.5)
                   .withMotionMagicCruiseVelocity(.7))
           .withCurrentLimits(
               new CurrentLimitsConfigs()

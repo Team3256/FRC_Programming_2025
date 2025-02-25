@@ -83,7 +83,6 @@ public class ArmIOTalonFX implements ArmIO {
     inputs.armMotorPosition = armMotorPosition.getValue().in(Rotations);
     inputs.armMotorStatorCurrent = armMotorStatorCurrent.getValue().in(Amps);
     inputs.armMotorSupplyCurrent = armMotorSupplyCurrent.getValue().in(Amps);
-
     inputs.armEncoderPosition = cancoderPosition.getValue().in(Rotations);
     inputs.armEncoderVelocity = cancoderVelocity.getValue().in(RotationsPerSecond);
     inputs.armEncoderAbsolutePosition = cancoderAbsolutePosition.getValue().in(Rotations);
