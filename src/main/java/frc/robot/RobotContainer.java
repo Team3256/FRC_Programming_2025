@@ -269,10 +269,10 @@ public class RobotContainer {
               () ->
                   drive
                       .withVelocityX(
-                          m_driverController.getLeftY()
+                          -m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
-                      .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
-                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
+                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
 
     m_driverController
@@ -353,13 +353,13 @@ public class RobotContainer {
                     drivetrain.repulsorCommand(
                         () -> {
                           return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, true);
+                              drivetrain.questNav.getRobotPose().get().toPose2d(), true);
                         }),
                     AutoAim.translateToPose(
                         drivetrain,
                         () -> {
                           return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, true);
+                              drivetrain.questNav.getRobotPose().get().toPose2d(), true);
                         }),
                     () -> {
                       return FeatureFlags.kAutoAlignPreferRepulsorPF;
@@ -367,8 +367,11 @@ public class RobotContainer {
                 Commands.waitUntil(
                         () ->
                             AutoAim.isInToleranceCoral(
-                                drivetrain.getState()
-                                    .Pose)) // Additionally, once we're in tolerance,
+                                drivetrain
+                                    .questNav
+                                    .getRobotPose()
+                                    .get()
+                                    .toPose2d())) // Additionally, once we're in tolerance,
                     // rumble
                     // controller
                     .andThen(
@@ -389,13 +392,13 @@ public class RobotContainer {
                     drivetrain.repulsorCommand(
                         () -> {
                           return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, false);
+                              drivetrain.questNav.getRobotPose().get().toPose2d(), false);
                         }),
                     AutoAim.translateToPose(
                         drivetrain,
                         () -> {
                           return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, false);
+                              drivetrain.questNav.getRobotPose().get().toPose2d(), false);
                         }),
                     () -> {
                       return FeatureFlags.kAutoAlignPreferRepulsorPF;
@@ -403,8 +406,11 @@ public class RobotContainer {
                 Commands.waitUntil(
                         () ->
                             AutoAim.isInToleranceCoral(
-                                drivetrain.getState()
-                                    .Pose)) // Additionally, once we're in tolerance,
+                                drivetrain
+                                    .questNav
+                                    .getRobotPose()
+                                    .get()
+                                    .toPose2d())) // Additionally, once we're in tolerance,
                     // rumble
                     // controller
                     .andThen(
@@ -446,19 +452,25 @@ public class RobotContainer {
         "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
     Logger.recordOutput(
         "AutoAim/LeftHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
+        CoralTargets.getHandedClosestTarget(
+            drivetrain.questNav.getRobotPose().get().toPose2d(), true));
     Logger.recordOutput(
         "AutoAim/RightHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
+        CoralTargets.getHandedClosestTarget(
+            drivetrain.questNav.getRobotPose().get().toPose2d(), false));
     Logger.recordOutput(
         "AutoAim/NameOfLHCoralTarget",
-        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());
+        CoralTargets.getHandedClosestTargetE(
+                drivetrain.questNav.getRobotPose().get().toPose2d(), true)
+            .name());
     Logger.recordOutput(
         "AutoAim/NameOfRHCoralTarget",
-        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, false).name());
+        CoralTargets.getHandedClosestTargetE(
+                drivetrain.questNav.getRobotPose().get().toPose2d(), false)
+            .name());
     Logger.recordOutput(
         "AutoAim/AlgaeIntakeTarget",
-        AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+        AlgaeIntakeTargets.getClosestTarget(drivetrain.questNav.getRobotPose().get().toPose2d()));
     superstructure.periodic();
   }
 }

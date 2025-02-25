@@ -46,7 +46,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Robot;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -188,7 +187,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   /* The SysId routine to test */
   private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
 
-  private final QuestNav questNav =
+  public final QuestNav questNav =
       new QuestNav(
           new Transform3d(
               new Translation3d(-0.221, 0.314, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
@@ -298,10 +297,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command repulsorCommand(Supplier<Pose2d> target) {
-    if (target == null) {
-      System.out.println("**** repulsorCommand disabled because of null target");
-      return Commands.none();
-    }
+    //    if (target == null) {
+    //      System.out.println("**** repulsorCommand disabled because of null target");
+    //      return Commands.none();
+    //    }
     // if (!FeatureFlags.kAutoAlignEnabled) {
     // System.out.println("**** repulsorCommand disabled because of
     // kAutoAlignEnabled =
@@ -314,32 +313,36 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           Logger.recordOutput("Repuslor/RobotPose", this.getState().Pose);
           Logger.recordOutput("Repuslor/Speeds", this.getState().Speeds);
           Logger.recordOutput("Repuslor/Running", true);
+          Logger.recordOutput("TargetX", target.get().getX());
+          Logger.recordOutput("TargetY", target.get().getY());
           // m_repulsor.setGoal(target.get().getTranslation());
           // if
           // (questNav.getRobotPose().get().toPose2d().getTranslation().getDistance(target.get().getTranslation())
           // < .3) {
           // ;\
-          if (Robot.isReal()) {
-            this.setControl(
-                m_pathApplyFieldSpeeds.withSpeeds(
-                    new ChassisSpeeds(
-                        xController.calculate(
-                            questNav.getRobotPose().get().getX(), target.get().getX()),
-                        yController.calculate(
-                            questNav.getRobotPose().get().getY(), target.get().getY()),
-                        headingController.calculate(
-                            questNav.getRobotPose().get().getRotation().toRotation2d().getRadians(),
-                            target.get().getRotation().getRadians()))));
-          } else {
-            this.setControl(
-                m_pathApplyFieldSpeeds.withSpeeds(
-                    new ChassisSpeeds(
-                        xController.calculate(this.getState().Pose.getX(), target.get().getX()),
-                        yController.calculate(this.getState().Pose.getY(), target.get().getY()),
-                        headingController.calculate(
-                            this.getState().Pose.getRotation().getRadians(),
-                            target.get().getRotation().getRadians()))));
-          }
+          //          if (Robot.isReal()) {
+          this.setControl(
+              m_pathApplyFieldSpeeds.withSpeeds(
+                  new ChassisSpeeds(
+                      xController.calculate(
+                          questNav.getRobotPose().get().getX(), target.get().getX()),
+                      yController.calculate(
+                          questNav.getRobotPose().get().getY(), target.get().getY()),
+                      headingController.calculate(
+                          questNav.getRobotPose().get().getRotation().toRotation2d().getRadians(),
+                          target.get().getRotation().getRadians()))));
+          //          } else {
+          //            this.setControl(
+          //                m_pathApplyFieldSpeeds.withSpeeds(
+          //                    new ChassisSpeeds(
+          //                        xController.calculate(this.getState().Pose.getX(),
+          // target.get().getX()),
+          //                        yController.calculate(this.getState().Pose.getY(),
+          // target.get().getY()),
+          //                        headingController.calculate(
+          //                            this.getState().Pose.getRotation().getRadians(),
+          //                            target.get().getRotation().getRadians()))));
+          //          }
           // } else {
           // followPathRepulsor(
           // questNav.getRobotPose().get().toPose2d(),
