@@ -62,7 +62,6 @@ import org.littletonrobotics.junction.Logger;
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
 
-  public final Pigeon2 m_pigeon2 = new Pigeon2(0, "mani");
   public static final double driveBaseRadius =
       Math.max(
           Math.max(
@@ -540,12 +539,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       return this.questNav.getRotation().toRotation2d();
     } else {
       a_questNavNotConnected.set(true);
-      return this.m_pigeon2.getRotation2d();
+      return this.getPigeon2().getRotation2d().plus(new Rotation2d(90));
     }
-  }
-
-  public Pose2d getCurrentPose() {
-    return questNav.getRobotPose().get().toPose2d();
   }
 
   private void configurePathPlanner() {
