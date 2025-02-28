@@ -232,7 +232,7 @@ public class RobotContainer {
   }
 
   public void updateAngles() {
-    this.finalAutoHeading = finalAutoHeading.plus(this.drivetrain.getCurrentHeading());
+    this.finalAutoHeading = this.drivetrain.getCurrentHeading();
   }
 
   public void configureSwerve() {
