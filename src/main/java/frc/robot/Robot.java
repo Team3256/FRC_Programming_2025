@@ -179,11 +179,6 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void autonomousExit() {
-    m_robotContainer.configureSwerve();
-  }
-
-  @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
@@ -205,6 +200,8 @@ public class Robot extends LoggedRobot {
                         * TunerConstants.kSpeedAt12Volts.magnitude())
                 .withTargetDirection(this.m_robotContainer.getDrivetrain().getCurrentHeading()))
         .withTimeout(aziTimeout);
+
+    /* maybe make the angle 0 since questnav is goated */
   }
 
   @Override
