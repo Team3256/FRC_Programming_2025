@@ -149,7 +149,16 @@ public class Superstructure {
         .and(elevator.isSafeForArm)
         .onTrue(arm.toSourceLevel(rightManipulatorSide))
         .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
-        .and(endEffector.beamBreak)
+        .and(rightManipulatorSide)
+        .and(endEffector.rightBeamBreak)
+        .onTrue(this.setState(StructureState.PREHOME));
+    stateTriggers
+        .get(StructureState.SOURCE)
+        .and(elevator.isSafeForArm)
+        .onTrue(arm.toSourceLevel(rightManipulatorSide))
+        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
+        .and(rightManipulatorSide.negate())
+        .and(endEffector.leftBeamBreak)
         .onTrue(this.setState(StructureState.PREHOME));
 
     // Random filler for now
