@@ -24,11 +24,17 @@ public final class SwerveConstants {
   public static final double wheelRadiusMaxVelocity = 2 * Math.PI; // Rad/Sec
   public static final double wheelRadiusMaxRampRate = Math.PI / 2; // Rad/Sec^2
 
-  public static final Rotation2d sourceLeft1 = new Rotation2d(125.989);
   // source 1
+  public static final Rotation2d sourceLeft1 = new Rotation2d(125.989);
+
+  // source 2
   public static final Rotation2d sourceRight2 = new Rotation2d(-sourceLeft1.getDegrees());
-  // source2
-  public static final Rotation2d hang = new Rotation2d(180);
+
+  // climb
+  public static final Rotation2d hang = new Rotation2d(0);
+
+  // barge
+  public static final Rotation2d barge = new Rotation2d(90);
 
   // angle backups
   public static final Rotation2d reefAB = new Rotation2d(0);

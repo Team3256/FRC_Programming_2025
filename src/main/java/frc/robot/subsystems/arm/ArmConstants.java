@@ -57,12 +57,13 @@ public final class ArmConstants {
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(0)
+                  .withKS(0.18)
                   .withKV(17)
                   .withKP(100)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(.4)
+                  .withKA(.7)
+                  .withKG(.291)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
@@ -73,23 +74,25 @@ public final class ArmConstants {
               new MotionMagicConfigs()
                   .withMotionMagicJerk(16)
                   .withMotionMagicAcceleration(4.5)
-                  .withMotionMagicCruiseVelocity(.7))
+                  .withMotionMagicCruiseVelocity(.65))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(142.22)
-                  .withRotorToSensorRatio(1));
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  .withFeedbackRemoteSensorID(armMotorEncoderId)
+                  .withSensorToMechanismRatio(1.3333333333333)
+                  .withRotorToSensorRatio(106.665));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()
           .withMagnetSensor(
               new MagnetSensorConfigs()
                   .withMagnetOffset(Rotations.of(0))
-                  .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                  .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                  .withMagnetOffset(-0.158122481)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
 
   public static final class Sim {

@@ -323,7 +323,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .a()
+        .povDown()
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -332,6 +332,18 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(hang))
+                .withTimeout(aziTimeout));
+
+    m_driverController
+        .a()
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
 
     new Trigger(

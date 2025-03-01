@@ -59,7 +59,6 @@ public class Arm extends DisableSubsystem {
     super(enabled);
 
     this.armIO = armIO;
-    armIO.resetPosition(Rotations.of(0.25));
   }
 
   @Override
