@@ -41,8 +41,6 @@ public class AutoRoutines {
     return routine;
   }
 
-
-
   private static class AutoCommands {
     private AutoCommands() {
       throw new UnsupportedOperationException("This is a utility class!");
