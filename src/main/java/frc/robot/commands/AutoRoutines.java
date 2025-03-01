@@ -29,12 +29,27 @@ public class AutoRoutines {
     return routine;
   }
 
-  /*
-   * A mobility auto.
-   */
+  public AutoRoutine ds1MobilityAuto() {
+    final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
+    final AutoTrajectory path = routine.trajectory("DS1-Mobility");
+
+    routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
+
+    return routine;
+  }
+
   public AutoRoutine ds2MobilityAuto() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
     final AutoTrajectory path = routine.trajectory("DS2-Mobility");
+
+    routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
+
+    return routine;
+  }
+
+  public AutoRoutine ds3MobilityAuto() {
+    final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
+    final AutoTrajectory path = routine.trajectory("DS3-Mobility");
 
     routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
 
