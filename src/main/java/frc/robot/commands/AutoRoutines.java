@@ -29,7 +29,7 @@ public class AutoRoutines {
     return routine;
   }
 
-  public AutoRoutine ds1MobilityAuto() {
+  public AutoRoutine DS1Mobility() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
     final AutoTrajectory path = routine.trajectory("DS1-Mobility");
 
@@ -38,7 +38,7 @@ public class AutoRoutines {
     return routine;
   }
 
-  public AutoRoutine ds2MobilityAuto() {
+  public AutoRoutine DS2Mobility() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
     final AutoTrajectory path = routine.trajectory("DS2-Mobility");
 
@@ -47,7 +47,7 @@ public class AutoRoutines {
     return routine;
   }
 
-  public AutoRoutine ds3MobilityAuto() {
+  public AutoRoutine DS3Mobility() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
     final AutoTrajectory path = routine.trajectory("DS3-Mobility");
 
