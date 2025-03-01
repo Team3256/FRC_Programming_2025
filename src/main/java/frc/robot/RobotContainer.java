@@ -338,7 +338,7 @@ public class RobotContainer {
                         azimuth
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(hang))
+                            .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
 
     new Trigger(
