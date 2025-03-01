@@ -235,6 +235,14 @@ public class RobotContainer {
     this.finalAutoHeading = this.drivetrain.getCurrentHeading();
   }
 
+  public Rotation2d getUpdatedAngle() {
+    return finalAutoHeading;
+  }
+
+  public CommandSwerveDrivetrain getDrivetrain() {
+    return this.drivetrain;
+  }
+
   public void configureSwerve() {
     // LinearVelocity is a vector, so we need to get the magnitude
     final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
@@ -323,6 +331,18 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
+        .povUp()
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(barge))
+                .withTimeout(aziTimeout));
+
+    m_driverController
         .povDown()
         .onTrue(
             drivetrain
@@ -332,18 +352,6 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(hang))
-                .withTimeout(aziTimeout));
-
-    m_driverController
-        .a()
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
 
     new Trigger(
@@ -358,18 +366,6 @@ public class RobotContainer {
                             .withTargetDirection(
                                 getStickAngle(m_driverController).plus(new Rotation2d(105))))
                 .withTimeout(3));
-
-    m_driverController
-        .povUp()
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(finalAutoHeading))
-                .withTimeout(aziTimeout));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     // Auto Align Begin
