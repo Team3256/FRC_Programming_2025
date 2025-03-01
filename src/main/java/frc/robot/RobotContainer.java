@@ -7,6 +7,10 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
+import static frc.robot.subsystems.swerve.SwerveConstants.*;
+
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
@@ -44,13 +48,8 @@ import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.autoaim.SourceIntakeTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
-import org.littletonrobotics.junction.Logger;
-
 import java.util.stream.Stream;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
-import static frc.robot.subsystems.swerve.SwerveConstants.*;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
