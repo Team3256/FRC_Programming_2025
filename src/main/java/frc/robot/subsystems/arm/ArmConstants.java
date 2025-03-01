@@ -29,34 +29,41 @@ public final class ArmConstants {
   public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
-  public static final Angle maxRotations = Rotations.of(3);
+  public static final Angle maxRotations = Rotations.of(2);
 
   public static final Angle[] reefRightPositions = {
-    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(0.32)
+    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(.343)
   };
 
   public static final Angle[] reefLeftPositions = {
-    Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.18)
+    Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.157)
   };
 
-  public static final Angle dealgaeRightPosition = Rotations.of(0.0);
-  public static final Angle dealgaeLeftPosition = Rotations.of(0.0);
+  public static final Angle[] dealgaeRightPosition = {Rotations.of(.43), Rotations.of(.361)};
+  public static final Angle[] dealgaeLeftPosition = {Rotations.of(.07), Rotations.of(.139)};
 
-  public static final Angle sourceRightPositions = Rotations.of(.7);
-  public static final Angle sourceLeftPositions = Rotations.of(.8);
+  public static final Angle sourceRightPositions = Rotations.of(.66);
+  public static final Angle sourceLeftPositions = Rotations.of(.84);
+
+  public static final Angle bargeLeftPosition = Rotations.of(.17);
+  public static final Angle bargeRightPosition = Rotations.of(.33);
 
   public static final Angle homePosition = Rotations.of(.25);
+
+  public static final double safeRightPosition = .37;
+  public static final double safeLeftPosition = .13;
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(0)
+                  .withKS(0.18)
                   .withKV(17)
                   .withKP(100)
                   .withKI(0)
                   .withKD(0)
-                  .withKG(.4)
+                  .withKA(.7)
+                  .withKG(.291)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
@@ -65,24 +72,27 @@ public final class ArmConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(2)
-                  .withMotionMagicCruiseVelocity(.7))
+                  .withMotionMagicJerk(16)
+                  .withMotionMagicAcceleration(4.5)
+                  .withMotionMagicCruiseVelocity(.65))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(142.22)
-                  .withRotorToSensorRatio(1));
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  .withFeedbackRemoteSensorID(armMotorEncoderId)
+                  .withSensorToMechanismRatio(1.3333333333333)
+                  .withRotorToSensorRatio(106.665));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()
           .withMagnetSensor(
               new MagnetSensorConfigs()
                   .withMagnetOffset(Rotations.of(0))
-                  .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
+                  .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
+                  .withMagnetOffset(-0.158122481)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
 
   public static final class Sim {

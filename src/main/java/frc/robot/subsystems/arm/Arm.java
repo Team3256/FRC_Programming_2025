@@ -50,14 +50,15 @@ public class Arm extends DisableSubsystem {
   private ArrayList<Map<String, Double>> selectedTraj = null;
   public final Trigger reachedPosition = new Trigger(this::isAtPosition);
   public final Trigger isSafePosition = new Trigger(this::isSafePosition);
+
+  private double cachedArmMotorPosition = 0.0;
+  private int cachedDirection = 0;
   private final MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
     super(enabled);
 
     this.armIO = armIO;
-    armIO.resetPosition(Rotations.of(0.25));
-    loadAllTraj();
   }
 
   @Override
@@ -121,13 +122,19 @@ public class Arm extends DisableSubsystem {
 
   public Command setPosition(Supplier<Angle> position, boolean continuous, IntSupplier direction) {
     return this.run(
-        () -> {
-          requestedPosition.mut_replace(
-              continuous
-                  ? continuousWrapAtHome(position.get(), direction.getAsInt())
-                  : position.get());
-          armIO.setPosition(requestedPosition);
-        });
+            () -> {
+              cachedArmMotorPosition =
+                  direction.getAsInt() == cachedDirection
+                      ? cachedArmMotorPosition
+                      : armIOAutoLogged.armMotorPosition;
+              requestedPosition.mut_replace(
+                  continuous
+                      ? continuousWrapAtHome(position.get(), direction.getAsInt())
+                      : position.get());
+              armIO.setPosition(requestedPosition);
+              cachedDirection = direction.getAsInt();
+            })
+        .beforeStarting(() -> cachedArmMotorPosition = armIOAutoLogged.armMotorPosition);
   }
 
   public Command setPosition(Angle position, boolean continuous, int direction) {
@@ -156,20 +163,20 @@ public class Arm extends DisableSubsystem {
         () -> 0);
   }
 
-  public Command toDealgaeLevel(BooleanSupplier rightSide) {
+  public Command toDealgaeLevel(int level, BooleanSupplier rightSide) {
     return this.setPosition(
         () ->
             rightSide.getAsBoolean()
-                ? ArmConstants.dealgaeRightPosition
-                : ArmConstants.dealgaeLeftPosition,
+                ? ArmConstants.dealgaeRightPosition[level]
+                : ArmConstants.dealgaeLeftPosition[level],
         true,
         () -> 0);
   }
 
   @AutoLogOutput
   public boolean isSafePosition() {
-    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= 0.15
-        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= .35;
+    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= ArmConstants.safeLeftPosition
+        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= ArmConstants.safeRightPosition;
   }
 
   public Command toSourceLevel(BooleanSupplier rightSide) {
@@ -180,6 +187,16 @@ public class Arm extends DisableSubsystem {
                 : ArmConstants.sourceLeftPositions,
         true,
         () -> rightSide.getAsBoolean() ? -1 : 1);
+  }
+
+  public Command toBargeLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.bargeRightPosition
+                : ArmConstants.bargeLeftPosition,
+        true,
+        () -> 0);
   }
 
   @AutoLogOutput
@@ -197,6 +214,16 @@ public class Arm extends DisableSubsystem {
         () -> ArmConstants.homePosition, true, () -> preferRightSide.getAsBoolean() ? -1 : 1);
   }
 
+  public Command toSafePosition(BooleanSupplier towardsRight) {
+    return this.setPosition(
+        () ->
+            towardsRight.getAsBoolean()
+                ? ArmConstants.safeRightPosition
+                : ArmConstants.safeLeftPosition,
+        true,
+        () -> towardsRight.getAsBoolean() ? 1 : -1);
+  }
+
   public Command off() {
     return this.runOnce(armIO::off);
   }
@@ -206,27 +233,25 @@ public class Arm extends DisableSubsystem {
   }
 
   public double continuousWrapAtHome(double angle, int direction) {
-    return continuousWrapAtHome(angle, armIOAutoLogged.armMotorPosition, direction);
+    return continuousWrapAtHome(angle, cachedArmMotorPosition, direction);
   }
 
   public static double continuousWrapAtHome(
       double reqAbsAngle, double currentAngle, double forcedDirection) {
-    // forcedDirection should be nonzero; its sign determines the rotation adjustment.
-    // Compute the allowed range for the integer offset.
     int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
     int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
-
-    // Compute the short-path candidate.
     int nIdeal = (int) Math.round(currentAngle - reqAbsAngle);
     int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
+    double candidate = reqAbsAngle + nCandidate;
+    double diff = candidate - currentAngle;
 
-    // Use the sign of forcedDirection to determine the adjustment.
-    int adjustment = (int) Math.signum(forcedDirection);
+    int adjustment =
+        (int)
+            ((1 - Math.max(Math.signum(diff) * Math.signum(forcedDirection), 0))
+                * Math.signum(forcedDirection));
 
-    // Add the adjustment to force the long path.
     int nLong = nCandidate + adjustment;
     nLong = Math.min(n_max, Math.max(n_min, nLong));
-
     return reqAbsAngle + nLong;
   }
 }

@@ -65,7 +65,7 @@ public final class Constants {
     public static final boolean kSwerveEnabled = true;
     public static final boolean kVisionEnabled = false;
     public static final boolean kSwerveAccelerationLimitingEnabled = false;
-    public static final boolean kAutoAlignEnabled = false; // safety switch
+    public static final boolean kAutoAlignEnabled = true; // safety switch
     public static final boolean kAutoAlignPreferRepulsorPF = true;
   }
 
@@ -101,7 +101,7 @@ public final class Constants {
    */
 
   public static class RobotConstants {
-    public static final int bumperLength = 22; // should be right?
-    public static final int bumperWidth = 22;
+    public static final double bumperLength = 0.1; // should be right?
+    public static final double bumperWidth = 22;
   }
 }

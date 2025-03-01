@@ -63,5 +63,7 @@ public interface EndEffectorIO {
     return new CANdi(0);
   }
 
-  public default void off() {}
+  public default void algaeOff() {}
+
+  public default void coralOff() {}
 }

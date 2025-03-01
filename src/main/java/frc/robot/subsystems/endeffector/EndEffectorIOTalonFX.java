@@ -47,8 +47,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   private final CANdi candi = new CANdi(EndEffectorConstants.candiID);
 
-  private final StatusSignal<Boolean> leftBeamBreak = candi.getS1Closed();
   private final StatusSignal<Boolean> rightBeamBreak = candi.getS2Closed();
+  private final StatusSignal<Boolean> leftBeamBreak = candi.getS1Closed();
 
   public EndEffectorIOTalonFX() {
     PhoenixUtil.applyMotorConfigs(
@@ -74,8 +74,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         coralMotorVelocity,
         coralMotorStatorCurrent,
         coralMotorSupplyCurrent,
-        leftBeamBreak,
-        rightBeamBreak);
+        rightBeamBreak,
+        leftBeamBreak);
     algaeMotor.optimizeBusUtilization();
     coralMotor.optimizeBusUtilization();
   }
@@ -91,8 +91,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         coralMotorVelocity,
         coralMotorStatorCurrent,
         coralMotorSupplyCurrent,
-        leftBeamBreak,
-        rightBeamBreak);
+        rightBeamBreak,
+        leftBeamBreak);
     inputs.algaeMotorVoltage = algaeMotorVoltage.getValue();
     inputs.algaeMotorVelocity = algaeMotorVelocity.getValue();
     inputs.algaeMotorStatorCurrent = algaeMotorStatorCurrent.getValue();
@@ -102,8 +102,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
     inputs.coralMotorStatorCurrent = coralMotorStatorCurrent.getValue();
     inputs.coralMotorSupplyCurrent = coralMotorSupplyCurrent.getValue();
 
-    inputs.rightBeamBreak = leftBeamBreak.getValue();
-    inputs.leftBeamBreak = rightBeamBreak.getValue();
+    inputs.rightBeamBreak = rightBeamBreak.getValue();
+    inputs.leftBeamBreak = leftBeamBreak.getValue();
   }
 
   @Override
@@ -151,8 +151,12 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   }
 
   @Override
-  public void off() {
+  public void algaeOff() {
     algaeMotor.setControl(new NeutralOut());
+  }
+
+  @Override
+  public void coralOff() {
     coralMotor.setControl(new NeutralOut());
   }
 

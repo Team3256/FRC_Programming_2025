@@ -11,26 +11,29 @@ import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import frc.robot.Constants.RobotConstants;
+import edu.wpi.first.math.util.Units;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 public enum CoralTargets {
-  // All coordinates are global coordinates from the lower, blue alliance side corner, if the walls
+  // All coordinates are global coordinates from the lower, blue alliance side
+  // corner, if the walls
   // were extended beyond the coral station
-  // All angles from the center of the coral with 0° across the width of the field, counterclockwise
-  BLUE_A(new Pose2d(3.95, 4.20, Rotation2d.fromDegrees(180)), true),
-  BLUE_B(new Pose2d(3.95, 3.87, Rotation2d.fromDegrees(180)), false),
-  BLUE_C(new Pose2d(4.07, 3.66, Rotation2d.fromDegrees(240)), true),
-  BLUE_D(new Pose2d(4.35, 3.49, Rotation2d.fromDegrees(240)), false),
-  BLUE_E(new Pose2d(4.60, 3.50, Rotation2d.fromDegrees(300)), false),
-  BLUE_F(new Pose2d(4.88, 3.66, Rotation2d.fromDegrees(300)), true),
-  BLUE_G(new Pose2d(5.00, 3.90, Rotation2d.fromDegrees(0)), false),
-  BLUE_H(new Pose2d(5.00, 4.20, Rotation2d.fromDegrees(0)), true),
-  BLUE_I(new Pose2d(4.88, 4.41, Rotation2d.fromDegrees(60)), false),
-  BLUE_J(new Pose2d(4.60, 4.57, Rotation2d.fromDegrees(60)), true),
-  BLUE_K(new Pose2d(4.36, 4.57, Rotation2d.fromDegrees(120)), true),
-  BLUE_L(new Pose2d(4.06, 4.41, Rotation2d.fromDegrees(120)), false),
+  // All angles from the center of the coral with 0° across the width of the
+  // field, counterclockwise
+  BLUE_A(new Pose2d(3.95, 4.20, Rotation2d.fromDegrees(180 + 90)), true),
+  BLUE_B(new Pose2d(3.95, 3.87, Rotation2d.fromDegrees(180 + 90)), false),
+  BLUE_C(new Pose2d(4.07, 3.66, Rotation2d.fromDegrees(240 + 90)), true),
+  BLUE_D(new Pose2d(4.35, 3.49, Rotation2d.fromDegrees(240 + 90)), false),
+  BLUE_E(new Pose2d(4.60, 3.50, Rotation2d.fromDegrees(300 + 90)), true),
+  BLUE_F(new Pose2d(4.88, 3.66, Rotation2d.fromDegrees(300 + 90)), false),
+  BLUE_G(new Pose2d(5.00, 3.90, Rotation2d.fromDegrees(0 + 90)), true),
+  BLUE_H(new Pose2d(5.00, 4.20, Rotation2d.fromDegrees(0 + 90)), false),
+  BLUE_I(new Pose2d(4.88, 4.41, Rotation2d.fromDegrees(60 + 90)), true),
+  BLUE_J(new Pose2d(4.60, 4.57, Rotation2d.fromDegrees(60 + 90)), false),
+  BLUE_K(new Pose2d(4.36, 4.57, Rotation2d.fromDegrees(120 + 90)), true),
+  BLUE_L(new Pose2d(4.06, 4.41, Rotation2d.fromDegrees(120 + 90)), false),
 
   RED_A(ChoreoAllianceFlipUtil.flip(BLUE_A.location), true),
   RED_B(ChoreoAllianceFlipUtil.flip(BLUE_B.location), false),
@@ -62,10 +65,17 @@ public enum CoralTargets {
           .toList();
 
   public static Pose2d getRobotTargetLocation(Pose2d original) {
+    // return original.transformBy();
     // 0.248 for trough
+    // tested values
+    // 0.291
+    // 0.3955 ((0.291 + 0.5) / 2)
+    // 0.4705 ((0.291 + 0.65) / 2)
+    // 3.625 is bumper length
+    // maybe add a bit more to account for robot not aligning perfectly
     return original.transformBy(
         new Transform2d(
-            0.291 + (RobotConstants.bumperLength / 2), // TODO: TUNE This!!
+            0.4705 + Units.inchesToMeters(3.625) + 0.25, // TODO: TUNE This!!
             0,
             Rotation2d.fromDegrees(180.0)));
   }
@@ -87,5 +97,19 @@ public enum CoralTargets {
                   return CoralTargets.getRobotTargetLocation(targets.location);
                 })
             .toList());
+  }
+
+  public static CoralTargets getHandedClosestTargetE(Pose2d pose, boolean leftHanded) {
+    return Arrays.stream(values())
+        // Lefthandedness is because each face of the reef has two branches going up
+        // so A is left, B is right
+        .filter((target) -> target.leftHanded == leftHanded)
+        .min(
+            Comparator.comparingDouble(
+                (CoralTargets target) ->
+                    pose.getTranslation()
+                        .getDistance(
+                            CoralTargets.getRobotTargetLocation(target.location).getTranslation())))
+        .get();
   }
 }

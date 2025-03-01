@@ -28,12 +28,12 @@ public final class ElevatorConstants {
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(0.1)
-                  .withKV(1.9)
-                  .withKP(12)
-                  .withKI(0)
+                  .withKS(.1259765625)
+                  .withKV(2.2)
+                  .withKP(200)
                   .withKD(0)
-                  .withKG(.5)
+                  .withKA(.1)
+                  .withKG(.36328125)
                   .withGravityType(GravityTypeValue.Elevator_Static) // Original 0.145
               )
           .withMotorOutput(
@@ -42,8 +42,9 @@ public final class ElevatorConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(36)
-                  .withMotionMagicCruiseVelocity(5.4))
+                  .withMotionMagicAcceleration(50)
+                  .withMotionMagicCruiseVelocity(5.5)
+                  .withMotionMagicJerk(200))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
@@ -53,7 +54,6 @@ public final class ElevatorConstants {
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                   .withSensorToMechanismRatio(16)
                   .withRotorToSensorRatio(1));
-  ;
   public static final boolean kUseMotionMagic = true;
   public static final double kStatusSignalUpdateFrequency = 50.0; // Hz
 
@@ -63,7 +63,7 @@ public final class ElevatorConstants {
   public static final int kEncoderATeethCount = 29;
   public static final int kEncoderBTeethCount = 31;
 
-  public static final Angle armSafePosition = Rotations.of(2.1);
+  public static final Angle armSafePosition = Rotations.of(3.39);
 
   public static final CANcoderConfiguration kEncoderAConfig =
       new CANcoderConfiguration()
@@ -84,7 +84,7 @@ public final class ElevatorConstants {
   // Please tune
 
   public static final Angle[] kReefPositionsPracticeField = {
-    Rotations.of(0.0), Rotations.of(1.26), Rotations.of(2.652), Rotations.of(5)
+    Rotations.of(0.0), Rotations.of(1.2), Rotations.of(2.6), Rotations.of(4.974)
   };
   public static final Distance[] kReefPositionsMeters = Constants.branchHeights.distances;
 
@@ -103,10 +103,10 @@ public final class ElevatorConstants {
         .plus(kReefPositionsPracticeField[3]),
   };
 
-  public static final Angle[] kDealgaePositions = {Rotations.of(0.0), Rotations.of(0.0)};
+  public static final Angle[] kDealgaePositions = {Rotations.of(1.1), Rotations.of(1.69)};
 
-  public static final Angle sourcePosition = Rotations.of(3.5);
-  public static final Angle bargePosition = Rotations.of(0.0);
+  public static final Angle sourcePosition = Rotations.of(3.3);
+  public static final Angle bargePosition = Rotations.of(5);
 
   public static final Angle homePosition = Rotations.of(0.15);
 

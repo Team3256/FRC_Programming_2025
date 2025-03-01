@@ -52,19 +52,16 @@ public class ArmIOTalonFX implements ArmIO {
     PhoenixUtil.applyCancoderConfig(
         cancoder, ArmConstants.cancoderConfiguration, ArmConstants.flashConfigRetries);
 
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        ArmConstants.updateFrequency,
-        armMotorVoltage,
-        armMotorVelocity,
-        armMotorPosition,
-        armMotorStatorCurrent,
-        armMotorSupplyCurrent,
-        cancoderAbsolutePosition,
-        cancoderPosition,
-        cancoderVelocity);
+    //    BaseStatusSignal.setUpdateFrequencyForAll(
+    //        ArmConstants.updateFrequency,
+    //        armMotorVoltage,
+    //        armMotorVelocity,
+    //        armMotorPosition,
+    //        armMotorStatorCurrent,
+    //        armMotorSupplyCurrent);
 
-    armMotor.optimizeBusUtilization();
-    cancoder.optimizeBusUtilization();
+    //    armMotor.optimizeBusUtilization();
+    //    cancoder.optimizeBusUtilization();
   }
 
   @Override
@@ -83,7 +80,6 @@ public class ArmIOTalonFX implements ArmIO {
     inputs.armMotorPosition = armMotorPosition.getValue().in(Rotations);
     inputs.armMotorStatorCurrent = armMotorStatorCurrent.getValue().in(Amps);
     inputs.armMotorSupplyCurrent = armMotorSupplyCurrent.getValue().in(Amps);
-
     inputs.armEncoderPosition = cancoderPosition.getValue().in(Rotations);
     inputs.armEncoderVelocity = cancoderVelocity.getValue().in(RotationsPerSecond);
     inputs.armEncoderAbsolutePosition = cancoderAbsolutePosition.getValue().in(Rotations);
