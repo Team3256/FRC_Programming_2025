@@ -180,7 +180,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousExit() {
-    m_robotContainer.updateAngles();
     m_robotContainer.configureSwerve();
   }
 
@@ -204,7 +203,7 @@ public class Robot extends LoggedRobot {
                 .withVelocityX(
                     -this.m_robotContainer.m_driverController.getLeftY()
                         * TunerConstants.kSpeedAt12Volts.magnitude())
-                .withTargetDirection(this.m_robotContainer.getUpdatedAngle()))
+                .withTargetDirection(this.m_robotContainer.getDrivetrain().getCurrentHeading()))
         .withTimeout(aziTimeout);
   }
 

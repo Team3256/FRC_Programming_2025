@@ -231,14 +231,6 @@ public class RobotContainer {
     RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
   }
 
-  public void updateAngles() {
-    this.finalAutoHeading = this.drivetrain.getCurrentHeading();
-  }
-
-  public Rotation2d getUpdatedAngle() {
-    return finalAutoHeading;
-  }
-
   public CommandSwerveDrivetrain getDrivetrain() {
     return this.drivetrain;
   }
