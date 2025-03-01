@@ -317,20 +317,19 @@ public class RobotContainer {
                             .withTargetDirection(sourceRight2))
                 .withTimeout(aziTimeout));
 
-      m_driverController
-              .povDown()
-              .onTrue(
-                      drivetrain
-                              .applyRequest(
-                                      () ->
-                                              azimuth
-                                                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                                                      .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                                                      .withTargetDirection(hang))
-                              .withTimeout(aziTimeout));
+    m_driverController
+        .povDown()
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(hang))
+                .withTimeout(aziTimeout));
 
-
-      m_driverController
+    m_driverController
         .a()
         .onTrue(
             drivetrain
