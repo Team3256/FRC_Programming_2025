@@ -31,7 +31,7 @@ public class AutoRoutines {
 
   public AutoRoutine DS1Mobility() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
-    final AutoTrajectory path = routine.trajectory("DS1-Mobility");
+    final AutoTrajectory path = routine.trajectory("DS1 - Mobility");
 
     routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
 
@@ -40,7 +40,7 @@ public class AutoRoutines {
 
   public AutoRoutine DS2Mobility() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
-    final AutoTrajectory path = routine.trajectory("DS2-Mobility");
+    final AutoTrajectory path = routine.trajectory("DS2 - Mobility");
 
     routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
 
@@ -49,7 +49,7 @@ public class AutoRoutines {
 
   public AutoRoutine DS3Mobility() {
     final AutoRoutine routine = m_factory.newRoutine("Mobility Auto");
-    final AutoTrajectory path = routine.trajectory("DS3-Mobility");
+    final AutoTrajectory path = routine.trajectory("DS3 - Mobility");
 
     routine.active().onTrue(path.resetOdometry().andThen(path.cmd()));
 
