@@ -77,7 +77,7 @@ public enum CoralTargets {
         new Transform2d(
             0.4705 + Units.inchesToMeters(3.625) + 0.25, // TODO: TUNE This!!
             0,
-            Rotation2d.fromDegrees(180.0)));
+            Rotation2d.fromDegrees(180.0 + 90)));
   }
 
   /** Gets the closest offset target to the given pose. */

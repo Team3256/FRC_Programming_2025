@@ -27,6 +27,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
@@ -190,7 +191,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public final QuestNav questNav =
       new QuestNav(
           new Transform3d(
-              new Translation3d(-0.221, 0.314, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
+              new Translation3d(-.211, .314, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
 
   public final RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
 
@@ -227,7 +228,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     configurePathPlanner();
     questNav.resetPose(
         new Pose3d(
-            new Translation3d(0.40679097175598145, 6.375413417816162, 0),
+            new Translation3d(3.188991069793701, 4.108436107635498, 0),
             new Rotation3d(new Rotation2d())));
     // resetPoseAndQuest(new Pose2d());
   }
@@ -381,7 +382,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    */
   public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> trajLogger) {
     return new AutoFactory(
-        () -> getState().Pose, this::resetPoseAndQuest, this::followPath, true, this, trajLogger);
+        () -> this.getState().Pose,
+        this::resetPoseAndQuest,
+        this::followPath,
+        true,
+        this,
+        trajLogger);
   }
 
   public void resetPoseAndQuest(Pose2d pose) {
@@ -425,15 +431,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    * @param sample Sample along the path to follow
    */
   public void followPath(SwerveSample sample) {
-    m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
 
-    var pose = getState().Pose;
+    var pose = this.getState().Pose;
 
     var targetSpeeds = sample.getChassisSpeeds();
-    targetSpeeds.vxMetersPerSecond += m_pathXController.calculate(pose.getX(), sample.x);
-    targetSpeeds.vyMetersPerSecond += m_pathYController.calculate(pose.getY(), sample.y);
+    targetSpeeds.vxMetersPerSecond += xController.calculate(pose.getX(), sample.x);
+    targetSpeeds.vyMetersPerSecond += yController.calculate(pose.getY(), sample.y);
     targetSpeeds.omegaRadiansPerSecond +=
-        m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
+        headingController.calculate(pose.getRotation().getRadians(), sample.heading);
+
+    Logger.recordOutput("Choreo/targetSpeeds", sample.getChassisSpeeds());
+    Logger.recordOutput("Choreo/targetPose", sample.getPose());
 
     setControl(
         m_pathApplyFieldSpeeds
@@ -526,6 +535,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               questNav.getRobotPose().get().getRotation().toRotation2d()));
       Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
       Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
+
+      this.addVisionMeasurement(
+          questNav.getRobotPose().get().toPose2d(),
+          questNav.getCaptureTime(),
+          VecBuilder.fill(0.0001, 0.0001, .99999));
     } else {
       a_questNavNotConnected.set(true);
     }
