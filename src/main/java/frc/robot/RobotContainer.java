@@ -172,7 +172,6 @@ public class RobotContainer {
   private void configureChoreoAutoChooser() {
 
     // Add options to the chooser
-    autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
     autoChooser.addCmd(
         "SysID forward translation dynamic",
