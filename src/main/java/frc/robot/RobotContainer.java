@@ -318,7 +318,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .povDown()
+        .povUp()
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -330,7 +330,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .a()
+        .povDown()
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -341,18 +341,18 @@ public class RobotContainer {
                             .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
 
-    new Trigger(
-            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(
-                                getStickAngle(m_driverController).plus(new Rotation2d(105))))
-                .withTimeout(3));
+//    new Trigger(
+//            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1))
+//        .onTrue(
+//            drivetrain
+//                .applyRequest(
+//                    () ->
+//                        azimuth
+//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+//                            .withTargetDirection(
+//                                getStickAngle(m_driverController).plus(new Rotation2d(105))))
+//                .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     // Auto Align Begin
