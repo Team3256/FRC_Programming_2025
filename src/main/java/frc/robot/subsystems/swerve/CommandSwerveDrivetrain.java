@@ -29,6 +29,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -47,6 +48,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -209,6 +211,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final Alert a_questNavNotConnected =
       new Alert("QuestNav failure (no data within 250ms)", AlertType.kError);
 
+  private final SwerveDrivePoseEstimator poseEstimator =
+      new SwerveDrivePoseEstimator(
+          this.getKinematics(),
+          this.getPigeon2().getRotation2d(),
+          this.getStateCopy().ModulePositions,
+          this.getStateCopy().Pose);
+
   /* WPILib Alerts end */
   /**
    * Constructs a CTRE SwerveDrivetrain using the specified constants.
@@ -230,7 +239,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         new Pose3d(
             new Translation3d(3.188991069793701, 4.108436107635498, 0),
             new Rotation3d(new Rotation2d())));
-    // resetPoseAndQuest(new Pose2d());
+    // resetPose(new Pose2d());
   }
 
   /**
@@ -253,7 +262,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configurePathPlanner();
-    // resetPoseAndQuest(new Pose2d());
+    // resetPose(new Pose2d());
   }
 
   /**
@@ -287,7 +296,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       startSimThread();
     }
     configurePathPlanner();
-    // resetPoseAndQuest(new Pose2d());
+    // resetPose(new Pose2d());
   }
 
   public Pose2d targetPose() {
@@ -382,18 +391,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    */
   public AutoFactory createAutoFactory(TrajectoryLogger<SwerveSample> trajLogger) {
     return new AutoFactory(
-        () -> this.getState().Pose,
-        this::resetPoseAndQuest,
-        this::followPath,
-        true,
-        this,
-        trajLogger);
+        () -> this.getState().Pose, this::resetPose, this::followPath, true, this, trajLogger);
   }
 
-  public void resetPoseAndQuest(Pose2d pose) {
-    System.out.println("**reset pose and quest called");
+  public void resetOdometryAndPose(Pose2d pose) {
     super.resetPose(pose);
-    // questNav.resetPose(pose);
+    this.questNav.resetPose(new Pose3d(pose));
   }
 
   public void followPathRepulsor(Pose2d pose, SwerveSample sample) {
@@ -527,14 +530,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
       // Utils.getCurrentTimeSeconds());
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose().get());
-      Logger.recordOutput(
-          "QuestNav/fixedPose",
-          new Pose2d(
-              questNav.getRobotPose().get().getX(),
-              questNav.getRobotPose().get().getY(),
-              questNav.getRobotPose().get().getRotation().toRotation2d()));
-      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
-      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
+      //      Logger.recordOutput(
+      //          "QuestNav/fixedPose",
+      //          new Pose2d(
+      //              questNav.getRobotPose().get().getX(),
+      //              questNav.getRobotPose().get().getY(),
+      //              questNav.getRobotPose().get().getRotation().toRotation2d()));
+      //      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
+      //      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
 
       this.addVisionMeasurement(
           questNav.getRobotPose().get().toPose2d(),
@@ -543,14 +546,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     } else {
       a_questNavNotConnected.set(true);
     }
-
-    Logger.recordOutput("Swerve/pose", this.getState().Pose);
+    if (Constants.FeatureFlags.kPhotonEnabled) {
+      poseEstimator.update(this.getPigeon2().getRotation2d(), this.getStateCopy().ModulePositions);
+    }
   }
 
   private void configurePathPlanner() {
     AutoBuilder.configure(
         () -> this.getState().Pose,
-        this::resetPoseAndQuest,
+        this::resetPose,
         () -> this.getState().Speeds,
         this::driveRobotRelativeWithFF,
         new PPHolonomicDriveController(
@@ -558,6 +562,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveConstants.ppRobotConfig,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
+  }
+
+  public void addPhotonEstimate(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    poseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
   private void startSimThread() {

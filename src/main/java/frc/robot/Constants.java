@@ -67,6 +67,8 @@ public final class Constants {
     public static final boolean kSwerveAccelerationLimitingEnabled = false;
     public static final boolean kAutoAlignEnabled = true; // safety switch
     public static final boolean kAutoAlignPreferRepulsorPF = true;
+
+    public static final boolean kPhotonEnabled = true;
   }
 
   public static class Logging {

@@ -40,6 +40,9 @@ import frc.robot.subsystems.endeffector.EndEffectorIOSim;
 import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AlgaeIntakeTargets;
 import frc.robot.utils.autoaim.AutoAim;
@@ -78,6 +81,14 @@ public class RobotContainer {
           true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
   private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
+
+  private final Vision vision =
+      new Vision(
+          drivetrain::addPhotonEstimate,
+          new VisionIOPhotonVision(VisionConstants.leftCam, VisionConstants.robotToLeftCam),
+          new VisionIOPhotonVision(VisionConstants.rightCam, VisionConstants.robotToRightCam),
+          new VisionIOPhotonVision(VisionConstants.frontCam, VisionConstants.robotToFrontCam),
+          new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam));
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
