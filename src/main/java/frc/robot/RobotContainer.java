@@ -8,7 +8,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
@@ -16,7 +15,6 @@ import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -96,7 +94,6 @@ public class RobotContainer {
 
   private final AutoRoutines m_autoRoutines;
   private AutoChooser autoChooser = new AutoChooser();
-  private Rotation2d finalAutoHeading;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -346,18 +343,19 @@ public class RobotContainer {
                             .withTargetDirection(hang))
                 .withTimeout(aziTimeout));
 
-    new Trigger(
-            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(
-                                getStickAngle(m_driverController).plus(new Rotation2d(105))))
-                .withTimeout(3));
+    //    new Trigger(
+    //            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withTargetDirection(
+    //                                getStickAngle(m_driverController).plus(new Rotation2d(105))))
+    //                .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     // Auto Align Begin
