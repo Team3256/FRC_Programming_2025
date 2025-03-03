@@ -13,6 +13,7 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -242,6 +243,8 @@ public class RobotContainer {
 
     SwerveRequest.ApplyRobotSpeeds driveAlt = new SwerveRequest.ApplyRobotSpeeds();
 
+    LegacySwerveRequest.PointWheelsAt lockHoriz = new LegacySwerveRequest.PointWheelsAt();
+
     SwerveRequest.FieldCentricFacingAngle azimuth =
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
@@ -339,6 +342,12 @@ public class RobotContainer {
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
+
+    m_driverController
+        .a()
+        .onTrue(
+            drivetrain.applyRequest(
+                () -> (SwerveRequest) lockHoriz.withModuleDirection(uniformHOffset)));
 
     //    new Trigger(
     //            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >

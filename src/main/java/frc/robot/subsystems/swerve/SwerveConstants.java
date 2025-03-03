@@ -13,6 +13,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Mass;
@@ -23,6 +24,13 @@ public final class SwerveConstants {
 
   public static final double wheelRadiusMaxVelocity = 2 * Math.PI; // Rad/Sec
   public static final double wheelRadiusMaxRampRate = Math.PI / 2; // Rad/Sec^2
+
+  public static final Rotation2d mod1XOffset = new Rotation2d(135);
+  public static final Rotation2d mod2XOffset = new Rotation2d(45);
+  public static final Rotation2d mod3XOffset = new Rotation2d(mod1XOffset.getDegrees() + 180);
+  public static final Rotation2d mod4XOffset = new Rotation2d(mod2XOffset.getDegrees() + 180);
+
+  public static final Rotation2d uniformHOffset = new Rotation2d(90);
 
   // source 1
   public static final Rotation2d sourceLeft1 = new Rotation2d(125.989);
@@ -74,4 +82,11 @@ public final class SwerveConstants {
           backRight);
 
   public static final AngularVelocity maxSteerModuleSpeed = RotationsPerSecond.of(1);
+
+  public static final SwerveModuleState mod1XState = new SwerveModuleState(0.0, mod1XOffset);
+  public static final SwerveModuleState mod2XState = new SwerveModuleState(0.0, mod2XOffset);
+  public static final SwerveModuleState mod3XState = new SwerveModuleState(0.0, mod3XOffset);
+  public static final SwerveModuleState mod4XState = new SwerveModuleState(0.0, mod4XOffset);
+
+  public static final SwerveModuleState lockHorizontal = new SwerveModuleState(0.0, uniformHOffset);
 }
