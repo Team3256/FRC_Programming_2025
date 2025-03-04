@@ -25,7 +25,7 @@ import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
-import java.util.Optional;
+import edu.wpi.first.wpilibj.RobotController;
 import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
@@ -36,6 +36,9 @@ public class QuestNav {
   private NetworkTable networkTable;
   private Transform3d robotToQuest;
   private Pose3d initPose = new Pose3d();
+
+  private Transform3d softResetTransform = new Transform3d();
+  private Pose3d softResetPose = new Pose3d();
 
   private IntegerEntry miso;
   private IntegerPublisher mosi;
@@ -50,6 +53,8 @@ public class QuestNav {
   private ChassisSpeeds velocity;
   private Pose3d previousPose;
   private double previousTime;
+
+  private final double TIMESTAMP_DELAY = 0.002;
 
   private long previousFrameCount;
 
@@ -112,15 +117,11 @@ public class QuestNav {
     return new Rotation3d(Degrees.of(euler[2]), Degrees.of(euler[0]), Degrees.of(-euler[1]));
   }
 
-  public Optional<Pose3d> getRobotPose() {
-    if (RobotBase.isReal()) {
-      return Optional.of(new Pose3d(getPosition(), getRotation()));
-    } else {
-      return Optional.empty();
-    }
+  public Pose3d getRobotPose() {
+    return new Pose3d(getPosition(), getRotation());
   }
 
-  public Translation3d getPosition() {
+  public Translation3d getProcessedPosition() {
     return rotateAxes(
             correctWorldAxis(getRawPosition())
                 .plus(robotToQuest.getTranslation())
@@ -129,10 +130,23 @@ public class QuestNav {
         .plus(initPose.getTranslation());
   }
 
-  public Rotation3d getRotation() {
-    // TODO: To support weird rotations/mountings of quest, implement world axis
-    // rotation
+  public Translation3d getPosition() {
+    Translation3d hardResetTransform = getProcessedPosition();
+    Translation3d softResetTransformation =
+        rotateAxes(
+                hardResetTransform.minus(softResetPose.getTranslation()),
+                softResetTransform.getRotation())
+            .plus(softResetPose.getTranslation())
+            .plus(softResetTransform.getTranslation());
+    return softResetTransformation;
+  }
+
+  public Rotation3d getProcessedRotation() {
     return getRawRotation().plus(initPose.getRotation());
+  }
+
+  public Rotation3d getRotation() {
+    return getProcessedRotation().plus(softResetTransform.getRotation());
   }
 
   public double getConfidence() {
@@ -144,7 +158,15 @@ public class QuestNav {
   }
 
   public double getCaptureTime() {
-    return timestamp.getAsDouble();
+    return RobotController.getFPGATime() / 1E6 - TIMESTAMP_DELAY;
+  }
+
+  public void softReset(Pose3d pose) {
+    softResetTransform =
+        new Transform3d(
+            pose.getTranslation().minus(getProcessedPosition()),
+            pose.getRotation().minus(getProcessedRotation()));
+    softResetPose = new Pose3d(getProcessedPosition(), getProcessedRotation());
   }
 
   public boolean isActive() {
@@ -192,7 +214,7 @@ public class QuestNav {
 
   private void updateVelocity() {
     if (previousPose == null) {
-      previousPose = getRobotPose().get();
+      previousPose = getRobotPose();
       previousTime = timestamp.get();
       return;
     }
@@ -207,7 +229,7 @@ public class QuestNav {
             (getPosition().getY() - previousPose.getTranslation().getY()) / deltaTime,
             (getRotation().getZ() - previousPose.getRotation().getZ()) / deltaTime);
     previousTime = currentTime;
-    previousPose = getRobotPose().get();
+    previousPose = getRobotPose();
   }
 
   public ChassisSpeeds getVelocity() {
@@ -222,7 +244,7 @@ public class QuestNav {
       cleanUpQuestCommand();
       updateVelocity();
 
-      Pose2d currPose = getRobotPose().get().toPose2d();
+      Pose2d currPose = getRobotPose().toPose2d();
       Logger.recordOutput(
           "Quest POSE",
           new double[] {currPose.getX(), currPose.getY(), currPose.getRotation().getDegrees()});
@@ -237,7 +259,7 @@ public class QuestNav {
   }
 
   public Translation2d calculateOffsetToRobotCenter() {
-    Pose3d currentPose = getRobotPose().get();
+    Pose3d currentPose = getRobotPose();
     Pose2d currentPose2d = currentPose.toPose2d();
 
     Rotation2d angle = currentPose2d.getRotation();

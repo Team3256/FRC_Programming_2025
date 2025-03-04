@@ -211,7 +211,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final Alert a_questNavNotConnected =
       new Alert("QuestNav failure (no data within 250ms)", AlertType.kError);
 
-  private final SwerveDrivePoseEstimator poseEstimator =
+  private final SwerveDrivePoseEstimator photonPoseEstimator =
       new SwerveDrivePoseEstimator(
           this.getKinematics(),
           this.getPigeon2().getRotation2d(),
@@ -334,12 +334,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           this.setControl(
               m_pathApplyFieldSpeeds.withSpeeds(
                   new ChassisSpeeds(
-                      xController.calculate(
-                          questNav.getRobotPose().get().getX(), target.get().getX()),
-                      yController.calculate(
-                          questNav.getRobotPose().get().getY(), target.get().getY()),
+                      xController.calculate(this.getState().Pose.getX(), target.get().getX()),
+                      yController.calculate(this.getState().Pose.getY(), target.get().getY()),
                       headingController.calculate(
-                          questNav.getRobotPose().get().getRotation().toRotation2d().getRadians(),
+                          this.getState().Pose.getRotation().getRadians(),
                           target.get().getRotation().getRadians()))));
           //          } else {
           //            this.setControl(
@@ -529,7 +527,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       // this.addVisionMeasurement(
       // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
       // Utils.getCurrentTimeSeconds());
-      Logger.recordOutput("QuestNav/pose", questNav.getRobotPose().get());
+      Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
       //      Logger.recordOutput(
       //          "QuestNav/fixedPose",
       //          new Pose2d(
@@ -540,14 +538,15 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       //      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
 
       this.addVisionMeasurement(
-          questNav.getRobotPose().get().toPose2d(),
+          questNav.getRobotPose().toPose2d(),
           questNav.getCaptureTime(),
           VecBuilder.fill(0.0001, 0.0001, .99999));
     } else {
       a_questNavNotConnected.set(true);
     }
     if (Constants.FeatureFlags.kPhotonEnabled) {
-      poseEstimator.update(this.getPigeon2().getRotation2d(), this.getStateCopy().ModulePositions);
+      photonPoseEstimator.update(
+          this.getPigeon2().getRotation2d(), this.getStateCopy().ModulePositions);
     }
   }
 
@@ -568,7 +567,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(
+    photonPoseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
