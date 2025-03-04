@@ -44,6 +44,20 @@ public class AutoRoutines {
     return routine;
   }
 
+  public AutoRoutine mobilityTop() {
+    final AutoRoutine routine = m_factory.newRoutine("mobilityTop");
+    final AutoTrajectory mobilityTop = routine.trajectory("MobilityTop");
+    routine.active().onTrue(mobilityTop.resetOdometry().andThen(mobilityTop.cmd()));
+    return routine;
+  }
+
+  public AutoRoutine mobilityBottom() {
+    final AutoRoutine routine = m_factory.newRoutine("mobilityBottom");
+    final AutoTrajectory mobilityBottom = routine.trajectory("MobilityBottom");
+    routine.active().onTrue(mobilityBottom.resetOdometry().andThen(mobilityBottom.cmd()));
+    return routine;
+  }
+
   public AutoRoutine l4Preload() {
     final AutoRoutine routine = m_factory.newRoutine("l4Preload");
     final AutoTrajectory l4Preload = routine.trajectory("MID-H");
