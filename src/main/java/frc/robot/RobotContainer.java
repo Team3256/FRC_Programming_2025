@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
@@ -110,7 +108,9 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the trigger bindings
     configureBindings();
-    m_autoRoutines = new AutoRoutines(drivetrain.createAutoFactory(drivetrain::trajLogger));
+    m_autoRoutines =
+        new AutoRoutines(
+            drivetrain.createAutoFactory(drivetrain::trajLogger), elevator, arm, endEffector);
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
     configureSwerve();
@@ -183,33 +183,8 @@ public class RobotContainer {
     // Add options to the chooser
     autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
-    autoChooser.addCmd(
-        "SysID forward translation dynamic",
-        () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID backward translation dynamic",
-        () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd(
-        "SysID forward translation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID forward translation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addRoutine("l4Preload", m_autoRoutines::l4Preload);
 
-    autoChooser.addCmd(
-        "SysID forward rotation dynamic",
-        () -> drivetrain.sysIdRotationDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID backward rotation dynamic",
-        () -> drivetrain.sysIdRotationDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd(
-        "SysID forward rotation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID forward rotation quasitastic",
-        () -> drivetrain.sysIdRotationQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd("Start Signal Logger", () -> Commands.runOnce(SignalLogger::start));
-    autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
     // SmartDashboard.updateValues();
     // Put the auto chooser on the dashboard
     // NodeManager nodeManager =
