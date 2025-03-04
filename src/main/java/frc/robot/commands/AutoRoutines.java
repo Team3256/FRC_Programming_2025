@@ -114,6 +114,64 @@ public class AutoRoutines {
     return routine;
   }
 
+  public AutoRoutine l4PreloadBottomSource2() {
+    final AutoRoutine routine = m_factory.newRoutine("l4PreloadBottomSource2");
+    final AutoTrajectory preloadH = routine.trajectory("MID-H");
+    final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
+    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
+    final AutoTrajectory CtoSource = routine.trajectory("C-Source2");
+    final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
+
+    routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
+    preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    preloadH
+        .done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
+                .andThen(
+                    m_autoCommands
+                        .home()
+                        .alongWith(Commands.waitSeconds(.5).andThen(HtoSource.spawnCmd()))));
+
+    HtoSource.atTimeBeforeEnd(.5)
+        .onTrue(
+            m_autoCommands
+                .goToSource()
+                .until(m_endEffector.rightBeamBreak)
+                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
+    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    SourceToC.done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
+                .andThen(
+                    m_autoCommands
+                        .home()
+                        .alongWith(Commands.waitSeconds(.5).andThen(CtoSource.spawnCmd()))));
+
+    CtoSource.atTimeBeforeEnd(.5)
+        .onTrue(
+            m_autoCommands
+                .goToSource()
+                .until(m_endEffector.rightBeamBreak)
+                .andThen(m_autoCommands.home().alongWith(SourceToD.spawnCmd())));
+    SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    SourceToD.done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
+                .andThen(m_autoCommands.home()));
+
+    return routine;
+  }
+
   private static class AutoCommands {
 
     private final Elevator m_elevator;
