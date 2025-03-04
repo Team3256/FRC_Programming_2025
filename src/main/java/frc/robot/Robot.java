@@ -10,11 +10,9 @@ package frc.robot;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.NT4PublisherNoFMS;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -31,7 +29,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
  */
 @Logged
 public class Robot extends LoggedRobot {
-  private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
 
@@ -180,19 +177,11 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
   }
 
   @Override
   public void teleopExit() {
     super.teleopExit();
-    if (!DriverStation.isFMSAttached()) {
-      // Ensures that enabling after a disable doesn't cause the superstructure to
-      // move.
-      m_robotContainer.superstructureForceIdle();
-    }
   }
 
   /** This function is called periodically during operator control. */

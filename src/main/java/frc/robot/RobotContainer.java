@@ -26,7 +26,6 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
@@ -107,7 +106,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    configureBindings();
+    configureOperatorBinds();
     m_autoRoutines =
         new AutoRoutines(
             drivetrain.createAutoFactory(drivetrain::trajLogger), elevator, arm, endEffector);
@@ -128,7 +127,7 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
+  private void configureOperatorBinds() {
 
     m_operatorController
         .x("Preset for source")
@@ -184,29 +183,10 @@ public class RobotContainer {
     autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
     autoChooser.addRoutine("l4Preload", m_autoRoutines::l4Preload);
-
-    // SmartDashboard.updateValues();
-    // Put the auto chooser on the dashboard
-    // NodeManager nodeManager =
-    // new NodeManager(drivetrain, ,
-    // drivetrain.createAutoFactory(drivetrain::trajLogger));
-    // ArrayList<Node> nodes = new ArrayList<>();
-    // nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H,
-    // ScoringTypes.L1));
-    // nodes.add(
-    // new Node(
-    // NodeType.SCORE_AND_INTAKE,
-    // IntakeLocations.Source2,
-    // ScoringLocations.A,
-    // ScoringTypes.L1));
-    // nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
-    // nodes.add(
-    // new Node(
-    // NodeType.SCORE_AND_INTAKE,
-    // IntakeLocations.Source2,
-    // ScoringLocations.B,
-    // ScoringTypes.L1));
-    // autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
+    autoChooser.addRoutine("mobilityTop", m_autoRoutines::mobilityTop);
+    autoChooser.addRoutine("mobilityBottom", m_autoRoutines::mobilityBottom);
+    autoChooser.addRoutine("l4PreloadBottomSource1", m_autoRoutines::l4PreloadBottomSource1);
+    autoChooser.addRoutine("l4PreloadBottomSource2", m_autoRoutines::l4PreloadBottomSource2);
 
     SmartDashboard.putData("auto chooser", autoChooser);
 
@@ -347,21 +327,8 @@ public class RobotContainer {
         .povLeft()
         .whileTrue(
             Commands.parallel( // Both run AutoAlign & check tolerance
-                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto
-                    drivetrain.repulsorCommand(
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, true);
-                        }),
-                    AutoAim.translateToPose(
-                        drivetrain,
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, true);
-                        }),
-                    () -> {
-                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
-                    }),
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true)),
                 Commands.waitUntil(
                         () ->
                             AutoAim.isInToleranceCoral(
@@ -370,34 +337,17 @@ public class RobotContainer {
                     // rumble
                     // controller
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
-                        })
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5))
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                        })));
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0))));
 
-    // Same as prev, except find the NOT righthanded one.
+    // Same as prev, except find the NOT lefthanded one.
     m_driverController
         .povRight()
         .whileTrue(
             Commands.parallel( // Both run AutoAlign & check tolerance
-                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto
-                    drivetrain.repulsorCommand(
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, false);
-                        }),
-                    AutoAim.translateToPose(
-                        drivetrain,
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.getState().Pose, false);
-                        }),
-                    () -> {
-                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
-                    }),
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false)),
                 Commands.waitUntil(
                         () ->
                             AutoAim.isInToleranceCoral(
@@ -406,19 +356,11 @@ public class RobotContainer {
                     // rumble
                     // controller
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
-                        })
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5))
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                        })));
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0))));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
-  }
-
-  public void superstructureForceIdle() {
-    superstructure.setState(StructureState.IDLE);
   }
 
   public void periodic() {

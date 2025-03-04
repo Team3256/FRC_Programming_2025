@@ -19,12 +19,6 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.DriveFeedforwards;
-import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -34,7 +28,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -52,7 +45,6 @@ import frc.robot.Constants;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
-import frc.robot.utils.RepulsorFieldPlanner;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -110,25 +102,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.SysIdSwerveSteerGains();
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
-
-  private final SwerveSetpointGenerator setpointGenerator =
-      new SwerveSetpointGenerator(
-          SwerveConstants.ppRobotConfig, SwerveConstants.maxSteerModuleSpeed);
-  private SwerveSetpoint previousSetpoint =
-      new SwerveSetpoint(
-          new ChassisSpeeds(0, 0, 0),
-          new SwerveModuleState[] {
-            new SwerveModuleState(0, new Rotation2d(0)),
-            new SwerveModuleState(0, new Rotation2d(0)),
-            new SwerveModuleState(0, new Rotation2d(0)),
-            new SwerveModuleState(0, new Rotation2d(0))
-          },
-          new DriveFeedforwards(
-              new double[] {0},
-              new double[] {0},
-              new double[] {0},
-              new double[] {0},
-              new double[] {0}));
 
   /*
    * SysId routine for characterizing translation. This is used to find PID gains
@@ -195,8 +168,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           new Transform3d(
               new Translation3d(-.211, .314, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
 
-  public final RepulsorFieldPlanner m_repulsor = new RepulsorFieldPlanner();
-
   private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
   private int _calculatedOffsetToRobotCenterCount = 0;
 
@@ -234,7 +205,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configurePathPlanner();
     questNav.resetPose(
         new Pose3d(
             new Translation3d(3.188991069793701, 4.108436107635498, 0),
@@ -261,7 +231,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configurePathPlanner();
     // resetPose(new Pose2d());
   }
 
@@ -295,42 +264,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    configurePathPlanner();
-    // resetPose(new Pose2d());
   }
 
-  public Pose2d targetPose() {
-    return new Pose2d(
-        m_pathXController.getSetpoint(),
-        m_pathYController.getSetpoint(),
-        Rotation2d.fromRadians(m_pathThetaController.getSetpoint()));
-  }
-
-  public Command repulsorCommand(Supplier<Pose2d> target) {
-    //    if (target == null) {
-    //      System.out.println("**** repulsorCommand disabled because of null target");
-    //      return Commands.none();
-    //    }
-    // if (!FeatureFlags.kAutoAlignEnabled) {
-    // System.out.println("**** repulsorCommand disabled because of
-    // kAutoAlignEnabled =
-    // false");
-    // return Commands.none();
-    // }
+  public Command pidToPose(Supplier<Pose2d> target) {
+    if (target == null) {
+      System.out.println("**** pidToPose disabled because of null target");
+      return Commands.none();
+    }
     return run(() -> {
-          Logger.recordOutput("Repuslor/RepulsorTarget", target.get());
-          Logger.recordOutput("Repuslor/Setpoint", targetPose());
-          Logger.recordOutput("Repuslor/RobotPose", this.getState().Pose);
-          Logger.recordOutput("Repuslor/Speeds", this.getState().Speeds);
-          Logger.recordOutput("Repuslor/Running", true);
-          Logger.recordOutput("TargetX", target.get().getX());
-          Logger.recordOutput("TargetY", target.get().getY());
-          // m_repulsor.setGoal(target.get().getTranslation());
-          // if
-          // (questNav.getRobotPose().get().toPose2d().getTranslation().getDistance(target.get().getTranslation())
-          // < .3) {
-          // ;\
-          //          if (Robot.isReal()) {
+          Logger.recordOutput("AutoAlign/Target", target.get());
+          Logger.recordOutput("AutoAlign/Running", true);
           this.setControl(
               m_pathApplyFieldSpeeds.withSpeeds(
                   new ChassisSpeeds(
@@ -339,30 +282,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                       headingController.calculate(
                           this.getState().Pose.getRotation().getRadians(),
                           target.get().getRotation().getRadians()))));
-          //          } else {
-          //            this.setControl(
-          //                m_pathApplyFieldSpeeds.withSpeeds(
-          //                    new ChassisSpeeds(
-          //                        xController.calculate(this.getState().Pose.getX(),
-          // target.get().getX()),
-          //                        yController.calculate(this.getState().Pose.getY(),
-          // target.get().getY()),
-          //                        headingController.calculate(
-          //                            this.getState().Pose.getRotation().getRadians(),
-          //                            target.get().getRotation().getRadians()))));
-          //          }
-          // } else {
-          // followPathRepulsor(
-          // questNav.getRobotPose().get().toPose2d(),
-          // m_repulsor.getCmd(
-          // questNav.getRobotPose().get().toPose2d(),
-          // this.getState().Speeds,
-          // 4,
-          // true,
-          // target.get().getRotation()));
-          // }
         })
-        .andThen(
+        .finallyDo(
             () -> {
               Logger.recordOutput("Repuslor/Running", false);
             });
@@ -395,21 +316,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public void resetOdometryAndPose(Pose2d pose) {
     super.resetPose(pose);
     this.questNav.resetPose(new Pose3d(pose));
-  }
-
-  public void followPathRepulsor(Pose2d pose, SwerveSample sample) {
-    m_pathThetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    var targetSpeeds = sample.getChassisSpeeds();
-    targetSpeeds.vyMetersPerSecond = m_pathXController.calculate(pose.getX(), sample.x);
-    targetSpeeds.vyMetersPerSecond = m_pathYController.calculate(pose.getY(), sample.y);
-    targetSpeeds.omegaRadiansPerSecond +=
-        m_pathThetaController.calculate(pose.getRotation().getRadians(), sample.heading);
-    this.setControl(
-        m_pathApplyFieldSpeeds
-            .withSpeeds(targetSpeeds)
-            .withWheelForceFeedforwardsX(sample.moduleForcesX())
-            .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 
   /**
@@ -550,19 +456,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
-  private void configurePathPlanner() {
-    AutoBuilder.configure(
-        () -> this.getState().Pose,
-        this::resetPose,
-        () -> this.getState().Speeds,
-        this::driveRobotRelativeWithFF,
-        new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
-        SwerveConstants.ppRobotConfig,
-        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-        this);
-  }
-
   public void addPhotonEstimate(
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
@@ -586,24 +479,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
               updateSimState(deltaTime, RobotController.getBatteryVoltage());
             });
     m_simNotifier.startPeriodic(kSimLoopPeriod);
-  }
-
-  public void driveRobotRelativeWithFF(ChassisSpeeds speeds, DriveFeedforwards feedforwards) {
-    this.setControl(
-        new SwerveRequest.ApplyRobotSpeeds()
-            .withSpeeds(speeds)
-            .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
-            .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons()));
-  }
-
-  public void driveFieldRelative(double xVelocity, double yVelocity, double angularVelocity) {
-
-    previousSetpoint =
-        setpointGenerator.generateSetpoint(
-            previousSetpoint, new ChassisSpeeds(xVelocity, yVelocity, angularVelocity), 0.02);
-    this.setControl(
-        new SwerveRequest.ApplyFieldSpeeds()
-            .withSpeeds(this.getKinematics().toChassisSpeeds(previousSetpoint.moduleStates())));
   }
 
   /**
