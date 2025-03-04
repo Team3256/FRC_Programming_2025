@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
@@ -38,7 +39,9 @@ public class Superstructure {
     PROCESSOR,
     SCORE_CORAL,
     PREHOME,
-    HOME
+    HOME,
+    CANCEL_ALL,
+    AUTO
   }
 
   public static enum ManipulatorSide {
@@ -243,10 +246,16 @@ public class Superstructure {
         .onTrue(arm.toHome())
         .and(arm.reachedPosition.and(elevator.reachedPosition))
         .onTrue(this.setState(StructureState.IDLE));
-    //    stateTriggers
-    //        .get(StructureState.HOME)
-    //        .and(prevStateTriggers.get(StructureState.PREHOME).negate())
-    //        .onTrue(this.setState(StructureState.PREHOME));
+
+    stateTriggers
+        .get(StructureState.CANCEL_ALL)
+        .onTrue(elevator.off())
+        .onTrue(arm.off())
+        .onTrue(endEffector.algaeOff())
+        .onTrue(endEffector.coralOff());
+
+    RobotModeTriggers.teleop().toggleOnTrue(this.setState(StructureState.IDLE));
+    RobotModeTriggers.autonomous().whileTrue(this.setState(StructureState.AUTO));
   }
 
   // call manually
