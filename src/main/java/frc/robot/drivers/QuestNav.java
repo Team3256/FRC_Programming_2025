@@ -26,7 +26,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
 public class QuestNav {
@@ -205,56 +204,6 @@ public class QuestNav {
   public void cleanUpQuestCommand() {
     if (miso.get() == 99) {
       mosi.set(0);
-    }
-  }
-
-  public int fiducialId() {
-    return 0;
-  }
-
-  private void updateVelocity() {
-    if (previousPose == null) {
-      previousPose = getRobotPose();
-      previousTime = timestamp.get();
-      return;
-    }
-    double currentTime = timestamp.get();
-    double deltaTime = currentTime - previousTime;
-    if (deltaTime == 0) {
-      return;
-    }
-    velocity =
-        new ChassisSpeeds(
-            (getPosition().getX() - previousPose.getTranslation().getX()) / deltaTime,
-            (getPosition().getY() - previousPose.getTranslation().getY()) / deltaTime,
-            (getRotation().getZ() - previousPose.getRotation().getZ()) / deltaTime);
-    previousTime = currentTime;
-    previousPose = getRobotPose();
-  }
-
-  public ChassisSpeeds getVelocity() {
-    if (null != velocity) {
-      return velocity;
-    }
-    return new ChassisSpeeds();
-  }
-
-  public void update() {
-    if (RobotBase.isReal()) {
-      cleanUpQuestCommand();
-      updateVelocity();
-
-      Pose2d currPose = getRobotPose().toPose2d();
-      Logger.recordOutput(
-          "Quest POSE",
-          new double[] {currPose.getX(), currPose.getY(), currPose.getRotation().getDegrees()});
-
-      ChassisSpeeds velocity = getVelocity();
-      Logger.recordOutput(
-          "Velocity",
-          new double[] {
-            velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, velocity.omegaRadiansPerSecond
-          });
     }
   }
 

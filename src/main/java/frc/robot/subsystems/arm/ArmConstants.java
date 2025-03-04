@@ -26,7 +26,6 @@ public final class ArmConstants {
   /* Misc */
   public static final boolean kUseFOC = false;
   public static final boolean kUseMotionMagic = true; // idk
-  public static final double updateFrequency = 50.0;
   public static final int flashConfigRetries = 5;
 
   public static final Angle maxRotations = Rotations.of(2);

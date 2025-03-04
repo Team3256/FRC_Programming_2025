@@ -9,21 +9,13 @@ package frc.robot.subsystems.swerve;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.pathplanner.lib.config.ModuleConfig;
-import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public final class SwerveConstants {
-
-  public static final double wheelRadiusMaxVelocity = 2 * Math.PI; // Rad/Sec
-  public static final double wheelRadiusMaxRampRate = Math.PI / 2; // Rad/Sec^2
-
   // source 1
   public static final Rotation2d sourceLeft1 = new Rotation2d(125.989);
 
@@ -57,21 +49,4 @@ public final class SwerveConstants {
       new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY);
   public static final Translation2d backRight =
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY);
-  public static final RobotConfig ppRobotConfig =
-      new RobotConfig(
-          SwerveConstants.robotMass,
-          SwerveConstants.robotMOI,
-          new ModuleConfig(
-              TunerConstants.kWheelRadius,
-              TunerConstants.kSpeedAt12Volts,
-              1,
-              DCMotor.getKrakenX60(1),
-              Amps.of(80),
-              1),
-          frontLeft,
-          frontRight,
-          backLeft,
-          backRight);
-
-  public static final AngularVelocity maxSteerModuleSpeed = RotationsPerSecond.of(1);
 }
