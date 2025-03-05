@@ -40,6 +40,7 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AlgaeIntakeTargets;
 import frc.robot.utils.autoaim.AutoAim;
@@ -82,10 +83,30 @@ public class RobotContainer {
   private final Vision vision =
       new Vision(
           drivetrain::addPhotonEstimate,
-          new VisionIOPhotonVision(VisionConstants.leftCam, VisionConstants.robotToLeftCam),
-          new VisionIOPhotonVision(VisionConstants.rightCam, VisionConstants.robotToRightCam),
-          new VisionIOPhotonVision(VisionConstants.frontCam, VisionConstants.robotToFrontCam),
-          new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam));
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.leftCam,
+                  VisionConstants.robotToLeftCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.leftCam, VisionConstants.robotToLeftCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.rightCam,
+                  VisionConstants.robotToRightCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.rightCam, VisionConstants.robotToRightCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.frontCam,
+                  VisionConstants.robotToFrontCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.frontCam, VisionConstants.robotToFrontCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.backCam,
+                  VisionConstants.robotToBackCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam));
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
