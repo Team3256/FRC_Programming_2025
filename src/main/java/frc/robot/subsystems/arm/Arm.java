@@ -210,6 +210,16 @@ public class Arm extends DisableSubsystem {
         () -> rightSide.getAsBoolean() ? 1 : -1);
   }
 
+  public Command toGroundAlgaeLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.groundAlgaeRightPosition
+                : ArmConstants.groundAlgaeLeftPosition,
+        true,
+        () -> rightSide.getAsBoolean() ? 1 : -1);
+  }
+
   @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(

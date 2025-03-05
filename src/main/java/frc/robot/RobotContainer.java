@@ -26,6 +26,8 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Superstructure.ManipulatorSide;
+import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
@@ -152,44 +154,36 @@ public class RobotContainer {
 
     m_operatorController
         .x("Preset for source")
-        .onTrue(superstructure.setState(Superstructure.StructureState.PRESOURCE));
+        .onTrue(superstructure.setState(StructureState.PRESOURCE));
     m_operatorController
         .b("Home everything")
-        .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));
-    m_operatorController
-        .a("Dealgae L2")
-        .onTrue(superstructure.setState(Superstructure.StructureState.DEALGAE_L2));
-    m_operatorController
-        .y("Dealgae L3")
-        .onTrue(superstructure.setState(Superstructure.StructureState.DEALGAE_L3));
+        .onTrue(superstructure.setState(StructureState.PREHOME));
+    m_operatorController.a("Dealgae L2").onTrue(superstructure.setState(StructureState.DEALGAE_L2));
+    m_operatorController.y("Dealgae L3").onTrue(superstructure.setState(StructureState.DEALGAE_L3));
 
-    m_operatorController
-        .povUp("L4 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L4));
-    m_operatorController
-        .povRight("L3 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L3));
-    m_operatorController
-        .povDown("L2 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L2));
+    m_operatorController.povUp("L4 Preset").onTrue(superstructure.setState(StructureState.L4));
+    m_operatorController.povRight("L3 Preset").onTrue(superstructure.setState(StructureState.L3));
+    m_operatorController.povDown("L2 Preset").onTrue(superstructure.setState(StructureState.L2));
     m_operatorController
         .rightBumper("Manipulator Side Right")
-        .onTrue(superstructure.setManipulatorSide(Superstructure.ManipulatorSide.RIGHT));
+        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
     m_operatorController
         .leftBumper("Manipulator Side Left")
-        .onTrue(superstructure.setManipulatorSide(Superstructure.ManipulatorSide.LEFT));
+        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.LEFT));
 
     m_operatorController
         .rightTrigger("Score Coral")
-        .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_CORAL));
+        .onTrue(superstructure.setState(StructureState.SCORE_CORAL));
     m_operatorController
         .leftTrigger("Score Algae")
-        .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_ALGAE));
+        .onTrue(superstructure.setState(StructureState.SCORE_ALGAE));
 
     new Trigger(() -> -m_operatorController.getLeftY() > .5)
-        .onTrue(superstructure.setState(Superstructure.StructureState.BARGE));
+        .onTrue(superstructure.setState(StructureState.BARGE));
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
-        .onTrue(superstructure.setState(Superstructure.StructureState.PROCESSOR));
+        .onTrue(superstructure.setState(StructureState.PROCESSOR));
+    new Trigger(() -> -m_operatorController.getRightY() < -.5)
+        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
   }
 
   private void configureChoreoAutoChooser() {

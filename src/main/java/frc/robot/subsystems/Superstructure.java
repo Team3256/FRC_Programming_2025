@@ -34,6 +34,7 @@ public class Superstructure {
     SOURCE,
     BARGE,
     SCORE_ALGAE,
+    GROUND_ALGAE,
     CLIMB,
     PROCESSOR,
     SCORE_CORAL,
@@ -163,7 +164,16 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PROCESSOR)
         .onTrue(elevator.toProcessorPosition())
+        .and(elevator.reachedPosition)
+        .debounce(.04) // wait two loop times
         .onTrue(arm.toProcessorLevel(rightManipulatorSide));
+
+    stateTriggers
+        .get(StructureState.GROUND_ALGAE)
+        .onTrue(elevator.toGroundAlgaePosition())
+        .and(elevator.reachedPosition)
+        .debounce(.04) // same as above cuz this lowk might break
+        .onTrue(arm.toGroundAlgaeLevel(rightManipulatorSide));
 
     stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
 
