@@ -17,7 +17,7 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public final class SwerveConstants {
   // source 1
-  public static final Rotation2d sourceLeft1 = new Rotation2d(125.989);
+  public static final Rotation2d sourceLeft1 = new Rotation2d(125.989 + 90);
 
   // source 2
   public static final Rotation2d sourceRight2 = new Rotation2d(-sourceLeft1.getDegrees());
