@@ -19,10 +19,10 @@ public class VisionConstants {
       AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);
 
   // Camera names, must match names configured on coprocessor
-  public static String leftCam = "camera_0";
-  public static String rightCam = "camera_1";
-  public static String frontCam = "camera_2";
-  public static String backCam = "camera_3";
+  public static String leftCam = "left";
+  public static String rightCam = "right";
+  public static String frontCam = "front";
+  public static String backCam = "back";
 
   // Robot to camera transforms
   // (Not used by Limelight, configure in web UI instead)
@@ -31,43 +31,43 @@ public class VisionConstants {
           Units.inchesToMeters(-7.615),
           Units.inchesToMeters(9.223),
           Units.inchesToMeters(26.457),
-          new Rotation3d(0.0, Units.degreesToRadians(-15), Math.PI / 2));
+          new Rotation3d(0.0, Units.degreesToRadians(-15), Units.degreesToRadians(90)));
   public static Transform3d robotToRightCam =
       new Transform3d(
           Units.inchesToMeters(-7.615),
           Units.inchesToMeters(-9.223),
           Units.inchesToMeters(26.957),
-          new Rotation3d(0.0, Units.degreesToRadians(-15), 3 * Math.PI / 2));
+          new Rotation3d(0.0, Units.degreesToRadians(-15), Units.degreesToRadians(-90)));
   public static Transform3d robotToFrontCam =
       new Transform3d(
           Units.inchesToMeters(13.305),
           Units.inchesToMeters(-0.002),
           Units.inchesToMeters(6.422),
-          new Rotation3d(0.0, Units.degreesToRadians(65), 0.0));
+          new Rotation3d(0.0, Units.degreesToRadians(65), 0));
   public static Transform3d robotToBackCam =
       new Transform3d(
           Units.inchesToMeters(-13.305),
           Units.inchesToMeters(-0.002),
           Units.inchesToMeters(6.422),
-          new Rotation3d(0.0, Units.degreesToRadians(65), Math.PI));
+          new Rotation3d(0.0, Units.degreesToRadians(65), Units.degreesToRadians(180)));
 
   // Basic filtering thresholds
-  public static double maxAmbiguity = 0.3;
-  public static double maxZError = 0.75;
+  public static double maxAmbiguity = 0.1;
+  public static double maxZError = 0.5;
 
   // Standard deviation baselines, for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)
-  public static double linearStdDevBaseline = 0.02; // Meters
-  public static double angularStdDevBaseline = 0.06; // Radians
+  public static double linearStdDevBaseline = 0.01; // Meters
+  public static double angularStdDevBaseline = 0.1; // Radians
 
   // Standard deviation multipliers for each camera
   // (Adjust to trust some cameras more than others)
   public static double[] cameraStdDevFactors =
       new double[] {
-        1.0, // Camera 0
-        1.0, // Camera 1
-        1.0, // Camera 2
-        1.0 // Camera 3
+        1, // Camera 0
+        1, // Camera 1
+        1, // Camera 2
+        1 // Camera 3
       };
 
   // Multipliers to apply for MegaTag 2 observations

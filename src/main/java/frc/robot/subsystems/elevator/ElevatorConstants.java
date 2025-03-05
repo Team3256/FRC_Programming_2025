@@ -103,9 +103,9 @@ public final class ElevatorConstants {
         .plus(kReefPositionsPracticeField[3]),
   };
 
-  public static final Angle[] kDealgaePositions = {Rotations.of(1.1), Rotations.of(1.69)};
+  public static final Angle[] kDealgaePositions = {Rotations.of(1.1), Rotations.of(1.70)};
 
-  public static final Angle sourcePosition = Rotations.of(3.522);
+  public static final Angle sourcePosition = Rotations.of(3.442);
   public static final Angle bargePosition = Rotations.of(5);
 
   public static final Angle homePosition = Rotations.of(0.15);

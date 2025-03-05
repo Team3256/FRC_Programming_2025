@@ -80,10 +80,10 @@ public final class ArmConstants {
                   .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                  .withFeedbackRemoteSensorID(armMotorEncoderId)
-                  .withSensorToMechanismRatio(1.3333333333333)
-                  .withRotorToSensorRatio(106.665));
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                  //                  .withFeedbackRemoteSensorID(armMotorEncoderId)
+                  .withSensorToMechanismRatio(142.22)
+                  .withRotorToSensorRatio(1));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()

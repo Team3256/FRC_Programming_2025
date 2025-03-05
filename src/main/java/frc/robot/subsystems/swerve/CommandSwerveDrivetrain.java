@@ -21,7 +21,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -166,7 +165,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public final QuestNav questNav =
       new QuestNav(
           new Transform3d(
-              new Translation3d(-.211, .314, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
+              new Translation3d(-.280, .247, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
 
   private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
   private int _calculatedOffsetToRobotCenterCount = 0;
@@ -207,7 +206,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     questNav.resetPose(
         new Pose3d(
-            new Translation3d(3.188991069793701, 4.108436107635498, 0),
+            new Translation3d(0.44800877571105957, 6.396022319793701, 0),
             new Rotation3d(new Rotation2d())));
     // resetPose(new Pose2d());
   }
@@ -434,25 +433,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
       // Utils.getCurrentTimeSeconds());
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
-      //      Logger.recordOutput(
-      //          "QuestNav/fixedPose",
-      //          new Pose2d(
-      //              questNav.getRobotPose().get().getX(),
-      //              questNav.getRobotPose().get().getY(),
-      //              questNav.getRobotPose().get().getRotation().toRotation2d()));
-      //      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
-      //      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
+      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
+      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
 
-      this.addVisionMeasurement(
-          questNav.getRobotPose().toPose2d(),
-          questNav.getCaptureTime(),
-          VecBuilder.fill(0.0001, 0.0001, .99999));
+      //      this.addVisionMeasurement(
+      //          questNav.getRobotPose().toPose2d(),
+      //          Utils.getCurrentTimeSeconds(),
+      //          VecBuilder.fill(0.0001, 0.0001, .99999));
     } else {
       a_questNavNotConnected.set(true);
     }
     if (Constants.FeatureFlags.kPhotonEnabled) {
       photonPoseEstimator.update(
           this.getPigeon2().getRotation2d(), this.getStateCopy().ModulePositions);
+      Logger.recordOutput("Vision/photonEstimate", photonPoseEstimator.getEstimatedPosition());
     }
   }
 
