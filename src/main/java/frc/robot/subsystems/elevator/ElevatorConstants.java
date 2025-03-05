@@ -84,7 +84,7 @@ public final class ElevatorConstants {
   // Please tune
 
   public static final Angle[] kReefPositionsPracticeField = {
-    Rotations.of(0.0), Rotations.of(1.2), Rotations.of(2.6), Rotations.of(4.974)
+    Rotations.of(0.0), Rotations.of(1.2), Rotations.of(2.6), Rotations.of(4.78)
   };
   public static final Distance[] kReefPositionsMeters = Constants.branchHeights.distances;
 
