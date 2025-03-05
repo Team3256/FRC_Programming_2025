@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.utils.NT4PublisherNoFMS;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -21,6 +23,8 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import static frc.robot.subsystems.swerve.SwerveConstants.aziTimeout;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -177,6 +181,20 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+
+    this.m_robotContainer
+            .getDrivetrain()
+            .applyRequest(
+                    new SwerveRequest.FieldCentricFacingAngle()
+                            .withDeadband(0.15 * TunerConstants.kSpeedAt12Volts.magnitude())
+                            .withVelocityY(
+                                    -this.m_robotContainer.m_driverController.getLeftX()
+                                            * TunerConstants.kSpeedAt12Volts.magnitude())
+                            .withVelocityX(
+                                    -this.m_robotContainer.m_driverController.getLeftY()
+                                            * TunerConstants.kSpeedAt12Volts.magnitude())
+                            .withTargetDirection(this.m_robotContainer.getDrivetrain().getCurrentHeading()))
+            .withTimeout(aziTimeout);
   }
 
   @Override

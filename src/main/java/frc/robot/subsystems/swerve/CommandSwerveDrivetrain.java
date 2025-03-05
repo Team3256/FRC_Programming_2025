@@ -317,6 +317,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     this.questNav.resetPose(new Pose3d(pose));
   }
 
+  public Rotation2d getCurrentHeading() {
+    if (!Utils.isSimulation() && questNav.isActive()) {
+      return this.questNav.getRotation().toRotation2d();
+    } else {
+      a_questNavNotConnected.set(true);
+      return this.getPigeon2().getRotation2d().plus(new Rotation2d(90));
+    }
+  }
+
+
   /**
    * Returns a command that applies the specified control request to this swerve drivetrain.
    *

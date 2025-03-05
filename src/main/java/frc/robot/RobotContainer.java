@@ -203,6 +203,10 @@ public class RobotContainer {
     RobotModeTriggers.autonomous().whileTrue(autoChooser.selectedCommandScheduler());
   }
 
+  public CommandSwerveDrivetrain getDrivetrain() {
+    return this.drivetrain;
+  }
+
   private void configureSwerve() {
     // LinearVelocity is a vector, so we need to get the magnitude
     final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
