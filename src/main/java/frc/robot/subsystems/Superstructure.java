@@ -144,22 +144,13 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PRESOURCE)
         .and(elevator.isSafeForArm.negate())
-        .onTrue(arm.toSafePosition(rightManipulatorSide.negate()));
+        .onTrue(arm.toSafePosition(() -> false));
     // Once the elevator reaches source position, we start move the arm around
     stateTriggers
         .get(StructureState.SOURCE)
         .and(elevator.isSafeForArm)
-        .onTrue(arm.toSourceLevel(rightManipulatorSide))
-        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
-        .and(rightManipulatorSide)
-        .and(endEffector.rightBeamBreak)
-        .onTrue(this.setState(StructureState.PREHOME));
-    stateTriggers
-        .get(StructureState.SOURCE)
-        .and(elevator.isSafeForArm)
-        .onTrue(arm.toSourceLevel(rightManipulatorSide))
-        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
-        .and(rightManipulatorSide.negate())
+        .onTrue(arm.toSourceLevel(() -> false))
+        .onTrue(endEffector.setSourceVelocity(() -> false))
         .and(endEffector.leftBeamBreak)
         .onTrue(this.setState(StructureState.PREHOME));
 
@@ -184,7 +175,6 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SOURCE))
-        .onTrue(elevator.toArmSafePosition())
         .and(elevator.isSafeForArm)
         .onTrue(arm.toHome(rightManipulatorSide.negate()))
         .and(arm.isSafePosition)
