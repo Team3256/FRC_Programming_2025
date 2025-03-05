@@ -114,7 +114,7 @@ public class AutoRoutines {
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.rightBeamBreak)
-                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
+                .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
@@ -154,7 +154,7 @@ public class AutoRoutines {
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.rightBeamBreak)
-                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
+                .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
@@ -172,7 +172,7 @@ public class AutoRoutines {
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.rightBeamBreak)
-                .andThen(m_autoCommands.home().alongWith(SourceToD.spawnCmd())));
+                .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
     SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
         .onTrue(
@@ -217,9 +217,21 @@ public class AutoRoutines {
     public Command home() {
       return m_elevator
           .toArmSafePosition()
-          .alongWith(Commands.waitUntil(m_elevator.isSafeForArm).andThen(m_arm.toHome(() -> false)))
           .alongWith(m_endEffector.coralOff())
-          .alongWith(Commands.waitUntil(m_arm.isSafePosition).andThen(m_elevator.toHome()));
+          .until(m_elevator.isSafeForArm)
+          .andThen(m_arm.toHome())
+          .until(m_arm.isSafePosition)
+          .andThen(m_elevator.toHome());
+    }
+
+    public Command homeSource() {
+      return m_elevator
+          .toArmSafePosition()
+          .alongWith(m_endEffector.coralOff())
+          .until(m_elevator.isSafeForArm)
+          .andThen(m_arm.toHome(() -> false))
+          .until(m_arm.isSafePosition)
+          .andThen(m_elevator.toHome());
     }
   }
 }
