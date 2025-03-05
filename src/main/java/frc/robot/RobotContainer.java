@@ -334,7 +334,11 @@ public class RobotContainer {
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    m_driverController.a().onTrue(drivetrain.applyRequest(() -> (SwerveRequest) lockHoriz.withModuleDirection(uniformHLockOffset)));
+    m_driverController
+        .a()
+        .onTrue(
+            drivetrain.applyRequest(
+                () -> (SwerveRequest) lockHoriz.withModuleDirection(uniformHLockOffset)));
 
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
