@@ -110,6 +110,14 @@ public class Elevator extends DisableSubsystem {
                 / (ElevatorConstants.kEncoderBTeethCount - ElevatorConstants.kEncoderATeethCount)));
   }
 
+  public Command toProcessorPosition() {
+    return this.setPosition(ElevatorConstants.processorPosition.in(Rotations));
+  }
+
+  public Command toGroundAlgaePosition() {
+    return this.setPosition(ElevatorConstants.groundAlgaePosition.in(Rotations));
+  }
+
   public Command toArmSafePosition() {
     return this.setPosition(ElevatorConstants.armSafePosition.in(Rotations));
   }

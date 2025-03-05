@@ -59,6 +59,7 @@ public class Arm extends DisableSubsystem {
     super(enabled);
 
     this.armIO = armIO;
+    armIO.resetPosition(Rotations.of(.25));
   }
 
   @Override
@@ -173,6 +174,16 @@ public class Arm extends DisableSubsystem {
         () -> 0);
   }
 
+  public Command toProcessorLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.processorRightPosition
+                : ArmConstants.processorLeftPosition,
+        true,
+        () -> 0);
+  }
+
   @AutoLogOutput
   public boolean isSafePosition() {
     return (armIOAutoLogged.armMotorPosition + 5) % 1 >= ArmConstants.safeLeftPosition
@@ -196,7 +207,17 @@ public class Arm extends DisableSubsystem {
                 ? ArmConstants.bargeRightPosition
                 : ArmConstants.bargeLeftPosition,
         true,
-        () -> 0);
+        () -> rightSide.getAsBoolean() ? 1 : -1);
+  }
+
+  public Command toGroundAlgaeLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.groundAlgaeRightPosition
+                : ArmConstants.groundAlgaeLeftPosition,
+        true,
+        () -> rightSide.getAsBoolean() ? 1 : -1);
   }
 
   @AutoLogOutput

@@ -11,7 +11,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -23,12 +22,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Superstructure.ManipulatorSide;
 import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -41,6 +40,10 @@ import frc.robot.subsystems.endeffector.EndEffectorIOSim;
 import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AlgaeIntakeTargets;
 import frc.robot.utils.autoaim.AutoAim;
@@ -79,6 +82,34 @@ public class RobotContainer {
           true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
   private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
+
+  private final Vision vision =
+      new Vision(
+          drivetrain::addPhotonEstimate,
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.leftCam,
+                  VisionConstants.robotToLeftCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.leftCam, VisionConstants.robotToLeftCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.rightCam,
+                  VisionConstants.robotToRightCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.rightCam, VisionConstants.robotToRightCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.frontCam,
+                  VisionConstants.robotToFrontCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.frontCam, VisionConstants.robotToFrontCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.backCam,
+                  VisionConstants.robotToBackCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam));
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -99,8 +130,10 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    configureBindings();
-    m_autoRoutines = new AutoRoutines(drivetrain.createAutoFactory(drivetrain::trajLogger));
+    configureOperatorBinds();
+    m_autoRoutines =
+        new AutoRoutines(
+            drivetrain.createAutoFactory(drivetrain::trajLogger), elevator, arm, endEffector);
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
     configureSwerve();
@@ -118,54 +151,40 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
+  private void configureOperatorBinds() {
 
     m_operatorController
         .x("Preset for source")
-        .onTrue(superstructure.setState(Superstructure.StructureState.PRESOURCE));
+        .onTrue(superstructure.setState(StructureState.PRESOURCE));
     m_operatorController
         .b("Home everything")
-        .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));
-    m_operatorController
-        .a("Dealgae L2")
-        .onTrue(superstructure.setState(Superstructure.StructureState.DEALGAE_L2));
-    m_operatorController
-        .y("Dealgae L3")
-        .onTrue(superstructure.setState(Superstructure.StructureState.DEALGAE_L3));
+        .onTrue(superstructure.setState(StructureState.PREHOME));
+    m_operatorController.a("Dealgae L2").onTrue(superstructure.setState(StructureState.DEALGAE_L2));
+    m_operatorController.y("Dealgae L3").onTrue(superstructure.setState(StructureState.DEALGAE_L3));
 
-    m_operatorController
-        .povUp("L4 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L4));
-    m_operatorController
-        .povRight("L3 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L3));
-    m_operatorController
-        .povDown("L2 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L2));
-    m_operatorController
-        .povLeft("L1 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L1));
-
+    m_operatorController.povUp("L4 Preset").onTrue(superstructure.setState(StructureState.L4));
+    m_operatorController.povRight("L3 Preset").onTrue(superstructure.setState(StructureState.L3));
+    m_operatorController.povDown("L2 Preset").onTrue(superstructure.setState(StructureState.L2));
     m_operatorController
         .rightBumper("Manipulator Side Right")
-        .onTrue(superstructure.setManipulatorSide(Superstructure.ManipulatorSide.RIGHT));
+        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
     m_operatorController
         .leftBumper("Manipulator Side Left")
-        .onTrue(superstructure.setManipulatorSide(Superstructure.ManipulatorSide.LEFT));
+        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.LEFT));
 
     m_operatorController
         .rightTrigger("Score Coral")
-        .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_CORAL));
+        .onTrue(superstructure.setState(StructureState.SCORE_CORAL));
     m_operatorController
         .leftTrigger("Score Algae")
-        .onTrue(superstructure.setState(Superstructure.StructureState.SCORE_ALGAE));
+        .onTrue(superstructure.setState(StructureState.SCORE_ALGAE));
 
     new Trigger(() -> -m_operatorController.getLeftY() > .5)
-        .onTrue(superstructure.setState(Superstructure.StructureState.BARGE));
+        .onTrue(superstructure.setState(StructureState.BARGE));
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
-        .onTrue(superstructure.setState(Superstructure.StructureState.PROCESSOR));
-    new Trigger(() -> -m_operatorController.getRightY() > .5)
-        .onTrue(superstructure.setState(Superstructure.StructureState.CLIMB));
+        .onTrue(superstructure.setState(StructureState.PROCESSOR));
+    new Trigger(() -> -m_operatorController.getRightY() < -.5)
+        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
   }
 
   private void configureChoreoAutoChooser() {
@@ -173,55 +192,11 @@ public class RobotContainer {
     // Add options to the chooser
     autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
-    autoChooser.addCmd(
-        "SysID forward translation dynamic",
-        () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID backward translation dynamic",
-        () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd(
-        "SysID forward translation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID forward translation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kReverse));
-
-    autoChooser.addCmd(
-        "SysID forward rotation dynamic",
-        () -> drivetrain.sysIdRotationDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID backward rotation dynamic",
-        () -> drivetrain.sysIdRotationDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd(
-        "SysID forward rotation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID forward rotation quasitastic",
-        () -> drivetrain.sysIdRotationQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd("Start Signal Logger", () -> Commands.runOnce(SignalLogger::start));
-    autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
-    // SmartDashboard.updateValues();
-    // Put the auto chooser on the dashboard
-    // NodeManager nodeManager =
-    // new NodeManager(drivetrain, ,
-    // drivetrain.createAutoFactory(drivetrain::trajLogger));
-    // ArrayList<Node> nodes = new ArrayList<>();
-    // nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H,
-    // ScoringTypes.L1));
-    // nodes.add(
-    // new Node(
-    // NodeType.SCORE_AND_INTAKE,
-    // IntakeLocations.Source2,
-    // ScoringLocations.A,
-    // ScoringTypes.L1));
-    // nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
-    // nodes.add(
-    // new Node(
-    // NodeType.SCORE_AND_INTAKE,
-    // IntakeLocations.Source2,
-    // ScoringLocations.B,
-    // ScoringTypes.L1));
-    // autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
+    autoChooser.addRoutine("l4Preload", m_autoRoutines::l4Preload);
+    autoChooser.addRoutine("mobilityTop", m_autoRoutines::mobilityTop);
+    autoChooser.addRoutine("mobilityBottom", m_autoRoutines::mobilityBottom);
+    autoChooser.addRoutine("l4PreloadBottomSource1", m_autoRoutines::l4PreloadBottomSource1);
+    autoChooser.addRoutine("l4PreloadBottomSource2", m_autoRoutines::l4PreloadBottomSource2);
 
     SmartDashboard.putData("auto chooser", autoChooser);
 
@@ -371,84 +346,40 @@ public class RobotContainer {
         .povLeft()
         .whileTrue(
             Commands.parallel( // Both run AutoAlign & check tolerance
-                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto
-                    drivetrain.repulsorCommand(
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.questNav.getRobotPose().get().toPose2d(), true);
-                        }),
-                    AutoAim.translateToPose(
-                        drivetrain,
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.questNav.getRobotPose().get().toPose2d(), true);
-                        }),
-                    () -> {
-                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
-                    }),
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true)),
                 Commands.waitUntil(
                         () ->
                             AutoAim.isInToleranceCoral(
-                                drivetrain
-                                    .questNav
-                                    .getRobotPose()
-                                    .get()
-                                    .toPose2d())) // Additionally, once we're in tolerance,
+                                drivetrain.getState()
+                                    .Pose)) // Additionally, once we're in tolerance,
                     // rumble
                     // controller
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
-                        })
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5))
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                        })));
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0))));
 
-    // Same as prev, except find the NOT righthanded one.
+    // Same as prev, except find the NOT lefthanded one.
     m_driverController
         .povRight()
         .whileTrue(
             Commands.parallel( // Both run AutoAlign & check tolerance
-                Commands.either( // Based on the FF, select REPULSOR or PIDAUTOAIM auto
-                    drivetrain.repulsorCommand(
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.questNav.getRobotPose().get().toPose2d(), false);
-                        }),
-                    AutoAim.translateToPose(
-                        drivetrain,
-                        () -> {
-                          return CoralTargets.getHandedClosestTarget(
-                              drivetrain.questNav.getRobotPose().get().toPose2d(), false);
-                        }),
-                    () -> {
-                      return FeatureFlags.kAutoAlignPreferRepulsorPF;
-                    }),
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false)),
                 Commands.waitUntil(
                         () ->
                             AutoAim.isInToleranceCoral(
-                                drivetrain
-                                    .questNav
-                                    .getRobotPose()
-                                    .get()
-                                    .toPose2d())) // Additionally, once we're in tolerance,
+                                drivetrain.getState()
+                                    .Pose)) // Additionally, once we're in tolerance,
                     // rumble
                     // controller
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5);
-                        })
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0.5))
                     .andThen(
-                        () -> {
-                          m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                        })));
+                        () -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0))));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
-  }
-
-  public void superstructureForceIdle() {
-    superstructure.setState(StructureState.IDLE);
   }
 
   public void periodic() {
@@ -474,25 +405,19 @@ public class RobotContainer {
         "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
     Logger.recordOutput(
         "AutoAim/LeftHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(
-            drivetrain.questNav.getRobotPose().get().toPose2d(), true));
+        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
     Logger.recordOutput(
         "AutoAim/RightHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(
-            drivetrain.questNav.getRobotPose().get().toPose2d(), false));
+        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
     Logger.recordOutput(
         "AutoAim/NameOfLHCoralTarget",
-        CoralTargets.getHandedClosestTargetE(
-                drivetrain.questNav.getRobotPose().get().toPose2d(), true)
-            .name());
+        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());
     Logger.recordOutput(
         "AutoAim/NameOfRHCoralTarget",
-        CoralTargets.getHandedClosestTargetE(
-                drivetrain.questNav.getRobotPose().get().toPose2d(), false)
-            .name());
+        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, false).name());
     Logger.recordOutput(
         "AutoAim/AlgaeIntakeTarget",
-        AlgaeIntakeTargets.getClosestTarget(drivetrain.questNav.getRobotPose().get().toPose2d()));
+        AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
     superstructure.periodic();
   }
 }

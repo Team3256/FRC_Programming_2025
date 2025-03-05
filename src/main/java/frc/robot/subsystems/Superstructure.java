@@ -34,11 +34,14 @@ public class Superstructure {
     SOURCE,
     BARGE,
     SCORE_ALGAE,
+    GROUND_ALGAE,
     CLIMB,
     PROCESSOR,
     SCORE_CORAL,
     PREHOME,
-    HOME
+    HOME,
+    CANCEL_ALL,
+    AUTO
   }
 
   public static enum ManipulatorSide {
@@ -142,22 +145,13 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PRESOURCE)
         .and(elevator.isSafeForArm.negate())
-        .onTrue(arm.toSafePosition(rightManipulatorSide.negate()));
+        .onTrue(arm.toSafePosition(() -> false));
     // Once the elevator reaches source position, we start move the arm around
     stateTriggers
         .get(StructureState.SOURCE)
         .and(elevator.isSafeForArm)
-        .onTrue(arm.toSourceLevel(rightManipulatorSide))
-        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
-        .and(rightManipulatorSide)
-        .and(endEffector.rightBeamBreak)
-        .onTrue(this.setState(StructureState.PREHOME));
-    stateTriggers
-        .get(StructureState.SOURCE)
-        .and(elevator.isSafeForArm)
-        .onTrue(arm.toSourceLevel(rightManipulatorSide))
-        .onTrue(endEffector.setSourceVelocity(rightManipulatorSide))
-        .and(rightManipulatorSide.negate())
+        .onTrue(arm.toSourceLevel(() -> false))
+        .onTrue(endEffector.setSourceVelocity(() -> false))
         .and(endEffector.leftBeamBreak)
         .onTrue(this.setState(StructureState.PREHOME));
 
@@ -165,13 +159,23 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.BARGE)
         .onTrue(elevator.toBargePosition())
-        .and(elevator.isSafeForArm)
         .onTrue(arm.toBargeLevel(rightManipulatorSide));
-    // Filler, but eventually you might have different outtake speeds for barge vs processor
+
     stateTriggers
-        .get(StructureState.SCORE_ALGAE)
-        .and(prevStateTriggers.get(StructureState.BARGE))
-        .onTrue(endEffector.setAlgaeOuttakeVoltage());
+        .get(StructureState.PROCESSOR)
+        .onTrue(elevator.toProcessorPosition())
+        .and(elevator.reachedPosition)
+        .debounce(.04) // wait two loop times
+        .onTrue(arm.toProcessorLevel(rightManipulatorSide));
+
+    stateTriggers
+        .get(StructureState.GROUND_ALGAE)
+        .onTrue(elevator.toGroundAlgaePosition())
+        .and(elevator.reachedPosition)
+        .debounce(.04) // same as above cuz this lowk might break
+        .onTrue(arm.toGroundAlgaeLevel(rightManipulatorSide));
+
+    stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
 
     // Turn coral motor off (helpful for transitioning from SCORE_CORAL), do not turn algae motor
     // off since you might be holding one
@@ -182,7 +186,6 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SOURCE))
-        .onTrue(elevator.toArmSafePosition())
         .and(elevator.isSafeForArm)
         .onTrue(arm.toHome(rightManipulatorSide.negate()))
         .and(arm.isSafePosition)
@@ -243,10 +246,16 @@ public class Superstructure {
         .onTrue(arm.toHome())
         .and(arm.reachedPosition.and(elevator.reachedPosition))
         .onTrue(this.setState(StructureState.IDLE));
-    //    stateTriggers
-    //        .get(StructureState.HOME)
-    //        .and(prevStateTriggers.get(StructureState.PREHOME).negate())
-    //        .onTrue(this.setState(StructureState.PREHOME));
+
+    stateTriggers
+        .get(StructureState.CANCEL_ALL)
+        .onTrue(elevator.off())
+        .onTrue(arm.off())
+        .onTrue(endEffector.algaeOff())
+        .onTrue(endEffector.coralOff());
+
+    //    RobotModeTriggers.teleop().toggleOnTrue(this.setState(StructureState.IDLE));
+    //    RobotModeTriggers.autonomous().whileTrue(this.setState(StructureState.AUTO));
   }
 
   // call manually

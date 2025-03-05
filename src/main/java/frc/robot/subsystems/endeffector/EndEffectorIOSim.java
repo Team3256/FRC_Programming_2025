@@ -9,6 +9,8 @@ package frc.robot.subsystems.endeffector;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+import com.ctre.phoenix6.signals.S1StateValue;
+import com.ctre.phoenix6.signals.S2StateValue;
 import com.ctre.phoenix6.sim.CANdiSimState;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -17,6 +19,8 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.sim.SimMechs;
 import org.littletonrobotics.junction.LoggedRobot;
 
@@ -40,11 +44,41 @@ public class EndEffectorIOSim extends EndEffectorIOTalonFX {
 
   private final CANdiSimState candiSim;
 
+  private final SendableChooser<Boolean> s1Closed =
+      new SendableChooser<>() {
+        {
+          addOption("Coral Inside", true);
+          addOption("No Coral", false);
+        }
+      };
+  private final SendableChooser<Boolean> s2Closed =
+      new SendableChooser<>() {
+        {
+          addOption("Coral Inside", true);
+          addOption("No Coral", false);
+        }
+      };
+
   public EndEffectorIOSim() {
     super();
     algaeMotorSim = super.getAlgaeMotor().getSimState();
     coralMotorSim = super.getCoralMotor().getSimState();
     candiSim = super.getCandi().getSimState();
+    SmartDashboard.putData("S1", s1Closed);
+    s1Closed.onChange(this::updateCandiS1);
+    s1Closed.setDefaultOption("No Coral", false);
+    SmartDashboard.putData("S2", s2Closed);
+    s2Closed.onChange(this::updateCandiS2);
+    s2Closed.setDefaultOption("No Coral", false);
+  }
+
+  private void updateCandiS1(boolean beamBroken) {
+    System.out.println("Updating S1");
+    candiSim.setS1State(beamBroken ? S1StateValue.Floating : S1StateValue.Low);
+  }
+
+  private void updateCandiS2(boolean beamBroken) {
+    candiSim.setS2State(beamBroken ? S2StateValue.Floating : S2StateValue.Low);
   }
 
   @Override
