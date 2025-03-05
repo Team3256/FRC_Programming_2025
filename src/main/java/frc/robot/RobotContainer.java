@@ -12,6 +12,7 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -217,6 +218,8 @@ public class RobotContainer {
 
     SwerveRequest.ApplyRobotSpeeds driveAlt = new SwerveRequest.ApplyRobotSpeeds();
 
+    LegacySwerveRequest.PointWheelsAt lockHoriz = new LegacySwerveRequest.PointWheelsAt();
+
     SwerveRequest.FieldCentricFacingAngle azimuth =
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
@@ -330,6 +333,13 @@ public class RobotContainer {
     //                .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+    m_driverController
+        .a()
+        .onTrue(
+            drivetrain.applyRequest(
+                () -> (SwerveRequest) lockHoriz.withModuleDirection(uniformHLockOffset)));
+
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
     m_driverController
