@@ -21,6 +21,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -357,6 +358,17 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 
+  @Override
+  public void seedFieldCentric() {
+    super.seedFieldCentric();
+    if (questNav.isActive()) {
+      questNav.softReset(
+          new Pose3d(
+              questNav.getRobotPose().getTranslation(),
+              new Rotation3d(super.getOperatorForwardDirection())));
+    }
+  }
+
   /**
    * Runs the SysId Quasistatic test in the given direction for the routine specified by {@link
    * #m_sysIdRoutineToApply}.
@@ -433,13 +445,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       // questNav.getPose().transformBy(SwerveConstants.robotToQuest.inverse()),
       // Utils.getCurrentTimeSeconds());
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
-      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
-      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
+      //      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
+      //      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
 
-      //      this.addVisionMeasurement(
-      //          questNav.getRobotPose().toPose2d(),
-      //          Utils.getCurrentTimeSeconds(),
-      //          VecBuilder.fill(0.0001, 0.0001, .99999));
+      this.addVisionMeasurement(
+          questNav.getRobotPose().toPose2d(),
+          Utils.getCurrentTimeSeconds(),
+          VecBuilder.fill(0.0001, 0.0001, .99999));
     } else {
       a_questNavNotConnected.set(true);
     }
