@@ -158,13 +158,14 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.BARGE)
         .onTrue(elevator.toBargePosition())
-        .and(elevator.isSafeForArm)
         .onTrue(arm.toBargeLevel(rightManipulatorSide));
-    // Filler, but eventually you might have different outtake speeds for barge vs processor
+
     stateTriggers
-        .get(StructureState.SCORE_ALGAE)
-        .and(prevStateTriggers.get(StructureState.BARGE))
-        .onTrue(endEffector.setAlgaeOuttakeVoltage());
+        .get(StructureState.PROCESSOR)
+        .onTrue(elevator.toProcessorPosition())
+        .onTrue(arm.toProcessorLevel(rightManipulatorSide));
+
+    stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
 
     // Turn coral motor off (helpful for transitioning from SCORE_CORAL), do not turn algae motor
     // off since you might be holding one

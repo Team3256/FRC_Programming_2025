@@ -93,6 +93,8 @@ public final class ArmConstants {
                   .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive)
                   .withMagnetOffset(-0.158122481)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
+  public static Angle processorRightPosition = Degrees.of(200);
+  public static Angle processorLeftPosition = Degrees.of(340);
 
   public static final class Sim {
     public static final double simGearing = 142.22;

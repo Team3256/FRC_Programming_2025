@@ -173,10 +173,6 @@ public class RobotContainer {
         .povDown("L2 Preset")
         .onTrue(superstructure.setState(Superstructure.StructureState.L2));
     m_operatorController
-        .povLeft("L1 Preset")
-        .onTrue(superstructure.setState(Superstructure.StructureState.L1));
-
-    m_operatorController
         .rightBumper("Manipulator Side Right")
         .onTrue(superstructure.setManipulatorSide(Superstructure.ManipulatorSide.RIGHT));
     m_operatorController
@@ -194,8 +190,6 @@ public class RobotContainer {
         .onTrue(superstructure.setState(Superstructure.StructureState.BARGE));
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
         .onTrue(superstructure.setState(Superstructure.StructureState.PROCESSOR));
-    new Trigger(() -> -m_operatorController.getRightY() > .5)
-        .onTrue(superstructure.setState(Superstructure.StructureState.CLIMB));
   }
 
   private void configureChoreoAutoChooser() {
