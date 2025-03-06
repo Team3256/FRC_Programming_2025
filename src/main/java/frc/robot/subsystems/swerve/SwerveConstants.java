@@ -17,13 +17,13 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public final class SwerveConstants {
 
-  public static final Rotation2d uniformHLockOffset = new Rotation2d(90);
+  public static final Rotation2d uniformHLockOffset = new Rotation2d(0);
 
   // source 1
-  public static final Rotation2d sourceLeft1 = new Rotation2d(125.989 + 90);
+  public static final Rotation2d sourceLeft1 = new Rotation2d(0.749);
 
   // source 2
-  public static final Rotation2d sourceRight2 = new Rotation2d(-sourceLeft1.getDegrees());
+  public static final Rotation2d sourceRight2 = new Rotation2d(2.621);
 
   // climb
   public static final Rotation2d hang = new Rotation2d(0);

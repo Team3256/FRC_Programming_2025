@@ -45,6 +45,7 @@ import frc.robot.Constants;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.utils.LoggedTracer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -457,6 +458,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           this.getPigeon2().getRotation2d(), this.getStateCopy().ModulePositions);
       Logger.recordOutput("Vision/photonEstimate", photonPoseEstimator.getEstimatedPosition());
     }
+
+    LoggedTracer.record(this.getClass().getSimpleName());
   }
 
   public void addPhotonEstimate(

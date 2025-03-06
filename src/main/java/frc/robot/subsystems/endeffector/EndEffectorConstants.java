@@ -43,7 +43,7 @@ public final class EndEffectorConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(60));
+                  .withStatorCurrentLimit(40));
   public static TalonFXConfiguration coralMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(

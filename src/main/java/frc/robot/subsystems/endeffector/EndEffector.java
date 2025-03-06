@@ -11,6 +11,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
+import frc.robot.utils.LoggedTracer;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -37,6 +38,8 @@ public class EndEffector extends DisableSubsystem {
     super.periodic();
     endEffectorIO.updateInputs(endEffectorIOInputsAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), endEffectorIOInputsAutoLogged);
+
+    LoggedTracer.record(this.getClass().getSimpleName());
   }
 
   public Command setCoralVoltage(DoubleSupplier voltage) {

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
+import frc.robot.utils.LoggedTracer;
 import frc.robot.utils.Util;
 import java.io.BufferedReader;
 import java.io.File;
@@ -59,7 +60,7 @@ public class Arm extends DisableSubsystem {
     super(enabled);
 
     this.armIO = armIO;
-    armIO.resetPosition(Rotations.of(.25));
+    //    armIO.resetPosition(Rotations.of(.25));
   }
 
   @Override
@@ -69,6 +70,8 @@ public class Arm extends DisableSubsystem {
         this.getClass().getSimpleName() + "/requestedPosition", requestedPosition.in(Rotations));
     armIO.updateInputs(armIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
+
+    LoggedTracer.record(this.getClass().getSimpleName());
 
     //    if (trajIterator != null && trajIterator.hasNext()) {
     //      armIO.setPosition(
@@ -242,7 +245,7 @@ public class Arm extends DisableSubsystem {
                 ? ArmConstants.safeRightPosition
                 : ArmConstants.safeLeftPosition,
         true,
-        () -> towardsRight.getAsBoolean() ? 1 : -1);
+        () -> towardsRight.getAsBoolean() ? 1 : -1); // TODO: tune
   }
 
   public Command off() {

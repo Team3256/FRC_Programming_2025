@@ -17,6 +17,7 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.utils.LoggedTracer;
 import java.util.HashMap;
 import java.util.Map;
 import org.littletonrobotics.junction.Logger;
@@ -145,7 +146,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PRESOURCE)
         .and(elevator.isSafeForArm.negate())
-        .onTrue(arm.toSafePosition(() -> false));
+        .onTrue(arm.toSafePosition(() -> true));
     // Once the elevator reaches source position, we start move the arm around
     stateTriggers
         .get(StructureState.SOURCE)
@@ -266,6 +267,8 @@ public class Superstructure {
     Logger.recordOutput(this.getClass().getSimpleName() + "/State", this.state.toString());
     Logger.recordOutput(this.getClass().getSimpleName() + "/PrevState", this.prevState.toString());
     Logger.recordOutput(this.getClass().getSimpleName() + "/StateTime", this.stateTimer.get());
+
+    LoggedTracer.record(this.getClass().getSimpleName());
   }
 
   public Command setState(StructureState state) {
