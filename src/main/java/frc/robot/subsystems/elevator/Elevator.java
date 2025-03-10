@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.utils.DisableSubsystem;
+import frc.robot.utils.LoggedTracer;
 import frc.robot.utils.Util;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -60,6 +61,8 @@ public class Elevator extends DisableSubsystem {
     Logger.recordOutput(this.getClass().getSimpleName() + "/requestedPosition", requestedPosition);
     motorIO.updateInputs(motorIOAutoLogged);
     Logger.processInputs(this.getClass().getSimpleName(), motorIOAutoLogged);
+
+    LoggedTracer.record(this.getClass().getSimpleName());
   }
 
   public Command setPosition(double position) {

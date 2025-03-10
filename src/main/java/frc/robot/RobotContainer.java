@@ -13,7 +13,6 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -44,13 +43,9 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.utils.MappedXboxController;
-import frc.robot.utils.autoaim.AlgaeIntakeTargets;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
-import frc.robot.utils.autoaim.SourceIntakeTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
-import java.util.stream.Stream;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -182,8 +177,6 @@ public class RobotContainer {
         .onTrue(superstructure.setState(StructureState.BARGE));
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
         .onTrue(superstructure.setState(StructureState.PROCESSOR));
-    new Trigger(() -> -m_operatorController.getRightY() < -.5)
-        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
   }
 
   private void configureChoreoAutoChooser() {
@@ -216,6 +209,8 @@ public class RobotContainer {
             .withRotationalRate(0.15 * MaxAngularRate);
 
     SwerveRequest.ApplyRobotSpeeds driveAlt = new SwerveRequest.ApplyRobotSpeeds();
+
+    SwerveRequest.PointWheelsAt lockHoriz = new SwerveRequest.PointWheelsAt();
 
     SwerveRequest.FieldCentricFacingAngle azimuth =
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
@@ -330,6 +325,13 @@ public class RobotContainer {
     //                .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+    m_driverController
+        .a()
+        .onTrue(
+            drivetrain.applyRequest(
+                () -> (SwerveRequest) lockHoriz.withModuleDirection(uniformHLockOffset)));
+
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
     m_driverController
@@ -373,41 +375,41 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    Logger.recordOutput(
-        "AutoAim/Targets/Coral",
-        Stream.of(CoralTargets.values())
-            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
-            .toArray(Pose2d[]::new));
-    // Log locations of all autoaim targets
-    Logger.recordOutput(
-        "AutoAim/Targets/Algae",
-        Stream.of(AlgaeIntakeTargets.values())
-            .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
-            .toArray(Pose2d[]::new));
-
-    Logger.recordOutput(
-        "AutoAim/Targets/SourceIntakes",
-        Stream.of(SourceIntakeTargets.values())
-            .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
-            .toArray(Pose2d[]::new));
-
-    Logger.recordOutput(
-        "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
-    Logger.recordOutput(
-        "AutoAim/LeftHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
-    Logger.recordOutput(
-        "AutoAim/RightHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
-    Logger.recordOutput(
-        "AutoAim/NameOfLHCoralTarget",
-        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());
-    Logger.recordOutput(
-        "AutoAim/NameOfRHCoralTarget",
-        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, false).name());
-    Logger.recordOutput(
-        "AutoAim/AlgaeIntakeTarget",
-        AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+    //    Logger.recordOutput(
+    //        "AutoAim/Targets/Coral",
+    //        Stream.of(CoralTargets.values())
+    //            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+    //            .toArray(Pose2d[]::new));
+    //    // Log locations of all autoaim targets
+    //    Logger.recordOutput(
+    //        "AutoAim/Targets/Algae",
+    //        Stream.of(AlgaeIntakeTargets.values())
+    //            .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
+    //            .toArray(Pose2d[]::new));
+    //
+    //    Logger.recordOutput(
+    //        "AutoAim/Targets/SourceIntakes",
+    //        Stream.of(SourceIntakeTargets.values())
+    //            .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
+    //            .toArray(Pose2d[]::new));
+    //
+    //    Logger.recordOutput(
+    //        "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
+    //    Logger.recordOutput(
+    //        "AutoAim/LeftHandedCoralTarget",
+    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
+    //    Logger.recordOutput(
+    //        "AutoAim/RightHandedCoralTarget",
+    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
+    //    Logger.recordOutput(
+    //        "AutoAim/NameOfLHCoralTarget",
+    //        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());
+    //    Logger.recordOutput(
+    //        "AutoAim/NameOfRHCoralTarget",
+    //        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, false).name());
+    //    Logger.recordOutput(
+    //        "AutoAim/AlgaeIntakeTarget",
+    //        AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
     superstructure.periodic();
   }
 }
