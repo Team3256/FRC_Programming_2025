@@ -188,7 +188,7 @@ public class Superstructure {
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SOURCE))
         .and(elevator.isSafeForArm)
-        .onTrue(arm.toHome(rightManipulatorSide.negate()))
+        .onTrue(arm.toHome(() -> true))
         .and(arm.isSafePosition)
         .onTrue(this.setState(StructureState.HOME));
 
@@ -196,19 +196,13 @@ public class Superstructure {
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.DEALGAE_L2))
         .onTrue(arm.toHome())
-        .onTrue(elevator.toDealgaePrehomeLevel(0))
         .and(arm.isSafePosition)
-        .and(elevator.reachedPosition)
-        .debounce(.025)
         .onTrue(this.setState(StructureState.HOME));
     stateTriggers
         .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.DEALGAE_L3))
         .onTrue(arm.toHome())
-        .onTrue(elevator.toDealgaePrehomeLevel(1))
         .and(arm.isSafePosition)
-        .and(elevator.reachedPosition)
-        .debounce(.025)
         .onTrue(this.setState(StructureState.HOME));
 
     stateTriggers

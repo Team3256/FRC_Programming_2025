@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.LoggedTracer;
 import frc.robot.utils.Util;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -66,11 +67,19 @@ public class Elevator extends DisableSubsystem {
   }
 
   public Command setPosition(double position) {
+    return setPosition(() -> position);
+  }
+
+  public Command setPosition(DoubleSupplier position) {
     return this.run(
         () -> {
-          requestedPosition = position;
-          motorIO.setPosition(position);
+          requestedPosition = position.getAsDouble();
+          motorIO.setPosition(position.getAsDouble());
         });
+  }
+
+  public double getPosition() {
+    return motorIOAutoLogged.motorPosition;
   }
 
   public Command setVoltage(double voltage) {

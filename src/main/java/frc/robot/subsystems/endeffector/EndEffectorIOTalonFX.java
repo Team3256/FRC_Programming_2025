@@ -47,8 +47,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   private final CANdi candi = new CANdi(EndEffectorConstants.candiID);
 
-  private final StatusSignal<Boolean> rightBeamBreak = candi.getS2Closed();
-  private final StatusSignal<Boolean> leftBeamBreak = candi.getS1Closed();
+  private final StatusSignal<Boolean> rightBeamBreak = candi.getS1Closed();
+  private final StatusSignal<Boolean> leftBeamBreak = candi.getS2Closed();
 
   public EndEffectorIOTalonFX() {
     PhoenixUtil.applyMotorConfigs(

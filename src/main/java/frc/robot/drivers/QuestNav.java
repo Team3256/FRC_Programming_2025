@@ -52,6 +52,7 @@ public class QuestNav {
   private ChassisSpeeds velocity;
   private Pose3d previousPose;
   private double previousTime;
+  private double cyclesWithoutUpdates = 0;
 
   private final double TIMESTAMP_DELAY = 0.002;
 
@@ -175,7 +176,17 @@ public class QuestNav {
       return false;
     }
     previousFrameCount = frameCount.get();
-    return initializedPosition;
+    return true;
+  }
+
+  public boolean connected() {
+    if (previousTime == timestamp.getAsDouble()) {
+      cyclesWithoutUpdates += 1;
+      return cyclesWithoutUpdates < 10;
+    }
+    cyclesWithoutUpdates = 0;
+    previousTime = timestamp.getAsDouble();
+    return true;
   }
 
   public boolean processQuestCommand(QuestCommand command) {

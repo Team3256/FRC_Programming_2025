@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -92,12 +93,6 @@ public class RobotContainer {
                   VisionConstants.robotToRightCam,
                   () -> drivetrain.getState().Pose)
               : new VisionIOPhotonVision(VisionConstants.rightCam, VisionConstants.robotToRightCam),
-          Utils.isSimulation()
-              ? new VisionIOPhotonVisionSim(
-                  VisionConstants.frontCam,
-                  VisionConstants.robotToFrontCam,
-                  () -> drivetrain.getState().Pose)
-              : new VisionIOPhotonVision(VisionConstants.frontCam, VisionConstants.robotToFrontCam),
           Utils.isSimulation()
               ? new VisionIOPhotonVisionSim(
                   VisionConstants.backCam,
@@ -177,6 +172,12 @@ public class RobotContainer {
         .onTrue(superstructure.setState(StructureState.BARGE));
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
         .onTrue(superstructure.setState(StructureState.PROCESSOR));
+    new Trigger(() -> -m_operatorController.getRightY() > .5)
+        .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() + .1)))
+        .toggleOnFalse(elevator.setPosition(elevator::getPosition));
+    new Trigger(() -> -m_operatorController.getRightY() < -.5)
+        .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() - .1)))
+        .toggleOnFalse(elevator.setPosition(elevator::getPosition));
   }
 
   private void configureChoreoAutoChooser() {
