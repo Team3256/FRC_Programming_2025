@@ -20,10 +20,10 @@ public final class SwerveConstants {
   public static final Rotation2d uniformHLockOffset = new Rotation2d(0);
 
   // source 1
-  public static final Rotation2d sourceLeft1 = new Rotation2d(0.749);
+  public static final Rotation2d sourceLeft1 = new Rotation2d(0.749 - 0.0872665);
 
   // source 2
-  public static final Rotation2d sourceRight2 = new Rotation2d(2.621);
+  public static final Rotation2d sourceRight2 = new Rotation2d(2.621 - 0.0872665);
 
   // climb
   public static final Rotation2d hang = new Rotation2d(0);
