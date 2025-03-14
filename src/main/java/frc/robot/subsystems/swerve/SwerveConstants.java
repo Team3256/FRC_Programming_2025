@@ -19,10 +19,10 @@ public final class SwerveConstants {
 
   public static final Rotation2d uniformHLockOffset = new Rotation2d(0);
 
-  // source 1
+  // source 1, 5 degree overshoot for weight drag from elevator
   public static final Rotation2d sourceLeft1 = new Rotation2d(0.749 - 0.0872665);
 
-  // source 2
+  // source 2, 5 degree overshoot
   public static final Rotation2d sourceRight2 = new Rotation2d(2.621 - 0.0872665);
 
   // climb
