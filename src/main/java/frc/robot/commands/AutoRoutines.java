@@ -60,17 +60,21 @@ public class AutoRoutines {
 
   public AutoRoutine l4Preload() {
     final AutoRoutine routine = m_factory.newRoutine("l4Preload");
-    final AutoTrajectory l4Preload = routine.trajectory("MID-H");
-    final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
-    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
-    final AutoTrajectory CtoSource = routine.trajectory("C-Source2");
-    final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
-
-    routine.active().onTrue(l4Preload.resetOdometry().andThen(l4Preload.cmd()));
-    l4Preload.done().onTrue(HtoSource.spawnCmd());
-    HtoSource.done().onTrue(SourceToC.spawnCmd());
-    SourceToC.done().onTrue(CtoSource.spawnCmd());
-    CtoSource.done().onTrue(SourceToD.spawnCmd());
+    final AutoTrajectory preloadH = routine.trajectory("MID-H");
+    routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
+    preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    preloadH
+        .done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(
+                    m_endEffector
+                        .leftBeamBreak
+                        .negate()
+                        .and(m_endEffector.rightBeamBreak.negate())
+                        .debounce(.5))
+                .andThen(m_autoCommands.home()));
     //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     //    l4Preload
     //        .done()

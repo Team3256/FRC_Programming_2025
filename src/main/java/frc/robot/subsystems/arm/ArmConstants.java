@@ -80,17 +80,17 @@ public final class ArmConstants {
                   .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                  .withFeedbackRemoteSensorID(armMotorEncoderId)
-                  .withSensorToMechanismRatio(1.3333333333333)
-                  .withRotorToSensorRatio(106.665));
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                  //                  .withFeedbackRemoteSensorID(armMotorEncoderId)
+                  .withSensorToMechanismRatio(142.22)
+                  .withRotorToSensorRatio(1));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()
           .withMagnetSensor(
               new MagnetSensorConfigs()
                   .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-                  .withMagnetOffset(.280354814)
+                  .withMagnetOffset(.29329094)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
   public static final Angle processorRightPosition = Rotations.of(.576);
   public static final Angle processorLeftPosition = Rotations.of(.924);

@@ -104,6 +104,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private final SwerveRequest.SysIdSwerveRotation m_rotationCharacterization =
       new SwerveRequest.SysIdSwerveRotation();
 
+  @AutoLogOutput private boolean questNavZeroed = false;
+
   /*
    * SysId routine for characterizing translation. This is used to find PID gains
    * for the drive motors.
@@ -206,11 +208,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    questNav.resetPose(
-        new Pose3d(
-            new Translation3d(0.44800877571105957, 6.396022319793701, 0),
-            new Rotation3d(new Rotation2d())));
-    // resetPose(new Pose2d());
   }
 
   /**
@@ -232,7 +229,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    // resetPose(new Pose2d());
   }
 
   /**
@@ -362,7 +358,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   @Override
   public void seedFieldCentric() {
     super.seedFieldCentric();
-    if (questNav.isActive()) {
+    if (questNav.connected()) {
       questNav.softReset(
           new Pose3d(
               questNav.getRobotPose().getTranslation(),
@@ -441,24 +437,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
               });
     }
-    if (!Utils.isSimulation() && questNav.isActive()) {
+
+    if (!Utils.isSimulation() && questNav.connected()) {
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
       //      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
       //      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
 
       this.addVisionMeasurement(
           questNav.getRobotPose().toPose2d(),
-          Utils.getCurrentTimeSeconds(),
+          questNav.getCaptureTime(),
           VecBuilder.fill(0.0001, 0.0001, .99999));
     } else {
       a_questNavNotConnected.set(true);
     }
+    Logger.recordOutput("QuestNav/connected", questNav.connected());
     if (Constants.FeatureFlags.kPhotonEnabled) {
       photonPoseEstimator.update(
           this.getPigeon2().getRotation2d(), this.getStateCopy().ModulePositions);
       Logger.recordOutput("Vision/photonEstimate", photonPoseEstimator.getEstimatedPosition());
     }
 
+    //    if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
+    //      if
+    // (photonPoseEstimator.getEstimatedPosition().getTranslation().getDistance(Pose2d.kZero.getTranslation()) >1) {
+    //        questNav.resetPose(new Pose3d(photonPoseEstimator.getEstimatedPosition()));
+    //        this.resetPose(photonPoseEstimator.getEstimatedPosition());
+    //        questNavZeroed = true;
+    //      }}
     LoggedTracer.record(this.getClass().getSimpleName());
   }
 
@@ -468,6 +473,43 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Matrix<N3, N1> visionMeasurementStdDevs) {
     photonPoseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    if (!questNav.connected()) {
+      this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
+  }
+
+  /**
+   * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+   * while still accounting for measurement noise.
+   *
+   * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+   * @param timestampSeconds The timestamp of the vision measurement in seconds.
+   */
+  @Override
+  public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+    super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds));
+  }
+
+  /**
+   * Adds a vision measurement to the Kalman Filter. This will correct the odometry pose estimate
+   * while still accounting for measurement noise.
+   *
+   * <p>Note that the vision measurement standard deviations passed into this method will continue
+   * to apply to future measurements until a subsequent call to {@link
+   * #setVisionMeasurementStdDevs(Matrix)} or this method.
+   *
+   * @param visionRobotPoseMeters The pose of the robot as measured by the vision camera.
+   * @param timestampSeconds The timestamp of the vision measurement in seconds.
+   * @param visionMeasurementStdDevs Standard deviations of the vision pose measurement in the form
+   *     [x, y, theta]ᵀ, with units in meters and radians.
+   */
+  @Override
+  public void addVisionMeasurement(
+      Pose2d visionRobotPoseMeters,
+      double timestampSeconds,
+      Matrix<N3, N1> visionMeasurementStdDevs) {
+    super.addVisionMeasurement(
+        visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
   }
 
   private void startSimThread() {
