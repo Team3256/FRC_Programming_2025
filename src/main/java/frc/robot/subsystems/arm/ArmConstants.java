@@ -41,16 +41,15 @@ public final class ArmConstants {
   public static final Angle[] dealgaeRightPosition = {Rotations.of(.376), Rotations.of(.361)};
   public static final Angle[] dealgaeLeftPosition = {Rotations.of(.124), Rotations.of(.139)};
 
-  public static final Angle sourceRightPositions = Rotations.of(.66);
-  public static final Angle sourceLeftPositions = Rotations.of(.84);
+  public static final Angle sourcePosition = Rotations.of(.3);
 
   public static final Angle bargeLeftPosition = Rotations.of(.17);
   public static final Angle bargeRightPosition = Rotations.of(.33);
 
-  public static final Angle homePosition = Rotations.of(.25);
+  public static final Angle homePosition = Rotations.of(.3);
 
   public static final double safeRightPosition = .37;
-  public static final double safeLeftPosition = .13;
+  public static final double safeLeftPosition = .25;
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()

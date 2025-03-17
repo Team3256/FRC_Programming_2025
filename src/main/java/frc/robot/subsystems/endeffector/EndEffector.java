@@ -23,10 +23,11 @@ public class EndEffector extends DisableSubsystem {
   private final EndEffectorIOInputsAutoLogged endEffectorIOInputsAutoLogged =
       new EndEffectorIOInputsAutoLogged();
 
-  public final Trigger rightBeamBreak =
-      new Trigger(() -> endEffectorIOInputsAutoLogged.rightBeamBreak);
-  public final Trigger leftBeamBreak =
-      new Trigger(() -> endEffectorIOInputsAutoLogged.leftBeamBreak);
+  public final Trigger coralBeamBreak =
+      new Trigger(() -> endEffectorIOInputsAutoLogged.coralBeamBreak);
+
+  public final Trigger algaeBeamBreak =
+      new Trigger(() -> endEffectorIOInputsAutoLogged.algaeBeamBreak);
 
   public EndEffector(boolean enabled, EndEffectorIO endEffectorIO) {
     super(enabled);
