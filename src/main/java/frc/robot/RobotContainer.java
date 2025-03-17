@@ -244,7 +244,8 @@ public class RobotContainer {
                       .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                       .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
-    m_driverController.povUp().whileTrue(drivetrain.wheelRadiusCharacterization(1));
+
+    //m_driverController.povUp().whileTrue(drivetrain.wheelRadiusCharacterization(1));
 
     m_driverController
         .leftBumper() // TODO: remodify this
