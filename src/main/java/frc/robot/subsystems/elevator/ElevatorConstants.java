@@ -83,11 +83,14 @@ public final class ElevatorConstants {
   // Coral positions
   // Please tune
 
+  // L1, L2, L3, L4
+  // 3 sigfigs of precision
   public static final Angle[] kReefPositionsPracticeField = {
-    Rotations.of(0.0), Rotations.of(1.2), Rotations.of(2.6), Rotations.of(4.92)
+    Rotations.of(0.0), Rotations.of(1.29), Rotations.of(2.64), Rotations.of(4.875)
   };
   public static final Distance[] kReefPositionsMeters = Constants.branchHeights.distances;
 
+  // L1 -> L4, in order
   public static final Angle[] kReefPositions = {
     convertMetersToRotations(
             FieldConstants.BranchHeights.PRACTICE_FIELD.distances[0].minus(kReefPositionsMeters[0]))

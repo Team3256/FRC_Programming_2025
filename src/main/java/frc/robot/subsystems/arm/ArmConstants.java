@@ -30,14 +30,20 @@ public final class ArmConstants {
 
   public static final Angle maxRotations = Rotations.of(2);
 
+  // Arm positions
+  // L1, L2-L3 (since same arm angle), L4
+  // "arm level 0" is L1, "arm level 1" is L2-L3, "arm level 2" is L4
+  // 3 sig figs of acc
   public static final Angle[] reefRightPositions = {
-    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(.343)
+    Rotations.of(0.32), Rotations.of(0.316), Rotations.of(0.3408)
   };
 
+  // @deprecated
   public static final Angle[] reefLeftPositions = {
     Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.157)
   };
 
+  // Dealgae L2, Daalgae L3
   public static final Angle[] dealgaeRightPosition = {Rotations.of(.376), Rotations.of(.361)};
   public static final Angle[] dealgaeLeftPosition = {Rotations.of(.124), Rotations.of(.139)};
 
