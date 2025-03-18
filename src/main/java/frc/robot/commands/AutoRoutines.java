@@ -204,7 +204,7 @@ public class AutoRoutines {
       return m_elevator
           .setPosition(ElevatorConstants.sourcePosition.in(Rotations))
           .alongWith(Commands.waitUntil(m_elevator.isSafeForArm).andThen(m_arm.toSourceLevel()))
-          .alongWith(m_endEffector.setSourceVelocity(() -> false));
+          .alongWith(m_endEffector.setSourceVelocity());
     }
 
     public Command home() {

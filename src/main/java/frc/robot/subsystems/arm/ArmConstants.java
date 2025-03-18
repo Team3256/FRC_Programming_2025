@@ -41,7 +41,7 @@ public final class ArmConstants {
   public static final Angle[] dealgaeRightPosition = {Rotations.of(.376), Rotations.of(.361)};
   public static final Angle[] dealgaeLeftPosition = {Rotations.of(.124), Rotations.of(.139)};
 
-  public static final Angle sourcePosition = Rotations.of(.3);
+  public static final Angle sourcePosition = Rotations.of(.286);
 
   public static final Angle bargeLeftPosition = Rotations.of(.17);
   public static final Angle bargeRightPosition = Rotations.of(.33);
@@ -55,13 +55,13 @@ public final class ArmConstants {
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(0.18)
-                  .withKV(17)
-                  .withKP(100)
+                  .withKS(.2)
+                  .withKV(11)
+                  .withKP(50)
                   .withKI(0)
                   .withKD(0)
-                  .withKA(.7)
-                  .withKG(.291)
+                  .withKA(.15)
+                  .withKG(.2)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
@@ -79,17 +79,17 @@ public final class ArmConstants {
                   .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  //                  .withFeedbackRemoteSensorID(armMotorEncoderId)
-                  .withSensorToMechanismRatio(142.22)
-                  .withRotorToSensorRatio(1));
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  .withFeedbackRemoteSensorID(armMotorEncoderId)
+                  .withSensorToMechanismRatio(1.33333)
+                  .withRotorToSensorRatio(69.9999975));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()
           .withMagnetSensor(
               new MagnetSensorConfigs()
                   .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-                  .withMagnetOffset(.29329094)
+                  .withMagnetOffset(-0.6601640625)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
   public static final Angle processorRightPosition = Rotations.of(.576);
   public static final Angle processorLeftPosition = Rotations.of(.924);

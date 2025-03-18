@@ -147,7 +147,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.SOURCE)
         .onTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)))
-        .onTrue(endEffector.setSourceVelocity(() -> false))
+        .onTrue(endEffector.setSourceVelocity())
         .and(endEffector.coralBeamBreak)
         .onTrue(this.setState(StructureState.PREHOME));
 
@@ -157,19 +157,19 @@ public class Superstructure {
         .onTrue(elevator.toBargePosition())
         .onTrue(arm.toBargeLevel(rightManipulatorSide));
 
-    stateTriggers
-        .get(StructureState.PROCESSOR)
-        .onTrue(elevator.toProcessorPosition())
-        .and(elevator.reachedPosition)
-        .debounce(.04) // wait two loop times
-        .onTrue(arm.toProcessorLevel(rightManipulatorSide));
+    //    stateTriggers
+    //        .get(StructureState.PROCESSOR)
+    //        .onTrue(elevator.toProcessorPosition())
+    //        .and(elevator.reachedPosition)
+    //        .debounce(.04) // wait two loop times
+    //        .onTrue(arm.toProcessorLevel(rightManipulatorSide));
 
-    stateTriggers
-        .get(StructureState.GROUND_ALGAE)
-        .onTrue(elevator.toGroundAlgaePosition())
-        .and(elevator.reachedPosition)
-        .debounce(.04) // same as above cuz this lowk might break
-        .onTrue(arm.toGroundAlgaeLevel(rightManipulatorSide));
+    //    stateTriggers
+    //        .get(StructureState.GROUND_ALGAE)
+    //        .onTrue(elevator.toGroundAlgaePosition())
+    //        .and(elevator.reachedPosition)
+    //        .debounce(.04) // same as above cuz this lowk might break
+    //        .onTrue(arm.toGroundAlgaeLevel(rightManipulatorSide));
 
     stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
 
@@ -192,11 +192,6 @@ public class Superstructure {
         .onTrue(arm.toHome())
         .and(arm.isSafePosition)
         .onTrue(this.setState(StructureState.HOME));
-
-    stateTriggers
-        .get(StructureState.PREHOME)
-        .and(prevStateTriggers.get(StructureState.SCORE_ALGAE))
-        .onTrue(endEffector.algaeOff());
 
     stateTriggers
         .get(StructureState.PREHOME)

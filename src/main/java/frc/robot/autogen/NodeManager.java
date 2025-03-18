@@ -83,7 +83,7 @@ public class NodeManager {
           intakeTraj.atTimeBeforeEnd(.5).toggleOnTrue(arm.toSourceLevel());
           Command intakeCmd =
               endEffector
-                  .setSourceVelocity(() -> true)
+                  .setSourceVelocity()
                   .until(endEffector.coralBeamBreak.debounce(.1))
                   .andThen(
                       arm.toHome().alongWith(Commands.waitSeconds(.2).andThen(elevator.toHome())));

@@ -83,12 +83,8 @@ public class EndEffector extends DisableSubsystem {
                 : EndEffectorConstants.l4Voltage * -1);
   }
 
-  public Command setSourceVelocity(BooleanSupplier rightSide) {
-    return setCoralVelocity(
-        () ->
-            rightSide.getAsBoolean()
-                ? EndEffectorConstants.sourceVelocity
-                : EndEffectorConstants.sourceVelocity.times(-1));
+  public Command setSourceVelocity() {
+    return setCoralVelocity(() -> EndEffectorConstants.sourceVelocity);
   }
 
   public Command setAlgaeIntakeVelocity() {
