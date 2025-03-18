@@ -45,22 +45,12 @@ public class Superstructure {
     AUTO
   }
 
-  public static enum ManipulatorSide {
-    LEFT,
-    RIGHT
-  }
-
-  private ManipulatorSide manipulatorSide = ManipulatorSide.RIGHT;
-
   private StructureState state = StructureState.IDLE;
   private StructureState prevState = StructureState.IDLE;
 
   private Map<StructureState, Trigger> stateTriggers = new HashMap<StructureState, Trigger>();
 
   private Map<StructureState, Trigger> prevStateTriggers = new HashMap<StructureState, Trigger>();
-
-  private final Trigger rightManipulatorSide =
-      new Trigger(() -> this.manipulatorSide == ManipulatorSide.RIGHT);
 
   private final Timer stateTimer = new Timer();
 
@@ -88,10 +78,7 @@ public class Superstructure {
   public void configStateTransitions() {
     stateTriggers.get(StructureState.IDLE).onTrue(endEffector.coralOff());
     // Move elevator and reef to L1, no safety limits since arm is still safe
-    stateTriggers
-        .get(StructureState.L1)
-        .onTrue(elevator.toReefLevel(0))
-        .onTrue(arm.toReefLevel(0, rightManipulatorSide));
+    stateTriggers.get(StructureState.L1).onTrue(elevator.toReefLevel(0)).onTrue(arm.toReefLevel(0));
 
     // L2 and L3 are same arm position so they are put together, once again no safety limits
     stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(1));
@@ -99,38 +86,35 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.L2)
         .or(stateTriggers.get(StructureState.L3))
-        .onTrue(arm.toReefLevel(1, () -> true));
+        .onTrue(arm.toReefLevel(1));
 
     // L4 reef level, no safety limits
-    stateTriggers
-        .get(StructureState.L4)
-        .onTrue(elevator.toReefLevel(3))
-        .onTrue(arm.toReefLevel(2, rightManipulatorSide));
+    stateTriggers.get(StructureState.L4).onTrue(elevator.toReefLevel(3)).onTrue(arm.toReefLevel(2));
 
     // Scoring coral, depending on previous state it changes endEffector velocity
     stateTriggers
         .get(StructureState.SCORE_CORAL)
         .and(prevStateTriggers.get(StructureState.L1))
-        .onTrue(endEffector.setL1Velocity(rightManipulatorSide));
+        .onTrue(endEffector.setL1Velocity());
     stateTriggers
         .get(StructureState.SCORE_CORAL)
         .and(prevStateTriggers.get(StructureState.L2).or(prevStateTriggers.get(StructureState.L3)))
-        .onTrue(endEffector.setL2L3Velocity(rightManipulatorSide));
+        .onTrue(endEffector.setL2L3Velocity());
     stateTriggers
         .get(StructureState.SCORE_CORAL)
         .and(prevStateTriggers.get(StructureState.L4))
-        .onTrue(endEffector.setL4Voltage(rightManipulatorSide));
+        .onTrue(endEffector.setL4Voltage());
 
     // Dealgae levels, no safety limits (yet, since they might need to be retuned)
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .onTrue(elevator.toDealgaeLevel(0))
-        .onTrue(arm.toDealgaeLevel(0, rightManipulatorSide));
+        .onTrue(arm.toDealgaeLevel(0));
 
     stateTriggers
         .get(StructureState.DEALGAE_L3)
         .onTrue(elevator.toDealgaeLevel(1))
-        .onTrue(arm.toDealgaeLevel(1, rightManipulatorSide));
+        .onTrue(arm.toDealgaeLevel(1));
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
@@ -155,7 +139,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.BARGE)
         .onTrue(elevator.toBargePosition())
-        .onTrue(arm.toBargeLevel(rightManipulatorSide));
+        .onTrue(arm.toBargeLevel());
 
     //    stateTriggers
     //        .get(StructureState.PROCESSOR)
@@ -243,9 +227,9 @@ public class Superstructure {
 
   // call manually
   public void periodic() {
-    Logger.recordOutput(
-        this.getClass().getSimpleName() + "/ManipulatorSide",
-        this.manipulatorSide.toString()); // TODO: remove
+    // Logger.recordOutput(
+    //     this.getClass().getSimpleName() + "/ManipulatorSide",
+    //     this.manipulatorSide.toString()); // TODO: remove
     Logger.recordOutput(this.getClass().getSimpleName() + "/State", this.state.toString());
     Logger.recordOutput(this.getClass().getSimpleName() + "/PrevState", this.prevState.toString());
     Logger.recordOutput(this.getClass().getSimpleName() + "/StateTime", this.stateTimer.get());
@@ -268,13 +252,5 @@ public class Superstructure {
 
   public StructureState getPrevState() {
     return this.prevState;
-  }
-
-  public Command setManipulatorSide(ManipulatorSide side) {
-    return Commands.runOnce(
-        () -> {
-          this.manipulatorSide = side;
-          // set manipulator side
-        });
   }
 }

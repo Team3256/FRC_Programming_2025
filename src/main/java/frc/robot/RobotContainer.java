@@ -26,7 +26,6 @@ import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
-import frc.robot.subsystems.Superstructure.ManipulatorSide;
 import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -154,12 +153,13 @@ public class RobotContainer {
     m_operatorController.povUp("L4 Preset").onTrue(superstructure.setState(StructureState.L4));
     m_operatorController.povRight("L3 Preset").onTrue(superstructure.setState(StructureState.L3));
     m_operatorController.povDown("L2 Preset").onTrue(superstructure.setState(StructureState.L2));
-    m_operatorController
-        .rightBumper("Manipulator Side Right")
-        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
-    m_operatorController
-        .leftBumper("Manipulator Side Left")
-        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.LEFT));
+
+    // m_operatorController
+    // .rightBumper("Manipulator Side Right")
+    // .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
+    // m_operatorController
+    // .leftBumper("Manipulator Side Left")
+    // .onTrue(superstructure.setManipulatorSide(ManipulatorSide.LEFT));
 
     m_operatorController
         .rightTrigger("Score Coral")
@@ -311,19 +311,20 @@ public class RobotContainer {
                             .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
 
-    //    new Trigger(
-    //            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // new Trigger(
+    // () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX()
+    // >
     // 0.1))
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withTargetDirection(
-    //                                getStickAngle(m_driverController).plus(new Rotation2d(105))))
-    //                .withTimeout(3));
+    // .onTrue(
+    // drivetrain
+    // .applyRequest(
+    // () ->
+    // azimuth
+    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    // .withTargetDirection(
+    // getStickAngle(m_driverController).plus(new Rotation2d(105))))
+    // .withTimeout(3));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
@@ -376,41 +377,44 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    //    Logger.recordOutput(
-    //        "AutoAim/Targets/Coral",
-    //        Stream.of(CoralTargets.values())
-    //            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
-    //            .toArray(Pose2d[]::new));
-    //    // Log locations of all autoaim targets
-    //    Logger.recordOutput(
-    //        "AutoAim/Targets/Algae",
-    //        Stream.of(AlgaeIntakeTargets.values())
-    //            .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
-    //            .toArray(Pose2d[]::new));
+    // Logger.recordOutput(
+    // "AutoAim/Targets/Coral",
+    // Stream.of(CoralTargets.values())
+    // .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+    // .toArray(Pose2d[]::new));
+    // // Log locations of all autoaim targets
+    // Logger.recordOutput(
+    // "AutoAim/Targets/Algae",
+    // Stream.of(AlgaeIntakeTargets.values())
+    // .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
+    // .toArray(Pose2d[]::new));
     //
-    //    Logger.recordOutput(
-    //        "AutoAim/Targets/SourceIntakes",
-    //        Stream.of(SourceIntakeTargets.values())
-    //            .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
-    //            .toArray(Pose2d[]::new));
+    // Logger.recordOutput(
+    // "AutoAim/Targets/SourceIntakes",
+    // Stream.of(SourceIntakeTargets.values())
+    // .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
+    // .toArray(Pose2d[]::new));
     //
-    //    Logger.recordOutput(
-    //        "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
-    //    Logger.recordOutput(
-    //        "AutoAim/LeftHandedCoralTarget",
-    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
-    //    Logger.recordOutput(
-    //        "AutoAim/RightHandedCoralTarget",
-    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
-    //    Logger.recordOutput(
-    //        "AutoAim/NameOfLHCoralTarget",
-    //        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());
-    //    Logger.recordOutput(
-    //        "AutoAim/NameOfRHCoralTarget",
-    //        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, false).name());
-    //    Logger.recordOutput(
-    //        "AutoAim/AlgaeIntakeTarget",
-    //        AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+    // Logger.recordOutput(
+    // "AutoAim/CoralTarget",
+    // CoralTargets.getClosestTarget(drivetrain.getState().Pose));
+    // Logger.recordOutput(
+    // "AutoAim/LeftHandedCoralTarget",
+    // CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
+    // Logger.recordOutput(
+    // "AutoAim/RightHandedCoralTarget",
+    // CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
+    // Logger.recordOutput(
+    // "AutoAim/NameOfLHCoralTarget",
+    // CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose,
+    // true).name());
+    // Logger.recordOutput(
+    // "AutoAim/NameOfRHCoralTarget",
+    // CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose,
+    // false).name());
+    // Logger.recordOutput(
+    // "AutoAim/AlgaeIntakeTarget",
+    // AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
     superstructure.periodic();
   }
 }

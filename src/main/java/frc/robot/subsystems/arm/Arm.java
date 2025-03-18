@@ -157,34 +157,16 @@ public class Arm extends DisableSubsystem {
     return this.run(() -> armIO.setVoltage(voltage));
   }
 
-  public Command toReefLevel(int level, BooleanSupplier rightSide) {
-    return setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.reefRightPositions[level]
-                : ArmConstants.reefLeftPositions[level],
-        true,
-        () -> 0);
+  public Command toReefLevel(int level) {
+    return setPosition(() -> ArmConstants.reefRightPositions[level], true, () -> 0);
   }
 
-  public Command toDealgaeLevel(int level, BooleanSupplier rightSide) {
-    return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.dealgaeRightPosition[level]
-                : ArmConstants.dealgaeLeftPosition[level],
-        true,
-        () -> 0);
+  public Command toDealgaeLevel(int level) {
+    return this.setPosition(() -> ArmConstants.dealgaeRightPosition[level], true, () -> 0);
   }
 
-  public Command toProcessorLevel(BooleanSupplier rightSide) {
-    return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.processorRightPosition
-                : ArmConstants.processorLeftPosition,
-        true,
-        () -> 0);
+  public Command toProcessorLevel() {
+    return this.setPosition(() -> ArmConstants.processorRightPosition, true, () -> 0);
   }
 
   @AutoLogOutput
@@ -197,24 +179,12 @@ public class Arm extends DisableSubsystem {
     return this.setPosition(() -> ArmConstants.sourcePosition, true, () -> 0);
   }
 
-  public Command toBargeLevel(BooleanSupplier rightSide) {
-    return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.bargeRightPosition
-                : ArmConstants.bargeLeftPosition,
-        true,
-        () -> rightSide.getAsBoolean() ? 1 : -1);
+  public Command toBargeLevel() {
+    return this.setPosition(() -> ArmConstants.bargeRightPosition, true, () -> 1);
   }
 
-  public Command toGroundAlgaeLevel(BooleanSupplier rightSide) {
-    return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.groundAlgaeRightPosition
-                : ArmConstants.groundAlgaeLeftPosition,
-        true,
-        () -> rightSide.getAsBoolean() ? 1 : -1);
+  public Command toGroundAlgaeLevel() {
+    return this.setPosition(() -> ArmConstants.groundAlgaeRightPosition, true, () -> 1);
   }
 
   @AutoLogOutput
@@ -227,6 +197,7 @@ public class Arm extends DisableSubsystem {
     return this.setPosition(ArmConstants.homePosition, true, 0);
   }
 
+  // leaving this here for now
   public Command toHome(BooleanSupplier preferRightSide) {
     return this.setPosition(
         () -> ArmConstants.homePosition, true, () -> preferRightSide.getAsBoolean() ? -1 : 1);

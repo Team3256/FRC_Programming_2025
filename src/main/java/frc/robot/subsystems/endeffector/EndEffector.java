@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.LoggedTracer;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -59,28 +58,16 @@ public class EndEffector extends DisableSubsystem {
     return this.run(() -> endEffectorIO.setAlgaeVelocity(velocity.get()));
   }
 
-  public Command setL1Velocity(BooleanSupplier rightSide) {
-    return setCoralVelocity(
-        () ->
-            rightSide.getAsBoolean()
-                ? EndEffectorConstants.l1Velocity
-                : EndEffectorConstants.l1Velocity.times(-1));
+  public Command setL1Velocity() {
+    return setCoralVelocity(() -> EndEffectorConstants.l1Velocity);
   }
 
-  public Command setL2L3Velocity(BooleanSupplier rightSide) {
-    return setCoralVelocity(
-        () ->
-            rightSide.getAsBoolean()
-                ? EndEffectorConstants.l2l3Velocity
-                : EndEffectorConstants.l2l3Velocity.times(-1));
+  public Command setL2L3Velocity() {
+    return setCoralVelocity(() -> EndEffectorConstants.l2l3Velocity);
   }
 
-  public Command setL4Voltage(BooleanSupplier rightSide) {
-    return setCoralVoltage(
-        () ->
-            rightSide.getAsBoolean()
-                ? EndEffectorConstants.l4Voltage
-                : EndEffectorConstants.l4Voltage * -1);
+  public Command setL4Voltage() {
+    return setCoralVoltage(() -> EndEffectorConstants.l4Voltage);
   }
 
   public Command setSourceVelocity() {

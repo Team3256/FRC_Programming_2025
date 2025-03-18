@@ -193,11 +193,11 @@ public class AutoRoutines {
     }
 
     public Command goToL4() {
-      return m_elevator.toReefLevel(3).alongWith(m_arm.toReefLevel(2, () -> true));
+      return m_elevator.toReefLevel(3).alongWith(m_arm.toReefLevel(2));
     }
 
     public Command scoreL4() {
-      return m_endEffector.setL4Voltage(() -> true);
+      return m_endEffector.setL4Voltage();
     }
 
     public Command goToSource() {
