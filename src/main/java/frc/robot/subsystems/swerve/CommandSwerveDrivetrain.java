@@ -459,8 +459,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
     //    if (!questNav.connected()) {
-    //      this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds,
-    // visionMeasurementStdDevs);
+    this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
     //    }
   }
 

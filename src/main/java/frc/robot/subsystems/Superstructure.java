@@ -197,6 +197,11 @@ public class Superstructure {
 
     stateTriggers
         .get(StructureState.PREHOME)
+        .and(prevStateTriggers.get(StructureState.SCORE_ALGAE))
+        .onTrue(endEffector.algaeOff());
+
+    stateTriggers
+        .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SCORE_CORAL))
         .onTrue(arm.toHome())
         .and(arm.reachedPosition)
@@ -219,11 +224,12 @@ public class Superstructure {
     // As a safety feature, the HOME state is only valid if the previous state was PREHOME ensuring
     // that you don't skip steps.
 
-    stateTriggers
-        .get(StructureState.IDLE)
-        .or(stateTriggers.get(StructureState.HOME))
-        .and(endEffector.algaeBeamBreak.negate())
-        .onTrue(endEffector.algaeOff());
+    //    stateTriggers
+    //        .get(StructureState.IDLE)
+    //        .or(stateTriggers.get(StructureState.HOME))
+    //        .and(endEffector.algaeBeamBreak.negate())
+    //            .debounce(.025)
+    //        .onTrue(endEffector.algaeOff());
 
     stateTriggers
         .get(StructureState.HOME)
