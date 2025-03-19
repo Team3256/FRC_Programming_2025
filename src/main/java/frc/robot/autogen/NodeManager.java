@@ -65,7 +65,7 @@ public class NodeManager {
                   .andThen(
                       endEffector
                           .setL4Voltage(() -> true)
-                          .until(routine.observe(endEffector.coralBeamBreak))
+                          .until(routine.observe(endEffector.rightBeamBreak))
                           .andThen(arm.toHome().alongWith(elevator.toHome())));
           preloadTraj.done().toggleOnTrue(scoreCmd);
           nextTrajTrigger = new Trigger(scoreCmd::isFinished);
@@ -80,11 +80,11 @@ public class NodeManager {
           intakeTraj
               .atTimeBeforeEnd(1)
               .toggleOnTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)));
-          intakeTraj.atTimeBeforeEnd(.5).toggleOnTrue(arm.toSourceLevel());
+          intakeTraj.atTimeBeforeEnd(.5).toggleOnTrue(arm.toSourceLevel(() -> true));
           Command intakeCmd =
               endEffector
-                  .setSourceVelocity()
-                  .until(endEffector.coralBeamBreak.debounce(.1))
+                  .setSourceVelocity(() -> true)
+                  .until(endEffector.rightBeamBreak.debounce(.1))
                   .andThen(
                       arm.toHome().alongWith(Commands.waitSeconds(.2).andThen(elevator.toHome())));
           intakeTraj.done().onTrue(intakeCmd);
@@ -103,7 +103,7 @@ public class NodeManager {
               scoreCmd =
                   endEffector
                       .setL1Velocity(() -> true)
-                      .until(endEffector.coralBeamBreak)
+                      .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
             }
@@ -114,7 +114,7 @@ public class NodeManager {
               scoreCmd =
                   endEffector
                       .setL2L3Velocity(() -> true)
-                      .until(endEffector.coralBeamBreak)
+                      .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
             }
@@ -125,7 +125,7 @@ public class NodeManager {
               scoreCmd =
                   endEffector
                       .setL2L3Velocity(() -> true)
-                      .until(endEffector.coralBeamBreak)
+                      .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
             }
@@ -136,7 +136,7 @@ public class NodeManager {
               scoreCmd =
                   endEffector
                       .setL4Voltage(() -> true)
-                      .until(endEffector.coralBeamBreak)
+                      .until(endEffector.rightBeamBreak)
                       .andThen(arm.toHome().alongWith(elevator.toHome()));
               scoringTraj.done().onTrue(scoreCmd);
             }

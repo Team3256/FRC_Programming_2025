@@ -68,7 +68,12 @@ public class AutoRoutines {
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate().debounce(.5))
+                .until(
+                    m_endEffector
+                        .leftBeamBreak
+                        .negate()
+                        .and(m_endEffector.rightBeamBreak.negate())
+                        .debounce(.5))
                 .andThen(m_autoCommands.home()));
     //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     //    l4Preload
@@ -101,7 +106,8 @@ public class AutoRoutines {
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
                 .andThen(
                     m_autoCommands
                         .home()
@@ -111,14 +117,15 @@ public class AutoRoutines {
         .onTrue(
             m_autoCommands
                 .goToSource()
-                .until(m_endEffector.coralBeamBreak)
+                .until(m_endEffector.rightBeamBreak)
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
                 .andThen(m_autoCommands.home()));
 
     return routine;
@@ -139,7 +146,8 @@ public class AutoRoutines {
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
                 .andThen(
                     m_autoCommands
                         .home()
@@ -149,14 +157,15 @@ public class AutoRoutines {
         .onTrue(
             m_autoCommands
                 .goToSource()
-                .until(m_endEffector.coralBeamBreak)
+                .until(m_endEffector.rightBeamBreak)
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
                 .andThen(
                     m_autoCommands
                         .home()
@@ -166,14 +175,15 @@ public class AutoRoutines {
         .onTrue(
             m_autoCommands
                 .goToSource()
-                .until(m_endEffector.coralBeamBreak)
+                .until(m_endEffector.rightBeamBreak)
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
     SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
+                .until(
+                    m_endEffector.leftBeamBreak.negate().and(m_endEffector.rightBeamBreak.negate()))
                 .andThen(m_autoCommands.home()));
 
     return routine;
@@ -203,8 +213,9 @@ public class AutoRoutines {
     public Command goToSource() {
       return m_elevator
           .setPosition(ElevatorConstants.sourcePosition.in(Rotations))
-          .alongWith(Commands.waitUntil(m_elevator.isSafeForArm).andThen(m_arm.toSourceLevel()))
-          .alongWith(m_endEffector.setSourceVelocity());
+          .alongWith(
+              Commands.waitUntil(m_elevator.isSafeForArm).andThen(m_arm.toSourceLevel(() -> false)))
+          .alongWith(m_endEffector.setSourceVelocity(() -> false));
     }
 
     public Command home() {

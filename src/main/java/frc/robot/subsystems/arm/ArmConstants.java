@@ -30,44 +30,39 @@ public final class ArmConstants {
 
   public static final Angle maxRotations = Rotations.of(2);
 
-  // Arm positions
-  // L1, L2-L3 (since same arm angle), L4
-  // "arm level 0" is L1, "arm level 1" is L2-L3, "arm level 2" is L4
-  // 3 sig figs of acc
   public static final Angle[] reefRightPositions = {
-    Rotations.of(0.32), Rotations.of(0.316), Rotations.of(0.3408)
+    Rotations.of(0.32), Rotations.of(0.32), Rotations.of(.343)
   };
 
-  // @deprecated
   public static final Angle[] reefLeftPositions = {
     Rotations.of(0.18), Rotations.of(0.18), Rotations.of(0.157)
   };
 
-  // Dealgae L2, Daalgae L3
   public static final Angle[] dealgaeRightPosition = {Rotations.of(.376), Rotations.of(.361)};
   public static final Angle[] dealgaeLeftPosition = {Rotations.of(.124), Rotations.of(.139)};
 
-  public static final Angle sourcePosition = Rotations.of(.286);
+  public static final Angle sourceRightPositions = Rotations.of(.66);
+  public static final Angle sourceLeftPositions = Rotations.of(.84);
 
   public static final Angle bargeLeftPosition = Rotations.of(.17);
   public static final Angle bargeRightPosition = Rotations.of(.33);
 
-  public static final Angle homePosition = Rotations.of(.3);
+  public static final Angle homePosition = Rotations.of(.25);
 
   public static final double safeRightPosition = .37;
-  public static final double safeLeftPosition = .25;
+  public static final double safeLeftPosition = .13;
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(.1)
-                  .withKV(11.1)
-                  .withKP(75)
+                  .withKS(0.18)
+                  .withKV(17)
+                  .withKP(100)
                   .withKI(0)
                   .withKD(0)
-                  .withKA(.2)
-                  .withKG(.35)
+                  .withKA(.7)
+                  .withKG(.291)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
@@ -76,26 +71,26 @@ public final class ArmConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicJerk(0)
-                  .withMotionMagicAcceleration(3.5)
-                  .withMotionMagicCruiseVelocity(.6))
+                  .withMotionMagicJerk(16)
+                  .withMotionMagicAcceleration(4.5)
+                  .withMotionMagicCruiseVelocity(.65))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
                   .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
-                  .withFeedbackRemoteSensorID(armMotorEncoderId)
-                  .withSensorToMechanismRatio(1.33333)
-                  .withRotorToSensorRatio(69.9999975));
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+                  //                  .withFeedbackRemoteSensorID(armMotorEncoderId)
+                  .withSensorToMechanismRatio(142.22)
+                  .withRotorToSensorRatio(1));
 
   public static final CANcoderConfiguration cancoderConfiguration =
       new CANcoderConfiguration()
           .withMagnetSensor(
               new MagnetSensorConfigs()
                   .withSensorDirection(SensorDirectionValue.Clockwise_Positive)
-                  .withMagnetOffset(-0.6601640625)
+                  .withMagnetOffset(.29329094)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
   public static final Angle processorRightPosition = Rotations.of(.576);
   public static final Angle processorLeftPosition = Rotations.of(.924);

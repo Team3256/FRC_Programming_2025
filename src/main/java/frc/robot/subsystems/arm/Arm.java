@@ -60,7 +60,7 @@ public class Arm extends DisableSubsystem {
     super(enabled);
 
     this.armIO = armIO;
-    //    armIO.resetPosition(Rotations.of(.25));
+    armIO.resetPosition(Rotations.of(.25));
   }
 
   @Override
@@ -193,8 +193,14 @@ public class Arm extends DisableSubsystem {
         && (armIOAutoLogged.armMotorPosition + 5) % 1 <= ArmConstants.safeRightPosition;
   }
 
-  public Command toSourceLevel() {
-    return this.setPosition(() -> ArmConstants.sourcePosition, true, () -> 0);
+  public Command toSourceLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.sourceRightPositions
+                : ArmConstants.sourceLeftPositions,
+        true,
+        () -> rightSide.getAsBoolean() ? -1 : 1);
   }
 
   public Command toBargeLevel(BooleanSupplier rightSide) {
@@ -204,7 +210,7 @@ public class Arm extends DisableSubsystem {
                 ? ArmConstants.bargeRightPosition
                 : ArmConstants.bargeLeftPosition,
         true,
-        () -> 0);
+        () -> rightSide.getAsBoolean() ? 1 : -1);
   }
 
   public Command toGroundAlgaeLevel(BooleanSupplier rightSide) {
@@ -214,7 +220,7 @@ public class Arm extends DisableSubsystem {
                 ? ArmConstants.groundAlgaeRightPosition
                 : ArmConstants.groundAlgaeLeftPosition,
         true,
-        () -> 0);
+        () -> rightSide.getAsBoolean() ? 1 : -1);
   }
 
   @AutoLogOutput
@@ -230,6 +236,16 @@ public class Arm extends DisableSubsystem {
   public Command toHome(BooleanSupplier preferRightSide) {
     return this.setPosition(
         () -> ArmConstants.homePosition, true, () -> preferRightSide.getAsBoolean() ? -1 : 1);
+  }
+
+  public Command toSafePosition(BooleanSupplier towardsRight) {
+    return this.setPosition(
+        () ->
+            towardsRight.getAsBoolean()
+                ? ArmConstants.safeRightPosition
+                : ArmConstants.safeLeftPosition,
+        true,
+        () -> towardsRight.getAsBoolean() ? 1 : -1); // TODO: tune
   }
 
   public Command off() {

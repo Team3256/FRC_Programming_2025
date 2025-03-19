@@ -29,8 +29,8 @@ public interface EndEffectorIO {
     public Current coralMotorStatorCurrent = Amps.of(0);
     public Current coralMotorSupplyCurrent = Amps.of(0);
 
-    public boolean coralBeamBreak = false;
-    public boolean algaeBeamBreak = false;
+    public boolean rightBeamBreak = false;
+    public boolean leftBeamBreak = false;
   }
 
   public default void updateInputs(EndEffectorIOInputs inputs) {}

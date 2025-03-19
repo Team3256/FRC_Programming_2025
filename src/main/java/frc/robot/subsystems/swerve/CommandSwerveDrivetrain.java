@@ -23,6 +23,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -40,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -182,6 +184,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   private final Alert a_questNavNotConnected =
       new Alert("QuestNav failure (no data within 250ms)", AlertType.kError);
+
+  private final SwerveDrivePoseEstimator photonPoseEstimator =
+      new SwerveDrivePoseEstimator(
+          this.getKinematics(),
+          this.getPigeon2().getRotation2d(),
+          this.getStateCopy().ModulePositions,
+          this.getStateCopy().Pose);
 
   /* WPILib Alerts end */
   /**
@@ -433,24 +442,28 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
       //      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
       //      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
-      if (!DriverStation.isDisabled()) {
-        this.addVisionMeasurement(
-            questNav.getRobotPose().toPose2d(),
-            questNav.getCaptureTime(),
-            VecBuilder.fill(0.0001, 0.0001, .99999));
-      }
 
+      this.addVisionMeasurement(
+          questNav.getRobotPose().toPose2d(),
+          questNav.getCaptureTime(),
+          VecBuilder.fill(0.0001, 0.0001, .99999));
     } else {
       a_questNavNotConnected.set(true);
     }
     Logger.recordOutput("QuestNav/connected", questNav.connected());
+    if (Constants.FeatureFlags.kPhotonEnabled) {
+      photonPoseEstimator.update(
+          this.getPigeon2().getRotation2d(), this.getStateCopy().ModulePositions);
+      Logger.recordOutput("Vision/photonEstimate", photonPoseEstimator.getEstimatedPosition());
+    }
 
-    //        if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
-    //          if
-    //     (this.getState().Pose.getTranslation().getDistance(Pose2d.kZero.getTranslation()) >1) {
-    //            questNav.resetPose(new Pose3d(this.getState().Pose));
-    //            questNavZeroed = true;
-    //          }}
+    //    if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
+    //      if
+    // (photonPoseEstimator.getEstimatedPosition().getTranslation().getDistance(Pose2d.kZero.getTranslation()) >1) {
+    //        questNav.resetPose(new Pose3d(photonPoseEstimator.getEstimatedPosition()));
+    //        this.resetPose(photonPoseEstimator.getEstimatedPosition());
+    //        questNavZeroed = true;
+    //      }}
     LoggedTracer.record(this.getClass().getSimpleName());
   }
 
@@ -458,9 +471,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    //    if (!questNav.connected()) {
-    this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-    //    }
+    photonPoseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    if (!questNav.connected()) {
+      this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
   }
 
   /**

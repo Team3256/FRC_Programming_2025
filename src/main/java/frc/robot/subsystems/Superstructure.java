@@ -99,14 +99,12 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.L2)
         .or(stateTriggers.get(StructureState.L3))
-        .onTrue(arm.toReefLevel(1, () -> true));
+        .onTrue(arm.toReefLevel(1, rightManipulatorSide));
 
     // L4 reef level, no safety limits
     stateTriggers
         .get(StructureState.L4)
         .onTrue(elevator.toReefLevel(3))
-        .and(elevator.reachedPosition)
-        .debounce(.02)
         .onTrue(arm.toReefLevel(2, rightManipulatorSide));
 
     // Scoring coral, depending on previous state it changes endEffector velocity
@@ -141,16 +139,21 @@ public class Superstructure {
     // Arm needs to wrap 180, so elevator has to be safe before we fully move
     stateTriggers
         .get(StructureState.PRESOURCE)
-        .onTrue(arm.toSourceLevel())
-        .and(arm.isSafePosition)
+        .onTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)))
+        .and(elevator.isSafeForArm)
         .onTrue(this.setState(StructureState.SOURCE));
     // We can move towards the direction up to a safe position if the elevator is not safe yet
+    stateTriggers
+        .get(StructureState.PRESOURCE)
+        .and(elevator.isSafeForArm.negate())
+        .onTrue(arm.toSafePosition(() -> true));
     // Once the elevator reaches source position, we start move the arm around
     stateTriggers
         .get(StructureState.SOURCE)
-        .onTrue(elevator.setPosition(ElevatorConstants.sourcePosition.in(Rotations)))
-        .onTrue(endEffector.setSourceVelocity())
-        .and(endEffector.coralBeamBreak)
+        .and(elevator.isSafeForArm)
+        .onTrue(arm.toSourceLevel(() -> false))
+        .onTrue(endEffector.setSourceVelocity(() -> false))
+        .and(endEffector.leftBeamBreak)
         .onTrue(this.setState(StructureState.PREHOME));
 
     // Random filler for now
@@ -159,19 +162,19 @@ public class Superstructure {
         .onTrue(elevator.toBargePosition())
         .onTrue(arm.toBargeLevel(rightManipulatorSide));
 
-    //    stateTriggers
-    //        .get(StructureState.PROCESSOR)
-    //        .onTrue(elevator.toProcessorPosition())
-    //        .and(elevator.reachedPosition)
-    //        .debounce(.04) // wait two loop times
-    //        .onTrue(arm.toProcessorLevel(rightManipulatorSide));
+    stateTriggers
+        .get(StructureState.PROCESSOR)
+        .onTrue(elevator.toProcessorPosition())
+        .and(elevator.reachedPosition)
+        .debounce(.04) // wait two loop times
+        .onTrue(arm.toProcessorLevel(rightManipulatorSide));
 
-    //    stateTriggers
-    //        .get(StructureState.GROUND_ALGAE)
-    //        .onTrue(elevator.toGroundAlgaePosition())
-    //        .and(elevator.reachedPosition)
-    //        .debounce(.04) // same as above cuz this lowk might break
-    //        .onTrue(arm.toGroundAlgaeLevel(rightManipulatorSide));
+    stateTriggers
+        .get(StructureState.GROUND_ALGAE)
+        .onTrue(elevator.toGroundAlgaePosition())
+        .and(elevator.reachedPosition)
+        .debounce(.04) // same as above cuz this lowk might break
+        .onTrue(arm.toGroundAlgaeLevel(rightManipulatorSide));
 
     stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
 
@@ -181,6 +184,13 @@ public class Superstructure {
 
     // Different version of prehome specifically for transitioning from SOURCE, because the arm
     // needs to move a specific direction
+    stateTriggers
+        .get(StructureState.PREHOME)
+        .and(prevStateTriggers.get(StructureState.SOURCE))
+        .and(elevator.isSafeForArm)
+        .onTrue(arm.toHome(() -> true))
+        .and(arm.isSafePosition)
+        .onTrue(this.setState(StructureState.HOME));
 
     stateTriggers
         .get(StructureState.PREHOME)
@@ -212,6 +222,7 @@ public class Superstructure {
     // assume that moving the arm towards home is safe and that you don't need to move the elevator.
     stateTriggers
         .get(StructureState.PREHOME)
+        .and(prevStateTriggers.get(StructureState.SOURCE).negate())
         .and(prevStateTriggers.get(StructureState.DEALGAE_L2).negate())
         .and(prevStateTriggers.get(StructureState.DEALGAE_L3).negate())
         .and(prevStateTriggers.get(StructureState.SCORE_CORAL).negate())
@@ -223,14 +234,6 @@ public class Superstructure {
     // state.
     // As a safety feature, the HOME state is only valid if the previous state was PREHOME ensuring
     // that you don't skip steps.
-
-    //    stateTriggers
-    //        .get(StructureState.IDLE)
-    //        .or(stateTriggers.get(StructureState.HOME))
-    //        .and(endEffector.algaeBeamBreak.negate())
-    //            .debounce(.025)
-    //        .onTrue(endEffector.algaeOff());
-
     stateTriggers
         .get(StructureState.HOME)
         .and(prevStateTriggers.get(StructureState.PREHOME))
