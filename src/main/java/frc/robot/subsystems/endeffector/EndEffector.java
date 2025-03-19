@@ -23,10 +23,11 @@ public class EndEffector extends DisableSubsystem {
   private final EndEffectorIOInputsAutoLogged endEffectorIOInputsAutoLogged =
       new EndEffectorIOInputsAutoLogged();
 
-  public final Trigger rightBeamBreak =
-      new Trigger(() -> endEffectorIOInputsAutoLogged.rightBeamBreak);
-  public final Trigger leftBeamBreak =
-      new Trigger(() -> endEffectorIOInputsAutoLogged.leftBeamBreak);
+  public final Trigger coralBeamBreak =
+      new Trigger(() -> endEffectorIOInputsAutoLogged.coralBeamBreak);
+
+  public final Trigger algaeBeamBreak =
+      new Trigger(() -> endEffectorIOInputsAutoLogged.algaeBeamBreak);
 
   public EndEffector(boolean enabled, EndEffectorIO endEffectorIO) {
     super(enabled);
@@ -82,12 +83,8 @@ public class EndEffector extends DisableSubsystem {
                 : EndEffectorConstants.l4Voltage * -1);
   }
 
-  public Command setSourceVelocity(BooleanSupplier rightSide) {
-    return setCoralVelocity(
-        () ->
-            rightSide.getAsBoolean()
-                ? EndEffectorConstants.sourceVelocity
-                : EndEffectorConstants.sourceVelocity.times(-1));
+  public Command setSourceVelocity() {
+    return setCoralVelocity(() -> EndEffectorConstants.sourceVelocity);
   }
 
   public Command setAlgaeIntakeVelocity() {

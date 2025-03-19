@@ -28,12 +28,12 @@ public final class ElevatorConstants {
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(.1259765625)
-                  .withKV(2.2)
-                  .withKP(200)
+                  .withKS(.31640625)
+                  .withKV(1.428)
+                  .withKP(150)
                   .withKD(0)
                   .withKA(.1)
-                  .withKG(.36328125)
+                  .withKG(.158203125)
                   .withGravityType(GravityTypeValue.Elevator_Static) // Original 0.145
               )
           .withMotorOutput(
@@ -42,9 +42,9 @@ public final class ElevatorConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(50)
-                  .withMotionMagicCruiseVelocity(5.5)
-                  .withMotionMagicJerk(200))
+                  .withMotionMagicAcceleration(30.75)
+                  .withMotionMagicCruiseVelocity(7.2)
+                  .withMotionMagicJerk(600))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
@@ -52,7 +52,7 @@ public final class ElevatorConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(16)
+                  .withSensorToMechanismRatio(12)
                   .withRotorToSensorRatio(1));
   public static final boolean kUseMotionMagic = true;
   public static final double kStatusSignalUpdateFrequency = 50.0; // Hz
@@ -83,11 +83,14 @@ public final class ElevatorConstants {
   // Coral positions
   // Please tune
 
+  // L1, L2, L3, L4
+  // 3 sigfigs of precision
   public static final Angle[] kReefPositionsPracticeField = {
-    Rotations.of(0.0), Rotations.of(1.2), Rotations.of(2.6), Rotations.of(4.92)
+    Rotations.of(0.0), Rotations.of(1.29), Rotations.of(2.64), Rotations.of(4.875)
   };
   public static final Distance[] kReefPositionsMeters = Constants.branchHeights.distances;
 
+  // L1 -> L4, in order
   public static final Angle[] kReefPositions = {
     convertMetersToRotations(
             FieldConstants.BranchHeights.PRACTICE_FIELD.distances[0].minus(kReefPositionsMeters[0]))
@@ -105,10 +108,10 @@ public final class ElevatorConstants {
 
   public static final Angle[] kDealgaePositions = {Rotations.of(.55), Rotations.of(2.0)};
 
-  public static final Angle sourcePosition = Rotations.of(3.392);
+  public static final Angle sourcePosition = Rotations.of(.27);
   public static final Angle bargePosition = Rotations.of(5);
 
-  public static final Angle homePosition = Rotations.of(0.15);
+  public static final Angle homePosition = Rotations.of(.27);
   public static final Angle processorPosition = Rotations.of(1.5); // not real for now
   public static final Angle groundAlgaePosition = Rotations.of(1.1);
 
