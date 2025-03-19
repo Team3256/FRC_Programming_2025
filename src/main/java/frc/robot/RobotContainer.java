@@ -337,108 +337,126 @@ public class RobotContainer {
 
     Logger.recordOutput(
         "Stick Angle", Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
-//
-//    new Trigger(
-//            () ->
-//                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
-//                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        < 1)
-//                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        > 0))))
-//        .onTrue(
-//            drivetrain
-//                .applyRequest(
-//                    () ->
-//                        azimuth
-//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-//                            .withTargetDirection(reefAB))
-//                .withTimeout(aziTimeout));
-//
-//    new Trigger(
-//            () ->
-//                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
-//                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        < 1)
-//                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        > 0))))
-//        .onTrue(
-//            drivetrain
-//                .applyRequest(
-//                    () ->
-//                        azimuth
-//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-//                            .withTargetDirection(reefCD))
-//                .withTimeout(aziTimeout));
-//
-//    new Trigger(
-//            () ->
-//                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
-//                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        < 1)
-//                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        > 0))))
-//        .onTrue(
-//            drivetrain
-//                .applyRequest(
-//                    () ->
-//                        azimuth
-//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-//                            .withTargetDirection(reefEF))
-//                .withTimeout(aziTimeout));
-//
-//    new Trigger(
-//            () ->
-//                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
-//                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        < 1)
-//                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        > 0))))
-//        .onTrue(
-//            drivetrain
-//                .applyRequest(
-//                    () ->
-//                        azimuth
-//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-//                            .withTargetDirection(reefGH))
-//                .withTimeout(aziTimeout));
-//
-//    new Trigger(
-//            () ->
-//                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
-//                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        < 1)
-//                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        > 0))))
-//        .onTrue(
-//            drivetrain
-//                .applyRequest(
-//                    () ->
-//                        azimuth
-//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-//                            .withTargetDirection(reefIJ))
-//                .withTimeout(aziTimeout));
-//
-//    new Trigger(
-//            () ->
-//                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
-//                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        < 1)
-//                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-//                        > 0))))
-//        .onTrue(
-//            drivetrain
-//                .applyRequest(
-//                    () ->
-//                        azimuth
-//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-//                            .withTargetDirection(reefKL))
-//                .withTimeout(aziTimeout));
+    //
+    //    new Trigger(
+    //            () ->
+    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1)
+    //                    && (Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        < 1)
+    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        > 0))))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(reefAB))
+    //                .withTimeout(aziTimeout));
+    //
+    //    new Trigger(
+    //            () ->
+    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1)
+    //                    && (Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        < 1)
+    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        > 0))))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(reefCD))
+    //                .withTimeout(aziTimeout));
+    //
+    //    new Trigger(
+    //            () ->
+    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1)
+    //                    && (Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        < 1)
+    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        > 0))))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(reefEF))
+    //                .withTimeout(aziTimeout));
+    //
+    //    new Trigger(
+    //            () ->
+    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1)
+    //                    && (Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        < 1)
+    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        > 0))))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(reefGH))
+    //                .withTimeout(aziTimeout));
+    //
+    //    new Trigger(
+    //            () ->
+    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1)
+    //                    && (Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        < 1)
+    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        > 0))))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(reefIJ))
+    //                .withTimeout(aziTimeout));
+    //
+    //    new Trigger(
+    //            () ->
+    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1)
+    //                    && (Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        < 1)
+    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // m_driverController.getRightX())
+    //                        > 0))))
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(reefKL))
+    //                .withTimeout(aziTimeout));
 
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
