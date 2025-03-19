@@ -68,7 +68,7 @@ public final class Constants {
     public static final boolean kAutoAlignEnabled = true; // safety switch
     public static final boolean kAutoAlignPreferRepulsorPF = true;
 
-    public static final boolean kPhotonEnabled = true;
+    public static final boolean kPhotonEnabled = false;
   }
 
   public static class Logging {

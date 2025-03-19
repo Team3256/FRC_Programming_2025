@@ -30,7 +30,7 @@ public final class ElevatorConstants {
               new Slot0Configs()
                   .withKS(.31640625)
                   .withKV(1.428)
-                  .withKP(100)
+                  .withKP(150)
                   .withKD(0)
                   .withKA(.1)
                   .withKG(.158203125)
@@ -108,10 +108,10 @@ public final class ElevatorConstants {
 
   public static final Angle[] kDealgaePositions = {Rotations.of(.55), Rotations.of(2.0)};
 
-  public static final Angle sourcePosition = Rotations.of(.228);
+  public static final Angle sourcePosition = Rotations.of(.27);
   public static final Angle bargePosition = Rotations.of(5);
 
-  public static final Angle homePosition = Rotations.of(0.15);
+  public static final Angle homePosition = Rotations.of(.27);
   public static final Angle processorPosition = Rotations.of(1.5); // not real for now
   public static final Angle groundAlgaePosition = Rotations.of(1.1);
 

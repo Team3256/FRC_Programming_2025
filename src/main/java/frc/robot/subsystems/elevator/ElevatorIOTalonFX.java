@@ -13,10 +13,8 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.robot.utils.PhoenixUtil;
@@ -33,38 +31,32 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final StatusSignal<Current> motorStatorCurrent = motor.getStatorCurrent();
   private final StatusSignal<Current> motorSupplyCurrent = motor.getSupplyCurrent();
 
-  private final CANcoder encoderA = new CANcoder(ElevatorConstants.kEncoderAID);
-  private final CANcoder encoderB = new CANcoder(ElevatorConstants.kEncoderBID);
-
-  private final StatusSignal<Angle> encoderARawPosition = encoderA.getPosition();
-  private final StatusSignal<Angle> encoderAAbsolutePosition = encoderA.getAbsolutePosition();
-  private final StatusSignal<AngularVelocity> encoderAVelocity = encoderA.getVelocity();
-
-  private final StatusSignal<Angle> encoderBRawPosition = encoderB.getPosition();
-  private final StatusSignal<Angle> encoderBAbsolutePosition = encoderB.getAbsolutePosition();
-  private final StatusSignal<AngularVelocity> encoderBVelocity = encoderB.getVelocity();
+  //  private final CANcoder encoderA = new CANcoder(ElevatorConstants.kEncoderAID);
+  //  private final CANcoder encoderB = new CANcoder(ElevatorConstants.kEncoderBID);
+  //
+  //  private final StatusSignal<Angle> encoderARawPosition = encoderA.getPosition();
+  //  private final StatusSignal<Angle> encoderAAbsolutePosition = encoderA.getAbsolutePosition();
+  //  private final StatusSignal<AngularVelocity> encoderAVelocity = encoderA.getVelocity();
+  //
+  //  private final StatusSignal<Angle> encoderBRawPosition = encoderB.getPosition();
+  //  private final StatusSignal<Angle> encoderBAbsolutePosition = encoderB.getAbsolutePosition();
+  //  private final StatusSignal<AngularVelocity> encoderBVelocity = encoderB.getVelocity();
 
   public ElevatorIOTalonFX() {
     PhoenixUtil.applyMotorConfigs(
         motor, ElevatorConstants.kMotorConfig, ElevatorConstants.kFlashConfigRetries);
 
-    PhoenixUtil.applyCancoderConfig(
-        encoderA, ElevatorConstants.kEncoderAConfig, ElevatorConstants.kFlashConfigRetries);
-    PhoenixUtil.applyCancoderConfig(
-        encoderB, ElevatorConstants.kEncoderBConfig, ElevatorConstants.kFlashConfigRetries);
+    //    PhoenixUtil.applyCancoderConfig(
+    //        encoderA, ElevatorConstants.kEncoderAConfig, ElevatorConstants.kFlashConfigRetries);
+    //    PhoenixUtil.applyCancoderConfig(
+    //        encoderB, ElevatorConstants.kEncoderBConfig, ElevatorConstants.kFlashConfigRetries);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         ElevatorConstants.kStatusSignalUpdateFrequency,
         motorVoltage,
         motorPosition,
         motorStatorCurrent,
-        motorSupplyCurrent,
-        encoderARawPosition,
-        encoderAAbsolutePosition,
-        encoderAVelocity,
-        encoderBRawPosition,
-        encoderBAbsolutePosition,
-        encoderBVelocity);
+        motorSupplyCurrent);
     motor.optimizeBusUtilization();
   }
 
@@ -76,14 +68,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     inputs.motorPosition = motorPosition.getValueAsDouble();
     inputs.motorStatorCurrent = motorStatorCurrent.getValueAsDouble();
     inputs.motorSupplyCurrent = motorSupplyCurrent.getValueAsDouble();
-
-    inputs.encoderARawPosition = encoderARawPosition.getValueAsDouble();
-    inputs.encoderAAbsolutePosition = encoderAAbsolutePosition.getValueAsDouble();
-    inputs.encoderAVelocity = encoderAVelocity.getValueAsDouble();
-
-    inputs.encoderBRawPosition = encoderBRawPosition.getValueAsDouble();
-    inputs.encoderBAbsolutePosition = encoderBAbsolutePosition.getValueAsDouble();
-    inputs.encoderBVelocity = encoderBVelocity.getValueAsDouble();
   }
 
   @Override

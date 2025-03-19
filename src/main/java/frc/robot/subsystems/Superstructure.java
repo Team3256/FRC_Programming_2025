@@ -105,6 +105,8 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.L4)
         .onTrue(elevator.toReefLevel(3))
+        .and(elevator.reachedPosition)
+        .debounce(.02)
         .onTrue(arm.toReefLevel(2, rightManipulatorSide));
 
     // Scoring coral, depending on previous state it changes endEffector velocity
@@ -218,7 +220,8 @@ public class Superstructure {
     // that you don't skip steps.
 
     stateTriggers
-        .get(StructureState.PREHOME)
+        .get(StructureState.IDLE)
+        .or(stateTriggers.get(StructureState.HOME))
         .and(endEffector.algaeBeamBreak.negate())
         .onTrue(endEffector.algaeOff());
 

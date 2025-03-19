@@ -204,7 +204,7 @@ public class Arm extends DisableSubsystem {
                 ? ArmConstants.bargeRightPosition
                 : ArmConstants.bargeLeftPosition,
         true,
-        () -> rightSide.getAsBoolean() ? 1 : -1);
+        () -> 0);
   }
 
   public Command toGroundAlgaeLevel(BooleanSupplier rightSide) {
@@ -214,7 +214,7 @@ public class Arm extends DisableSubsystem {
                 ? ArmConstants.groundAlgaeRightPosition
                 : ArmConstants.groundAlgaeLeftPosition,
         true,
-        () -> rightSide.getAsBoolean() ? 1 : -1);
+        () -> 0);
   }
 
   @AutoLogOutput

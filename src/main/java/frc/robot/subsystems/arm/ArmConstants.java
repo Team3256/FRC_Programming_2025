@@ -61,13 +61,13 @@ public final class ArmConstants {
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(.2)
-                  .withKV(11)
-                  .withKP(50)
+                  .withKS(.1)
+                  .withKV(11.1)
+                  .withKP(75)
                   .withKI(0)
                   .withKD(0)
-                  .withKA(.15)
-                  .withKG(.2)
+                  .withKA(.2)
+                  .withKG(.35)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
@@ -76,9 +76,9 @@ public final class ArmConstants {
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
-                  .withMotionMagicJerk(16)
-                  .withMotionMagicAcceleration(4.5)
-                  .withMotionMagicCruiseVelocity(.65))
+                  .withMotionMagicJerk(0)
+                  .withMotionMagicAcceleration(3.5)
+                  .withMotionMagicCruiseVelocity(.6))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
