@@ -8,7 +8,6 @@
 package frc.robot.subsystems.climb;
 
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -20,7 +19,6 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 
 public class ClimbConstants {
@@ -33,7 +31,7 @@ public class ClimbConstants {
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
-          .withSlot0(new Slot0Configs().withKS(0).withKV(0).withKP(0).withKI(0).withKD(0))
+          .withSlot0(new Slot0Configs().withKS(0).withKV(0).withKP(0.5).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)

@@ -13,7 +13,6 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -313,30 +312,34 @@ public class RobotContainer {
                             .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
-
-    m_driverController
-        .a()
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(
-                                new Rotation2d(
-                                    drivetrain.questNav.getRobotPose().getRotation().getAngle()
-                                        + (2 * Math.PI))))
-                .withTimeout(aziTimeout));
+    //
+    //    m_driverController
+    //        .a()
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(
+    //                                new Rotation2d(
+    //
+    // drivetrain.questNav.getRobotPose().getRotation().getAngle()
+    //                                        + Math.PI)))
+    //                .withTimeout(aziTimeout));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-    new Trigger(
-            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1))
-        .onTrue(drivetrain.applyRequest(() -> lockHoriz.withModuleDirection(uniformHLockOffset)));
+    //
+    //    new Trigger(
+    //            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // 0.1))
+    //        .onTrue(drivetrain.applyRequest(() ->
+    // lockHoriz.withModuleDirection(uniformHLockOffset)));
 
     Logger.recordOutput(
-        "Stick Angle Radians", Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
+        "Stick Angle Radians",
+        Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
     //
     //    new Trigger(
     //            () ->
