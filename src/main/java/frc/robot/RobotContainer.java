@@ -240,9 +240,9 @@ public class RobotContainer {
               () ->
                   drive
                       .withVelocityX(
-                          -m_driverController.getLeftY()
+                          m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
-                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                      .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
                       .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
 
@@ -255,10 +255,10 @@ public class RobotContainer {
                 () ->
                     drive
                         .withVelocityX(
-                            -m_driverController.getLeftY()
+                            m_driverController.getLeftY()
                                 * SlowMaxSpeed) // Drive forward with negative Y (forward)
                         .withVelocityY(
-                            -m_driverController.getLeftX()
+                            m_driverController.getLeftX()
                                 * SlowMaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(
                             -m_driverController.getTriggerAxes()
@@ -273,8 +273,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceLeft1))
                 .withTimeout(aziTimeout));
 
@@ -285,8 +285,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceRight2))
                 .withTimeout(aziTimeout));
 
@@ -297,8 +297,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(hang))
                 .withTimeout(aziTimeout));
 
@@ -309,8 +309,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
 
@@ -321,12 +321,12 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(
                                 new Rotation2d(
                                     drivetrain.questNav.getRobotPose().getRotation().getAngle()
-                                        + Math.PI)))
+                                        + (2 * Math.PI))))
                 .withTimeout(aziTimeout));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -336,7 +336,7 @@ public class RobotContainer {
         .onTrue(drivetrain.applyRequest(() -> lockHoriz.withModuleDirection(uniformHLockOffset)));
 
     Logger.recordOutput(
-        "Stick Angle", Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
+        "Stick Angle Radians", Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
     //
     //    new Trigger(
     //            () ->

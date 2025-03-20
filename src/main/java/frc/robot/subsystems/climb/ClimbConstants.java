@@ -8,6 +8,7 @@
 package frc.robot.subsystems.climb;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
@@ -19,6 +20,7 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 
 public class ClimbConstants {
@@ -50,6 +52,11 @@ public class ClimbConstants {
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
                   .withSensorToMechanismRatio(400) // this is actually the ratio lol
                   .withRotorToSensorRatio(1));
+
+  // Presets (rotations) // make this angle at some point
+  public final double stowPosition = -95; // decreased to allow pullback
+  public final double pullPosition = -100; // pulls in
+  public final double readyPosition = -28; // move out to hook
 
   public static final class sim {
     public static final double simGearing = 10;
