@@ -191,6 +191,7 @@ public class RobotContainer {
     autoChooser.addRoutine("mobilityBottom", m_autoRoutines::mobilityBottom);
     autoChooser.addRoutine("l4PreloadBottomSource1", m_autoRoutines::l4PreloadBottomSource1);
     autoChooser.addRoutine("l4PreloadBottomSource2", m_autoRoutines::l4PreloadBottomSource2);
+    autoChooser.addRoutine("dsadadad", m_autoRoutines::test);
 
     SmartDashboard.putData("auto chooser", autoChooser);
 
@@ -227,9 +228,10 @@ public class RobotContainer {
                   drive
                       .withVelocityX(
                           swerveVelXRateLimiter.calculate(
-                              m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
+                              -m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
                       .withVelocityY(
-                          swerveVelYRateLimiter.calculate(m_driverController.getLeftX() * MaxSpeed))
+                          swerveVelYRateLimiter.calculate(
+                              -m_driverController.getLeftX() * MaxSpeed))
                       .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
 
     } else {
@@ -504,11 +506,11 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    //    Logger.recordOutput(
-    //        "AutoAim/Targets/Coral",
-    //        Stream.of(CoralTargets.values())
-    //            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
-    //            .toArray(Pose2d[]::new));
+    //        Logger.recordOutput(
+    //            "AutoAim/Targets/Coral",
+    //            Stream.of(CoralTargets.values())
+    //                .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+    //                .toArray(Pose2d[]::new));
     //    // Log locations of all autoaim targets
     //    Logger.recordOutput(
     //        "AutoAim/Targets/Algae",
@@ -524,12 +526,12 @@ public class RobotContainer {
     //
     //    Logger.recordOutput(
     //        "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
-    //    Logger.recordOutput(
-    //        "AutoAim/LeftHandedCoralTarget",
-    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
-    //    Logger.recordOutput(
-    //        "AutoAim/RightHandedCoralTarget",
-    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
+    Logger.recordOutput(
+        "AutoAim/LeftHandedCoralTarget",
+        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
+    Logger.recordOutput(
+        "AutoAim/RightHandedCoralTarget",
+        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
     //    Logger.recordOutput(
     //        "AutoAim/NameOfLHCoralTarget",
     //        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());

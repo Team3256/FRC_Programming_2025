@@ -38,9 +38,9 @@ public class EndEffector extends DisableSubsystem {
   public void periodic() {
     super.periodic();
     endEffectorIO.updateInputs(endEffectorIOInputsAutoLogged);
-    Logger.processInputs(this.getClass().getSimpleName(), endEffectorIOInputsAutoLogged);
+    Logger.processInputs("EndEffector", endEffectorIOInputsAutoLogged);
 
-    LoggedTracer.record(this.getClass().getSimpleName());
+    LoggedTracer.record("EndEffector");
   }
 
   public Command setCoralVoltage(DoubleSupplier voltage) {

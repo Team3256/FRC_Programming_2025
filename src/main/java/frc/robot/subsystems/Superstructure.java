@@ -127,7 +127,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .onTrue(elevator.toDealgaeLevel(0))
-        .onTrue(arm.toDealgaeLevel(0, rightManipulatorSide));
+        .onTrue(arm.toDealgaeLevel(0, () -> true));
 
     stateTriggers
         .get(StructureState.DEALGAE_L3)
@@ -253,11 +253,10 @@ public class Superstructure {
   // call manually
   public void periodic() {
     Logger.recordOutput(
-        this.getClass().getSimpleName() + "/ManipulatorSide",
-        this.manipulatorSide.toString()); // TODO: remove
-    Logger.recordOutput(this.getClass().getSimpleName() + "/State", this.state.toString());
-    Logger.recordOutput(this.getClass().getSimpleName() + "/PrevState", this.prevState.toString());
-    Logger.recordOutput(this.getClass().getSimpleName() + "/StateTime", this.stateTimer.get());
+        "Superstructure/ManipulatorSide", this.manipulatorSide.toString()); // TODO: remove
+    Logger.recordOutput("Superstructure/State", this.state.toString());
+    Logger.recordOutput("Superstructure/PrevState", this.prevState.toString());
+    Logger.recordOutput("Superstructure/StateTime", this.stateTimer.get());
 
     LoggedTracer.record(this.getClass().getSimpleName());
   }

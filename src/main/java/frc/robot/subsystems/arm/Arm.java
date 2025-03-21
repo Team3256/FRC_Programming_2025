@@ -66,12 +66,13 @@ public class Arm extends DisableSubsystem {
   @Override
   public void periodic() {
     super.periodic();
-    Logger.recordOutput(
-        this.getClass().getSimpleName() + "/requestedPosition", requestedPosition.in(Rotations));
+    //    Logger.recordOutput(
+    //        this.getClass().getSimpleName() + "/requestedPosition",
+    // requestedPosition.in(Rotations));
     armIO.updateInputs(armIOAutoLogged);
-    Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
+    Logger.processInputs("Arm", armIOAutoLogged);
 
-    LoggedTracer.record(this.getClass().getSimpleName());
+    LoggedTracer.record("Arm");
 
     //    if (trajIterator != null && trajIterator.hasNext()) {
     //      armIO.setPosition(

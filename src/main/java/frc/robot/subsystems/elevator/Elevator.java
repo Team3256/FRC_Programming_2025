@@ -8,15 +8,11 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
-import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.LoggedTracer;
 import frc.robot.utils.Util;
@@ -28,7 +24,6 @@ public class Elevator extends DisableSubsystem {
 
   private final ElevatorIO motorIO;
   private final ElevatorIOInputsAutoLogged motorIOAutoLogged = new ElevatorIOInputsAutoLogged();
-  private final SysIdRoutine m_sysIdRoutine;
 
   private double requestedPosition = 0;
 
@@ -38,32 +33,18 @@ public class Elevator extends DisableSubsystem {
   public Elevator(boolean enabled, ElevatorIO motorIO) {
     super(enabled);
     this.motorIO = motorIO;
-    m_sysIdRoutine =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                Volts.of(0.2).per(Seconds), // Use default ramp rate (1 V/s)
-                Volts.of(6), // Reduce dynamic step voltage to 4 to prevent brownout
-                null, // Use default timeout (10 s)
-                // Log state with Phoenix SignalLogger class
-                (state) -> SignalLogger.writeString("state", state.toString())),
-            new SysIdRoutine.Mechanism(
-                (volts) ->
-                    motorIO
-                        .getMotor()
-                        .setControl(motorIO.getVoltageRequest().withOutput(volts.in(Volts))),
-                null,
-                this));
     motorIO.zero();
   }
 
   @Override
   public void periodic() {
     super.periodic();
-    Logger.recordOutput(this.getClass().getSimpleName() + "/requestedPosition", requestedPosition);
+    //    Logger.recordOutput(this.getClass().getSimpleName() + "/requestedPosition",
+    // requestedPosition);
     motorIO.updateInputs(motorIOAutoLogged);
-    Logger.processInputs(this.getClass().getSimpleName(), motorIOAutoLogged);
+    Logger.processInputs("Elevator", motorIOAutoLogged);
 
-    LoggedTracer.record(this.getClass().getSimpleName());
+    LoggedTracer.record("Elevator");
   }
 
   public Command setPosition(double position) {
@@ -150,11 +131,4 @@ public class Elevator extends DisableSubsystem {
 
   // TODO: Grab coral level from NT/selector
 
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.quasistatic(direction);
-  }
-
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.dynamic(direction);
-  }
 }

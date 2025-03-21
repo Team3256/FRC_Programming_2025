@@ -88,6 +88,24 @@ public class AutoRoutines {
     return routine;
   }
 
+  public AutoRoutine test() {
+    final AutoRoutine routine = m_factory.newRoutine("l4PreloadBottomSource2");
+    final AutoTrajectory preloadH = routine.trajectory("MID-H");
+    final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
+    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
+    final AutoTrajectory CtoSource = routine.trajectory("C-Source2");
+    final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
+
+    routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
+    preloadH.done().onTrue(HtoSource.spawnCmd());
+    HtoSource.done().onTrue(SourceToC.spawnCmd());
+    SourceToC.done().onTrue(CtoSource.spawnCmd());
+    CtoSource.done().onTrue(SourceToD.spawnCmd());
+    SourceToD.done().onTrue(m_autoCommands.goToL4());
+
+    return routine;
+  }
+
   public AutoRoutine l4PreloadBottomSource1() {
     final AutoRoutine routine = m_factory.newRoutine("l4PreloadBottomSource1");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");

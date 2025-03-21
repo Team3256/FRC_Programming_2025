@@ -21,7 +21,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
@@ -167,7 +166,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public final QuestNav questNav =
       new QuestNav(
           new Transform3d(
-              new Translation3d(-.280, .247, 0), new Rotation3d(Rotation2d.fromDegrees(142.5))));
+              new Translation3d(-0.277, -0.251, 0), new Rotation3d(Rotation2d.fromDegrees(217.5))));
 
   private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
   private int _calculatedOffsetToRobotCenterCount = 0;
@@ -199,6 +198,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
+    questNav.resetPose(
+        new Pose3d(
+            0.4273998737335205, 6.396022319793701, 0, new Rotation3d(Rotation2d.fromDegrees(0))));
   }
 
   /**
@@ -259,6 +261,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       System.out.println("**** pidToPose disabled because of null target");
       return Commands.none();
     }
+    xController.setTolerance(.1);
+    yController.setTolerance(.1);
+    headingController.setTolerance(Math.toRadians(.1));
     return run(() -> {
           Logger.recordOutput("AutoAlign/Target", target.get());
           Logger.recordOutput("AutoAlign/Running", true);
@@ -431,26 +436,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     if (!Utils.isSimulation() && questNav.connected()) {
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
-      //      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
-      //      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
-      if (!DriverStation.isDisabled()) {
-        this.addVisionMeasurement(
-            questNav.getRobotPose().toPose2d(),
-            questNav.getCaptureTime(),
-            VecBuilder.fill(0.0001, 0.0001, .99999));
-      }
+      Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
+      Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
+      //      if (!DriverStation.isDisabled()) {
+      //        super.addVisionMeasurement(
+      //            questNav.getRobotPose().toPose2d(),
+      //            Utils.getCurrentTimeSeconds(),
+      //            VecBuilder.fill(0.0001, 0.0001, .99999));
+      //      }
 
     } else {
       a_questNavNotConnected.set(true);
     }
     Logger.recordOutput("QuestNav/connected", questNav.connected());
 
-    //        if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
-    //          if
-    //     (this.getState().Pose.getTranslation().getDistance(Pose2d.kZero.getTranslation()) >1) {
-    //            questNav.resetPose(new Pose3d(this.getState().Pose));
-    //            questNavZeroed = true;
-    //          }}
+    //            if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
+    //              if
+    //         (this.getState().Pose.getTranslation().getDistance(Pose2d.kZero.getTranslation()) >1)
+    // {
+    //                questNav.softReset(new Pose3d(this.getState().Pose));
+    ////                questNavZeroed = true;
+    //              }}
     LoggedTracer.record(this.getClass().getSimpleName());
   }
 
@@ -459,7 +465,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
     //    if (!questNav.connected()) {
+    //    if (DriverStation.isDisabled() || !questNav.connected()) {
     this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    //    }
+
     //    }
   }
 

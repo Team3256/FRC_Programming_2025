@@ -63,10 +63,10 @@ public final class ArmConstants {
               new Slot0Configs()
                   .withKS(.1)
                   .withKV(11.1)
-                  .withKP(75)
+                  .withKP(100)
                   .withKI(0)
                   .withKD(0)
-                  .withKA(.2)
+                  .withKA(0)
                   .withKG(.35)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
@@ -85,7 +85,7 @@ public final class ArmConstants {
                   .withStatorCurrentLimit(80))
           .withFeedback(
               new FeedbackConfigs()
-                  .withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANcoder)
+                  .withFeedbackSensorSource(FeedbackSensorSourceValue.SyncCANcoder)
                   .withFeedbackRemoteSensorID(armMotorEncoderId)
                   .withSensorToMechanismRatio(1.33333)
                   .withRotorToSensorRatio(69.9999975));

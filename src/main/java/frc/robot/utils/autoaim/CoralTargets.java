@@ -11,7 +11,6 @@ import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.util.Units;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -22,7 +21,7 @@ public enum CoralTargets {
   // were extended beyond the coral station
   // All angles from the center of the coral with 0° across the width of the
   // field, counterclockwise
-  BLUE_A(new Pose2d(3.95, 4.20, Rotation2d.fromDegrees(180)), true),
+  BLUE_A(new Pose2d(3.20, 4.16, Rotation2d.fromDegrees(90)), true),
   BLUE_B(new Pose2d(3.95, 3.87, Rotation2d.fromDegrees(180)), false),
   BLUE_C(new Pose2d(4.07, 3.66, Rotation2d.fromDegrees(240)), true),
   BLUE_D(new Pose2d(4.35, 3.49, Rotation2d.fromDegrees(240)), false),
@@ -75,9 +74,9 @@ public enum CoralTargets {
     // maybe add a bit more to account for robot not aligning perfectly
     return original.transformBy(
         new Transform2d(
-            0.495 + Units.inchesToMeters(3.625) + 0.25, // TODO: TUNE This!!
+            0, // TODO: TUNE This!!
             0,
-            Rotation2d.fromDegrees(180.0 + 90)));
+            Rotation2d.kZero));
   }
 
   /** Gets the closest offset target to the given pose. */
