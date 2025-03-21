@@ -106,7 +106,7 @@ public class Superstructure {
         .get(StructureState.L4)
         .onTrue(elevator.toReefLevel(3))
         .and(elevator.reachedPosition)
-        .debounce(.02)
+        .debounce(.03)
         .onTrue(arm.toReefLevel(2, rightManipulatorSide));
 
     // Scoring coral, depending on previous state it changes endEffector velocity
