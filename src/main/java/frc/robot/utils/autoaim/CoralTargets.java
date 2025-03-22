@@ -7,7 +7,6 @@
 
 package frc.robot.utils.autoaim;
 
-import choreo.util.ChoreoAllianceFlipUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -46,16 +45,16 @@ public enum CoralTargets {
   //  RED_J(new Pose2d(12.37, 5.05, Rotation2d.fromDegrees(30)), false),
   //  RED_K(new Pose2d(13.55, 2.84, Rotation2d.fromDegrees(-150)), true),
   //  RED_L(new Pose2d(12.27, 3.02, Rotation2d.fromDegrees(150)), false),
-  RED_A(ChoreoAllianceFlipUtil.flip(BLUE_A.location), true),
-  RED_B(ChoreoAllianceFlipUtil.flip(BLUE_B.location), false),
-  RED_C(ChoreoAllianceFlipUtil.flip(BLUE_C.location), true),
+  RED_A(new Pose2d(14.3, 3.84, Rotation2d.fromDegrees(-90)), true),
+  RED_B(new Pose2d(14.3, 4.26, Rotation2d.fromDegrees(-90)), false),
+  RED_C(new Pose2d(13.84, 5.04, Rotation2d.fromDegrees(-30)), true),
   //  //  RED_D(ChoreoAllianceFlipUtil.flip(BLUE_D.location), false),
   RED_E(new Pose2d(12.57, 5.21, Rotation2d.fromDegrees(30)), false),
-  RED_F(ChoreoAllianceFlipUtil.flip(BLUE_F.location), true),
+  RED_F(new Pose2d(12.34, 5.09, Rotation2d.fromDegrees(30)), true),
   //  RED_G(ChoreoAllianceFlipUtil.flip(BLUE_G.location), false),
   //  RED_H(ChoreoAllianceFlipUtil.flip(BLUE_H.location), true),
   //  RED_I(ChoreoAllianceFlipUtil.flip(BLUE_I.location), false),
-  RED_J(ChoreoAllianceFlipUtil.flip(BLUE_J.location), true),
+  RED_J(new Pose2d(12.47, 2.84, Rotation2d.fromDegrees(150)), true),
   RED_K(new Pose2d(13.55, 2.84, Rotation2d.fromDegrees(-150)), true),
   RED_L(new Pose2d(13.8, 2.98, Rotation2d.fromDegrees(-150)), false);
 
