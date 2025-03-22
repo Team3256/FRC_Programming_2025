@@ -13,6 +13,7 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -47,6 +48,7 @@ import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+import java.util.stream.Stream;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -506,11 +508,11 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    //        Logger.recordOutput(
-    //            "AutoAim/Targets/Coral",
-    //            Stream.of(CoralTargets.values())
-    //                .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
-    //                .toArray(Pose2d[]::new));
+    Logger.recordOutput(
+        "AutoAim/Targets/Coral",
+        Stream.of(CoralTargets.values())
+            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+            .toArray(Pose2d[]::new));
     //    // Log locations of all autoaim targets
     //    Logger.recordOutput(
     //        "AutoAim/Targets/Algae",
