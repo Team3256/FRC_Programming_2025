@@ -105,7 +105,14 @@ public class RobotContainer {
                   VisionConstants.backCam,
                   VisionConstants.robotToBackCam,
                   () -> drivetrain.getState().Pose)
-              : new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam));
+              : new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.frontCam,
+                  VisionConstants.robotToFrontCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(
+                  VisionConstants.frontCam, VisionConstants.robotToFrontCam));
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(

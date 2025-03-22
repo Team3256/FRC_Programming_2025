@@ -66,6 +66,7 @@ public class VisionConstants {
       new double[] {
         1, // Camera 0
         1, // Camera 1
+        1,
         1 // Camera 3
       };
 

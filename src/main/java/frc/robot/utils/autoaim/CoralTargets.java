@@ -31,8 +31,8 @@ public enum CoralTargets {
   BLUE_H(new Pose2d(5.74, 4.30, Rotation2d.fromDegrees(-90)), false),
   BLUE_I(new Pose2d(5.28, 5.02, Rotation2d.fromDegrees(-30)), true),
   BLUE_J(new Pose2d(4.75, 5.35, Rotation2d.fromDegrees(-30)), false),
-  BLUE_K(new Pose2d(4.01, 5.22, Rotation2d.fromDegrees(27.91)), true),
-  BLUE_L(new Pose2d(3.73, 5.12, Rotation2d.fromDegrees(32)), false),
+  BLUE_K(new Pose2d(4.01, 5.22, Rotation2d.fromDegrees(30)), true),
+  BLUE_L(new Pose2d(3.73, 5.12, Rotation2d.fromDegrees(30)), false),
 
   //  RED_A(new Pose2d(3.22, 4.20, Rotation2d.fromDegrees(90)), true),
   //  RED_B(new Pose2d(3.18, 3.85, Rotation2d.fromDegrees(90)), false),
@@ -50,14 +50,14 @@ public enum CoralTargets {
   RED_B(ChoreoAllianceFlipUtil.flip(BLUE_B.location), false),
   RED_C(ChoreoAllianceFlipUtil.flip(BLUE_C.location), true),
   //  //  RED_D(ChoreoAllianceFlipUtil.flip(BLUE_D.location), false),
-  RED_E(ChoreoAllianceFlipUtil.flip(BLUE_E.location), false),
+  RED_E(new Pose2d(12.57, 5.21, Rotation2d.fromDegrees(30)), false),
   RED_F(ChoreoAllianceFlipUtil.flip(BLUE_F.location), true),
   //  RED_G(ChoreoAllianceFlipUtil.flip(BLUE_G.location), false),
   //  RED_H(ChoreoAllianceFlipUtil.flip(BLUE_H.location), true),
   //  RED_I(ChoreoAllianceFlipUtil.flip(BLUE_I.location), false),
   RED_J(ChoreoAllianceFlipUtil.flip(BLUE_J.location), true),
-  RED_K(ChoreoAllianceFlipUtil.flip(BLUE_K.location), true),
-  RED_L(ChoreoAllianceFlipUtil.flip(BLUE_L.location), false);
+  RED_K(new Pose2d(13.55, 2.84, Rotation2d.fromDegrees(-150)), true),
+  RED_L(new Pose2d(13.8, 2.98, Rotation2d.fromDegrees(-150)), false);
 
   public final Pose2d location;
   public final boolean leftHanded;
