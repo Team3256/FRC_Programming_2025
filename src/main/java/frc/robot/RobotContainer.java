@@ -175,6 +175,9 @@ public class RobotContainer {
         .onTrue(superstructure.setState(StructureState.BARGE));
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
         .onTrue(superstructure.setState(StructureState.PROCESSOR));
+
+    new Trigger(() -> m_operatorController.getLeftX() > .5)
+        .onTrue(superstructure.setState(StructureState.CLIMB));
     new Trigger(() -> -m_operatorController.getRightY() > .5)
         .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() + .1)))
         .toggleOnFalse(elevator.setPosition(elevator::getPosition));

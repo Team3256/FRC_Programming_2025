@@ -93,6 +93,8 @@ public class Superstructure {
         .onTrue(elevator.toReefLevel(0))
         .onTrue(arm.toReefLevel(0, rightManipulatorSide));
 
+    stateTriggers.get(StructureState.CLIMB).onTrue(elevator.toHome()).onTrue(arm.toClimb());
+
     // L2 and L3 are same arm position so they are put together, once again no safety limits
     stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(1));
     stateTriggers.get(StructureState.L3).onTrue(elevator.toReefLevel(2));
