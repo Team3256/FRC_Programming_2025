@@ -32,6 +32,9 @@ import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbConstants;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -79,6 +82,7 @@ public class RobotContainer {
       new EndEffector(
           true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
+  private final Climb climb = new Climb(true, new ClimbIOTalonFX());
   private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
 
   private final Vision vision =
@@ -178,6 +182,14 @@ public class RobotContainer {
 
     new Trigger(() -> m_operatorController.getLeftX() > .5)
         .onTrue(superstructure.setState(StructureState.CLIMB));
+
+    new Trigger(() -> m_operatorController.getRightX() > .5)
+        .onTrue(climb.setVoltage(ClimbConstants.kUpVoltage))
+        .or(new Trigger(() -> m_operatorController.getRightX() < -.5))
+        .onFalse(climb.setVoltage(0));
+    new Trigger(() -> m_operatorController.getRightX() < -.5)
+        .onTrue(climb.setVoltage(ClimbConstants.kDownVoltage));
+
     new Trigger(() -> -m_operatorController.getRightY() > .5)
         .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() + .1)))
         .toggleOnFalse(elevator.setPosition(elevator::getPosition));

@@ -351,17 +351,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             .withWheelForceFeedforwardsY(sample.moduleForcesY()));
   }
 
-  @Override
-  public void seedFieldCentric() {
-    super.seedFieldCentric();
-    if (questNav.connected()) {
-      questNav.softReset(
-          new Pose3d(
-              questNav.getRobotPose().getTranslation(),
-              new Rotation3d(super.getOperatorForwardDirection())));
-    }
-  }
-
   /**
    * Runs the SysId Quasistatic test in the given direction for the routine specified by {@link
    * #m_sysIdRoutineToApply}.

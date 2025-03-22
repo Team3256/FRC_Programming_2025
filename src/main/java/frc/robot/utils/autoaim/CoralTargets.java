@@ -39,7 +39,7 @@ public enum CoralTargets {
   //  RED_C(new Pose2d(3.70, 3.00, Rotation2d.fromDegrees(148)), true),
   RED_D(new Pose2d(13.49, 5.30, Rotation2d.fromDegrees(-30)), false),
   //  //  RED_E(new Pose2d(4.95, 2.83, Rotation2d.fromDegrees(-150)), true),
-  ////  RED_F(new Pose2d(5.26, 2.95, Rotation2d.fromDegrees(-150)), false),
+  //  RED_F(new Pose2d(5.26, 2.95, Rotation2d.fromDegrees(-150)), false),
   RED_G(new Pose2d(11.79, 4.22, Rotation2d.fromDegrees(90)), true),
   RED_H(new Pose2d(11.82, 3.69, Rotation2d.fromDegrees(90)), false),
   RED_I(new Pose2d(12.27, 3.02, Rotation2d.fromDegrees(150)), true), // wrong

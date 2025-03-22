@@ -25,9 +25,12 @@ public class ClimbConstants {
   public static final int kClimbMotorID = 49;
 
   public static final double kUpdateFrequency = 0;
-  public static final boolean kUseMotionMagic = true;
+  public static final boolean kUseMotionMagic = false;
 
-  public static final boolean kUseFOC = true;
+  public static final double kUpVoltage = 2;
+  public static final double kDownVoltage = -2;
+
+  public static final boolean kUseFOC = false;
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
