@@ -27,8 +27,8 @@ public class ClimbConstants {
   public static final double kUpdateFrequency = 0;
   public static final boolean kUseMotionMagic = false;
 
-  public static final double kUpVoltage = 2;
-  public static final double kDownVoltage = -2;
+  public static final double kUpVoltage = 4;
+  public static final double kDownVoltage = -4;
 
   public static final boolean kUseFOC = false;
 
