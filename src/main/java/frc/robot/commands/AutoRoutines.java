@@ -61,7 +61,9 @@ public class AutoRoutines {
   public AutoRoutine l4Preload() {
     final AutoRoutine routine = m_factory.newRoutine("l4Preload");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
-    routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
+    routine
+        .active()
+        .onTrue(preloadH.resetOdometry().andThen(Commands.waitSeconds(5)).andThen(preloadH.cmd()));
     preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     preloadH
         .done()
