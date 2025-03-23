@@ -47,7 +47,7 @@ public final class EndEffectorConstants {
   public static TalonFXConfiguration coralMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(.117).withKA(0).withKP(.6).withKI(0).withKD(0))
+              new Slot0Configs().withKS(0).withKV(.118).withKA(0).withKP(.2).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
