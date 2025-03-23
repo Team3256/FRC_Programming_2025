@@ -72,7 +72,7 @@ public final class Constants {
   }
 
   public static class Logging {
-    public static final boolean kLogToUSB = true;
+    public static final boolean kLogToUSB = false;
     public static final boolean kAdvkitUseReplayLogs = false;
     // DEBUG: Everything (which will be useful for debugging)
     // INFO: Everything except DEBUG
