@@ -81,6 +81,13 @@ public class AutoRoutines {
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate().debounce(.5))
+                .deadlineFor(
+                    m_drivetrain.pidToPoseAlliance(
+                        () ->
+                            new Pose2d(
+                                5.785916328430176,
+                                4.243002891540527,
+                                Rotation2d.fromRadians(4.71))))
                 .andThen(m_autoCommands.home()));
     //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     //    l4Preload
@@ -174,8 +181,8 @@ public class AutoRoutines {
                     m_drivetrain.pidToPoseAlliance(
                         () ->
                             new Pose2d(
-                                5.793995380401611,
-                                4.191510200500488,
+                                5.785916328430176,
+                                4.243002891540527,
                                 Rotation2d.fromRadians(4.71))))
                 .andThen(
                     m_autoCommands
