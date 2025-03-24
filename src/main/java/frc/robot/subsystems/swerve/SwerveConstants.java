@@ -17,19 +17,17 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public final class SwerveConstants {
 
-  public static final Rotation2d uniformHLockOffset = new Rotation2d(0);
-
   // source 1, 5 degree overshoot for weight drag from elevator // + (2 * Math.PI)
-  public static final Rotation2d sourceLeft1 = new Rotation2d(0.696 - 0.087266);
+  public static final Rotation2d sourceLeft1 = new Rotation2d(0.696 - (2 * 0.087266));
 
   // source 2, 5 degree overshoot
-  public static final Rotation2d sourceRight2 = new Rotation2d(2.527 - 0.0872665);
+  public static final Rotation2d sourceRight2 = new Rotation2d(2.527 - (2 * 0.0872665));
 
   // climb
-  public static final Rotation2d hang = new Rotation2d(0);
+  public static final Rotation2d hang = new Rotation2d(Math.PI);
 
   // barge
-  public static final Rotation2d barge = new Rotation2d(Math.PI / 2);
+  public static final Rotation2d barge = new Rotation2d(-Math.PI / 2);
 
   // angle backups
   public static final Rotation2d reefAB = new Rotation2d(0 + (Math.PI / 2));
