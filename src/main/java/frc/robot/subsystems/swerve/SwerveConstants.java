@@ -31,8 +31,10 @@ public final class SwerveConstants {
 
   // angle backups
   public static final Rotation2d reefAB = new Rotation2d(0 + (Math.PI / 2) - (2 * 0.0872665));
-  public static final Rotation2d reefCD = new Rotation2d((Math.PI / 3) + (Math.PI / 2) - (2 * 0.0872665));
-  public static final Rotation2d reefEF = new Rotation2d((2 * reefCD.getRadians()) + (Math.PI / 2) - (2 * 0.0872665));
+  public static final Rotation2d reefCD =
+      new Rotation2d((Math.PI / 3) + (Math.PI / 2) - (2 * 0.0872665));
+  public static final Rotation2d reefEF =
+      new Rotation2d((2 * reefCD.getRadians()) + (Math.PI / 2) - (2 * 0.0872665));
   public static final Rotation2d reefGH = new Rotation2d(Math.PI + (Math.PI / 2) - (2 * 0.0872665));
   public static final Rotation2d reefIJ = new Rotation2d(-reefCD.getRadians());
   public static final Rotation2d reefKL = new Rotation2d(-reefEF.getRadians());
