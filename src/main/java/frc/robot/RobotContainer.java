@@ -278,7 +278,7 @@ public class RobotContainer {
     // m_driverController.povUp().whileTrue(drivetrain.wheelRadiusCharacterization(1));
 
     m_driverController
-        .leftBumper() // TODO: remodify this
+        .leftBumper()
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
@@ -320,7 +320,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .povUp()
+        .povDown()
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -332,7 +332,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .povDown()
+        .povUp()
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -360,16 +360,7 @@ public class RobotContainer {
     //                .withTimeout(aziTimeout));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-    //
-    //    new Trigger(
-    //            () -> (m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
-    // 0.1))
-    //        .onTrue(drivetrain.applyRequest(() ->
-    // lockHoriz.withModuleDirection(uniformHLockOffset)));
 
-    Logger.recordOutput(
-        "Stick Angle Radians",
-        Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
     //
     //    new Trigger(
     //            () ->
@@ -534,6 +525,9 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    Logger.recordOutput(
+        "Stick Angle Radians",
+        Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
     Logger.recordOutput(
         "AutoAim/Targets/Coral",
         Stream.of(CoralTargets.values())
