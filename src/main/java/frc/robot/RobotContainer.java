@@ -13,6 +13,7 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -31,6 +32,9 @@ import frc.robot.subsystems.Superstructure.StructureState;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbConstants;
+import frc.robot.subsystems.climb.ClimbIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -47,6 +51,7 @@ import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+import java.util.stream.Stream;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -77,6 +82,7 @@ public class RobotContainer {
       new EndEffector(
           true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
+  private final Climb climb = new Climb(true, new ClimbIOTalonFX());
   private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
 
   private final Vision vision =
@@ -99,7 +105,14 @@ public class RobotContainer {
                   VisionConstants.backCam,
                   VisionConstants.robotToBackCam,
                   () -> drivetrain.getState().Pose)
-              : new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam));
+              : new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.frontCam,
+                  VisionConstants.robotToFrontCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(
+                  VisionConstants.frontCam, VisionConstants.robotToFrontCam));
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -123,7 +136,11 @@ public class RobotContainer {
     configureOperatorBinds();
     m_autoRoutines =
         new AutoRoutines(
-            drivetrain.createAutoFactory(drivetrain::trajLogger), elevator, arm, endEffector);
+            drivetrain.createAutoFactory(drivetrain::trajLogger),
+            elevator,
+            arm,
+            endEffector,
+            drivetrain);
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
     configureSwerve();
@@ -173,6 +190,17 @@ public class RobotContainer {
         .onTrue(superstructure.setState(StructureState.BARGE));
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
         .onTrue(superstructure.setState(StructureState.PROCESSOR));
+
+    new Trigger(() -> m_operatorController.getLeftX() > .5)
+        .onTrue(superstructure.setState(StructureState.CLIMB));
+
+    new Trigger(() -> m_operatorController.getRightX() > .5)
+        .onTrue(climb.setVoltage(ClimbConstants.kUpVoltage))
+        .or(new Trigger(() -> m_operatorController.getRightX() < -.5))
+        .onFalse(climb.setVoltage(0));
+    new Trigger(() -> m_operatorController.getRightX() < -.5)
+        .onTrue(climb.setVoltage(ClimbConstants.kDownVoltage));
+
     new Trigger(() -> -m_operatorController.getRightY() > .5)
         .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() + .1)))
         .toggleOnFalse(elevator.setPosition(elevator::getPosition));
@@ -241,9 +269,9 @@ public class RobotContainer {
               () ->
                   drive
                       .withVelocityX(
-                          m_driverController.getLeftY()
+                          -m_driverController.getLeftY()
                               * MaxSpeed) // Drive forward with negative Y (forward)
-                      .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
+                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                       .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
 
@@ -256,10 +284,10 @@ public class RobotContainer {
                 () ->
                     drive
                         .withVelocityX(
-                            m_driverController.getLeftY()
+                            -m_driverController.getLeftY()
                                 * SlowMaxSpeed) // Drive forward with negative Y (forward)
                         .withVelocityY(
-                            m_driverController.getLeftX()
+                            -m_driverController.getLeftX()
                                 * SlowMaxSpeed) // Drive left with negative X (left)
                         .withRotationalRate(
                             -m_driverController.getTriggerAxes()
@@ -274,8 +302,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceLeft1))
                 .withTimeout(aziTimeout));
 
@@ -286,8 +314,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceRight2))
                 .withTimeout(aziTimeout));
 
@@ -298,8 +326,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(hang))
                 .withTimeout(aziTimeout));
 
@@ -310,8 +338,8 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
-                            .withVelocityY(m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(m_driverController.getLeftY() * MaxSpeed)
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(barge))
                 .withTimeout(aziTimeout));
     //
@@ -506,11 +534,11 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    //        Logger.recordOutput(
-    //            "AutoAim/Targets/Coral",
-    //            Stream.of(CoralTargets.values())
-    //                .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
-    //                .toArray(Pose2d[]::new));
+    Logger.recordOutput(
+        "AutoAim/Targets/Coral",
+        Stream.of(CoralTargets.values())
+            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+            .toArray(Pose2d[]::new));
     //    // Log locations of all autoaim targets
     //    Logger.recordOutput(
     //        "AutoAim/Targets/Algae",

@@ -178,6 +178,10 @@ public class Arm extends DisableSubsystem {
         () -> 0);
   }
 
+  public Command toClimb() {
+    return this.setPosition(() -> ArmConstants.climbPosition, true, () -> 0);
+  }
+
   public Command toProcessorLevel(BooleanSupplier rightSide) {
     return this.setPosition(
         () ->

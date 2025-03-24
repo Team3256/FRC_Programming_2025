@@ -12,12 +12,15 @@ import static edu.wpi.first.units.Units.Rotations;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 
 public class AutoRoutines {
   private final AutoFactory m_factory;
@@ -25,13 +28,20 @@ public class AutoRoutines {
   private final AutoCommands m_autoCommands;
 
   private final Elevator m_elevator;
+  private final CommandSwerveDrivetrain m_drivetrain;
   private final Arm m_arm;
   private final EndEffector m_endEffector;
 
-  public AutoRoutines(AutoFactory factory, Elevator elevator, Arm arm, EndEffector endEffector) {
+  public AutoRoutines(
+      AutoFactory factory,
+      Elevator elevator,
+      Arm arm,
+      EndEffector endEffector,
+      CommandSwerveDrivetrain drivetrain) {
     m_factory = factory;
     m_elevator = elevator;
     m_arm = arm;
+    m_drivetrain = drivetrain;
     m_endEffector = endEffector;
     m_autoCommands = new AutoCommands(elevator, arm, endEffector);
   }
@@ -61,7 +71,9 @@ public class AutoRoutines {
   public AutoRoutine l4Preload() {
     final AutoRoutine routine = m_factory.newRoutine("l4Preload");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
-    routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
+    routine
+        .active()
+        .onTrue(preloadH.resetOdometry().andThen(Commands.waitSeconds(5)).andThen(preloadH.cmd()));
     preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     preloadH
         .done()
@@ -69,6 +81,13 @@ public class AutoRoutines {
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate().debounce(.5))
+                .deadlineFor(
+                    m_drivetrain.pidToPoseAlliance(
+                        () ->
+                            new Pose2d(
+                                5.785916328430176,
+                                4.243002891540527,
+                                Rotation2d.fromRadians(4.71))))
                 .andThen(m_autoCommands.home()));
     //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     //    l4Preload
@@ -158,6 +177,13 @@ public class AutoRoutines {
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate())
+                .deadlineFor(
+                    m_drivetrain.pidToPoseAlliance(
+                        () ->
+                            new Pose2d(
+                                5.785916328430176,
+                                4.243002891540527,
+                                Rotation2d.fromRadians(4.71))))
                 .andThen(
                     m_autoCommands
                         .home()
@@ -168,6 +194,13 @@ public class AutoRoutines {
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.coralBeamBreak)
+                .deadlineFor(
+                    m_drivetrain.pidToPoseAlliance(
+                        () ->
+                            new Pose2d(
+                                0.7617058753967285,
+                                1.2630654573440552,
+                                Rotation2d.fromRadians(2.50))))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
@@ -175,6 +208,13 @@ public class AutoRoutines {
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate())
+                .deadlineFor(
+                    m_drivetrain.pidToPoseAlliance(
+                        () ->
+                            new Pose2d(
+                                3.7114241123199463,
+                                2.9666056632995605,
+                                Rotation2d.fromRadians(2.61))))
                 .andThen(
                     m_autoCommands
                         .home()
@@ -185,6 +225,13 @@ public class AutoRoutines {
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.coralBeamBreak)
+                .deadlineFor(
+                    m_drivetrain.pidToPoseAlliance(
+                        () ->
+                            new Pose2d(
+                                0.7617058753967285,
+                                1.2630654573440552,
+                                Rotation2d.fromRadians(2.50))))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
     SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
@@ -192,6 +239,13 @@ public class AutoRoutines {
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate())
+                .deadlineFor(
+                    m_drivetrain.pidToPoseAlliance(
+                        () ->
+                            new Pose2d(
+                                4.044410705566406,
+                                2.776327610015869,
+                                Rotation2d.fromRadians(2.61))))
                 .andThen(m_autoCommands.home()));
 
     return routine;
@@ -221,7 +275,7 @@ public class AutoRoutines {
     public Command goToSource() {
       return m_elevator
           .setPosition(ElevatorConstants.sourcePosition.in(Rotations))
-          .alongWith(Commands.waitUntil(m_elevator.isSafeForArm).andThen(m_arm.toSourceLevel()))
+          .alongWith(m_arm.toSourceLevel())
           .alongWith(m_endEffector.setSourceVelocity());
     }
 
