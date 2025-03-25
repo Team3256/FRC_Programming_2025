@@ -12,8 +12,6 @@ import static edu.wpi.first.units.Units.Rotations;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.arm.Arm;
@@ -21,6 +19,8 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.endeffector.EndEffector;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.utils.autoaim.CoralTargets;
+import frc.robot.utils.autoaim.SourceIntakeTargets;
 
 public class AutoRoutines {
   private final AutoFactory m_factory;
@@ -71,6 +71,7 @@ public class AutoRoutines {
   public AutoRoutine l4Preload() {
     final AutoRoutine routine = m_factory.newRoutine("l4Preload");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
+
     routine
         .active()
         .onTrue(preloadH.resetOdometry().andThen(Commands.waitSeconds(5)).andThen(preloadH.cmd()));
@@ -82,12 +83,8 @@ public class AutoRoutines {
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate().debounce(.5))
                 .deadlineFor(
-                    m_drivetrain.pidToPoseAlliance(
-                        () ->
-                            new Pose2d(
-                                5.785916328430176,
-                                4.243002891540527,
-                                Rotation2d.fromRadians(4.71))))
+                    m_drivetrain.pidToPose(
+                        () -> preloadH.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
                 .andThen(m_autoCommands.home()));
     //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     //    l4Preload
@@ -166,7 +163,7 @@ public class AutoRoutines {
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
     final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
     final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
-    final AutoTrajectory CtoSource = routine.trajectory("C-Source2");
+    final AutoTrajectory CToSource = routine.trajectory("C-Source2");
     final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
 
     routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
@@ -178,12 +175,8 @@ public class AutoRoutines {
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate())
                 .deadlineFor(
-                    m_drivetrain.pidToPoseAlliance(
-                        () ->
-                            new Pose2d(
-                                5.785916328430176,
-                                4.243002891540527,
-                                Rotation2d.fromRadians(4.71))))
+                    m_drivetrain.pidToPose(
+                        () -> preloadH.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
                 .andThen(
                     m_autoCommands
                         .home()
@@ -195,12 +188,10 @@ public class AutoRoutines {
                 .goToSource()
                 .until(m_endEffector.coralBeamBreak)
                 .deadlineFor(
-                    m_drivetrain.pidToPoseAlliance(
+                    m_drivetrain.pidToPose(
                         () ->
-                            new Pose2d(
-                                0.7617058753967285,
-                                1.2630654573440552,
-                                Rotation2d.fromRadians(2.50))))
+                            HtoSource.getFinalPose()
+                                .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
@@ -209,29 +200,23 @@ public class AutoRoutines {
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate())
                 .deadlineFor(
-                    m_drivetrain.pidToPoseAlliance(
-                        () ->
-                            new Pose2d(
-                                3.7114241123199463,
-                                2.9666056632995605,
-                                Rotation2d.fromRadians(2.61))))
+                    m_drivetrain.pidToPose(
+                        () -> SourceToC.getFinalPose().orElse(CoralTargets.BLUE_C.location)))
                 .andThen(
                     m_autoCommands
                         .home()
-                        .alongWith(Commands.waitSeconds(.5).andThen(CtoSource.spawnCmd()))));
+                        .alongWith(Commands.waitSeconds(.5).andThen(CToSource.spawnCmd()))));
 
-    CtoSource.atTimeBeforeEnd(.5)
+    CToSource.atTimeBeforeEnd(.5)
         .onTrue(
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.coralBeamBreak)
                 .deadlineFor(
-                    m_drivetrain.pidToPoseAlliance(
+                    m_drivetrain.pidToPose(
                         () ->
-                            new Pose2d(
-                                0.7617058753967285,
-                                1.2630654573440552,
-                                Rotation2d.fromRadians(2.50))))
+                            CToSource.getFinalPose()
+                                .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
     SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
@@ -240,12 +225,8 @@ public class AutoRoutines {
                 .andThen(m_autoCommands.scoreL4())
                 .until(m_endEffector.coralBeamBreak.negate())
                 .deadlineFor(
-                    m_drivetrain.pidToPoseAlliance(
-                        () ->
-                            new Pose2d(
-                                4.044410705566406,
-                                2.776327610015869,
-                                Rotation2d.fromRadians(2.61))))
+                    m_drivetrain.pidToPose(
+                        () -> SourceToD.getFinalPose().orElse(CoralTargets.BLUE_D.location)))
                 .andThen(m_autoCommands.home()));
 
     return routine;

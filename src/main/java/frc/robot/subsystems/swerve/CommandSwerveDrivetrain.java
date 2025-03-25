@@ -13,7 +13,6 @@ import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
 import choreo.trajectory.Trajectory;
-import choreo.util.ChoreoAllianceFlipUtil;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -279,31 +278,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         })
         .finallyDo(
             () -> {
-              Logger.recordOutput("Repuslor/Running", false);
+              Logger.recordOutput("AutoAlign/Running", false);
             });
-  }
-
-  public Command pidToPoseAlliance(Supplier<Pose2d> target) {
-    xController.setTolerance(.1);
-    yController.setTolerance(.1);
-    headingController.setTolerance(Math.toRadians(.1));
-    return run(
-        () -> {
-          Pose2d targetPose = target.get();
-          if (DriverStation.getAlliance().isPresent()) {
-            if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
-              targetPose = ChoreoAllianceFlipUtil.flip(target.get());
-            }
-          }
-          this.setControl(
-              m_pathApplyFieldSpeeds.withSpeeds(
-                  new ChassisSpeeds(
-                      xController.calculate(this.getState().Pose.getX(), targetPose.getX()),
-                      yController.calculate(this.getState().Pose.getY(), targetPose.getY()),
-                      headingController.calculate(
-                          this.getState().Pose.getRotation().getRadians(),
-                          targetPose.getRotation().getRadians()))));
-        });
   }
 
   /**
