@@ -198,7 +198,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if (Utils.isSimulation()) {
       startSimThread();
     }
-    this.getPigeon2().setYaw(270);
     questNav.resetPose(
         new Pose3d(
             0.4273998737335205, 6.396022319793701, 0, new Rotation3d(Rotation2d.fromDegrees(0))));
@@ -428,26 +427,25 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
       Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
       Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
-      // if (!DriverStation.isDisabled()) {
-      // super.addVisionMeasurement(
-      // questNav.getRobotPose().toPose2d(),
-      // Utils.getCurrentTimeSeconds(),
-      // VecBuilder.fill(0.0001, 0.0001, .99999));
-      // }
+      //      if (!DriverStation.isDisabled()) {
+      //        super.addVisionMeasurement(
+      //            questNav.getRobotPose().toPose2d(),
+      //            Utils.getCurrentTimeSeconds(),
+      //            VecBuilder.fill(0.0001, 0.0001, .99999));
+      //      }
 
     } else {
       a_questNavNotConnected.set(true);
     }
     Logger.recordOutput("QuestNav/connected", questNav.connected());
 
-    // if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
-    // if
-    // (this.getState().Pose.getTranslation().getDistance(Pose2d.kZero.getTranslation())
-    // >1)
+    //            if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
+    //              if
+    //         (this.getState().Pose.getTranslation().getDistance(Pose2d.kZero.getTranslation()) >1)
     // {
-    // questNav.softReset(new Pose3d(this.getState().Pose));
-    //// questNavZeroed = true;
-    // }}
+    //                questNav.softReset(new Pose3d(this.getState().Pose));
+    ////                questNavZeroed = true;
+    //              }}
     LoggedTracer.record(this.getClass().getSimpleName());
   }
 
@@ -455,12 +453,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    // if (!questNav.connected()) {
-    // if (DriverStation.isDisabled() || !questNav.connected()) {
+    //    if (!questNav.connected()) {
+    //    if (DriverStation.isDisabled() || !questNav.connected()) {
     this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-    // }
+    //    }
 
-    // }
+    //    }
   }
 
   /**
