@@ -83,6 +83,7 @@ public class VisionIOPhotonVisionTrig implements VisionIO {
                 1,
                 robotPose.get().targetsUsed.get(0).bestCameraToTarget.getTranslation().getNorm(),
                 PoseObservationType.TRIG));
+        continue;
       }
       if (result.multitagResult.isPresent()) { // Multitag result
         var multitagResult = result.multitagResult.get();
