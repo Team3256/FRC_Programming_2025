@@ -10,17 +10,26 @@ package frc.robot.subsystems.vision;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 
 /** IO implementation for real PhotonVision hardware. */
-public class VisionIOPhotonVision implements VisionIO {
+public class VisionIOPhotonVisionTrig implements VisionIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
+  protected final PhotonPoseEstimator photonPoseEstimator;
+
+  protected Supplier<Rotation2d> headingSupplier;
+  protected DoubleSupplier headingTimeSupplier;
+
+  protected BooleanSupplier shouldUseTrig;
 
   /**
    * Creates a new VisionIOPhotonVision.
@@ -28,13 +37,27 @@ public class VisionIOPhotonVision implements VisionIO {
    * @param name The configured name of the camera.
    * @param robotToCamera The 3D position of the camera relative to the robot.
    */
-  public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
+  public VisionIOPhotonVisionTrig(
+      String name,
+      Transform3d robotToCamera,
+      Supplier<Rotation2d> headingSupplier,
+      DoubleSupplier headingTimeSupplier,
+      BooleanSupplier shouldUseTrig) {
     camera = new PhotonCamera(name);
     this.robotToCamera = robotToCamera;
+    this.headingSupplier = headingSupplier;
+    this.headingTimeSupplier = headingTimeSupplier;
+    photonPoseEstimator =
+        new PhotonPoseEstimator(
+            aprilTagLayout,
+            PhotonPoseEstimator.PoseStrategy.PNP_DISTANCE_TRIG_SOLVE,
+            robotToCamera);
+    this.shouldUseTrig = shouldUseTrig;
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
+    photonPoseEstimator.addHeadingData(headingTimeSupplier.getAsDouble(), headingSupplier.get());
     inputs.connected = camera.isConnected();
 
     // Read new camera observations
@@ -44,6 +67,23 @@ public class VisionIOPhotonVision implements VisionIO {
       // Update latest target observation
 
       // Add pose observation
+
+      if (shouldUseTrig.getAsBoolean()
+          && result.getTargets().stream()
+              .anyMatch(target -> Arrays.stream(reefIds).anyMatch(id -> id == target.fiducialId))) {
+        Optional<EstimatedRobotPose> robotPose = photonPoseEstimator.update(result);
+        if (robotPose.isEmpty()) {
+          continue;
+        }
+        poseObservations.add(
+            new PoseObservation(
+                robotPose.get().timestampSeconds,
+                robotPose.get().estimatedPose,
+                robotPose.get().targetsUsed.get(0).poseAmbiguity,
+                1,
+                robotPose.get().targetsUsed.get(0).bestCameraToTarget.getTranslation().getNorm(),
+                PoseObservationType.TRIG));
+      }
       if (result.multitagResult.isPresent()) { // Multitag result
         var multitagResult = result.multitagResult.get();
 

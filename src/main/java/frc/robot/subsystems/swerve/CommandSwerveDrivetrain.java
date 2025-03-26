@@ -39,9 +39,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.FieldConstants;
 import frc.robot.drivers.QuestNav;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.utils.LoggedTracer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -177,6 +179,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           SwerveConstants.frontRight,
           SwerveConstants.backLeft,
           SwerveConstants.backRight);
+
   /* WPILib Alerts start */
 
   private final Alert a_questNavNotConnected =
@@ -293,6 +296,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   public void trajLogger(Trajectory<SwerveSample> sample, boolean isStart) {
     Logger.recordOutput(this.getClass().getSimpleName() + "/Choreo/TrajPoses", sample.getPoses());
+  }
+
+  public boolean shouldUseTrig() {
+    return this.getState().Pose.getTranslation().getDistance(FieldConstants.Reef.center)
+        < VisionConstants.distanceToUseTrigMeters;
   }
 
   /**

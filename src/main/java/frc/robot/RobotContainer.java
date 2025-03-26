@@ -43,10 +43,7 @@ import frc.robot.subsystems.endeffector.EndEffectorIOSim;
 import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.*;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
@@ -88,18 +85,29 @@ public class RobotContainer {
   private final Vision vision =
       new Vision(
           drivetrain::addPhotonEstimate,
+          drivetrain::shouldUseTrig,
           Utils.isSimulation()
               ? new VisionIOPhotonVisionSim(
                   VisionConstants.leftCam,
                   VisionConstants.robotToLeftCam,
                   () -> drivetrain.getState().Pose)
-              : new VisionIOPhotonVision(VisionConstants.leftCam, VisionConstants.robotToLeftCam),
+              : new VisionIOPhotonVisionTrig(
+                  VisionConstants.leftCam,
+                  VisionConstants.robotToLeftCam,
+                  () -> drivetrain.getPigeon2().getRotation2d(),
+                  Utils::getCurrentTimeSeconds,
+                  drivetrain::shouldUseTrig),
           Utils.isSimulation()
               ? new VisionIOPhotonVisionSim(
                   VisionConstants.rightCam,
                   VisionConstants.robotToRightCam,
                   () -> drivetrain.getState().Pose)
-              : new VisionIOPhotonVision(VisionConstants.rightCam, VisionConstants.robotToRightCam),
+              : new VisionIOPhotonVisionTrig(
+                  VisionConstants.rightCam,
+                  VisionConstants.robotToRightCam,
+                  () -> drivetrain.getPigeon2().getRotation2d(),
+                  Utils::getCurrentTimeSeconds,
+                  drivetrain::shouldUseTrig),
           Utils.isSimulation()
               ? new VisionIOPhotonVisionSim(
                   VisionConstants.backCam,

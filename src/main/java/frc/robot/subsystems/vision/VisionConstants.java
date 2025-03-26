@@ -24,6 +24,10 @@ public class VisionConstants {
   public static String frontCam = "front";
   public static String backCam = "back";
 
+  public static int[] reefIds = new int[] {6, 7, 8, 9, 10, 11, 17, 18, 19, 20, 21, 22};
+
+  public static final double distanceToUseTrigMeters = 2.5;
+
   // Robot to camera transforms
   // (Not used by Limelight, configure in web UI instead)
   public static Transform3d robotToLeftCam =
@@ -64,14 +68,9 @@ public class VisionConstants {
   // (Adjust to trust some cameras more than others)
   public static double[] cameraStdDevFactors =
       new double[] {
-        1.5, // Camera 0
+        1, // Camera 0
         1, // Camera 1
         1.5,
         1.5 // Camera 3
       };
-
-  // Multipliers to apply for MegaTag 2 observations
-  public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
-  public static double angularStdDevMegatag2Factor =
-      Double.POSITIVE_INFINITY; // No rotation data available
 }
