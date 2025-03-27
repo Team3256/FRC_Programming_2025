@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.LoggedTracer;
+import java.util.List;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -87,6 +88,9 @@ public class Vision extends SubsystemBase {
         // Calculate standard deviations
         double stdDevFactor =
             Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
+        if (hasElement(nonReefIds, observation.tagIds())) {
+          stdDevFactor *= 1.7;
+        }
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
         if (cameraIndex < cameraStdDevFactors.length) {
@@ -129,6 +133,15 @@ public class Vision extends SubsystemBase {
     //        allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
     LoggedTracer.record(this.getClass().getSimpleName());
+  }
+
+  public static boolean hasElement(List<Short> list1, List<Short> list2) {
+    for (Short i : list1) {
+      if (list2.contains(i)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @FunctionalInterface

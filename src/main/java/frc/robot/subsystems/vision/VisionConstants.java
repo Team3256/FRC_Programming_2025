@@ -12,6 +12,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import java.util.List;
 
 public class VisionConstants {
   // AprilTag layout
@@ -24,14 +25,27 @@ public class VisionConstants {
   public static String frontCam = "front";
   public static String backCam = "back";
 
+  public static List<Short> nonReefIds =
+      List.of(
+          (short) 4,
+          (short) 5,
+          (short) 14,
+          (short) 15,
+          (short) 1,
+          (short) 2,
+          (short) 13,
+          (short) 12,
+          (short) 3,
+          (short) 16);
+
   // Robot to camera transforms
   // (Not used by Limelight, configure in web UI instead)
   public static Transform3d robotToLeftCam =
       new Transform3d(
-          Units.inchesToMeters(-7.615),
-          Units.inchesToMeters(9.223),
-          Units.inchesToMeters(25.457),
-          new Rotation3d(0.0, Units.degreesToRadians(15), Units.degreesToRadians(90)));
+          Units.inchesToMeters(10.437),
+          Units.inchesToMeters(-7.403),
+          Units.inchesToMeters(19.916),
+          new Rotation3d(0.0, Units.degreesToRadians(36.901414), Units.degreesToRadians(-115)));
   public static Transform3d robotToRightCam =
       new Transform3d(
           Units.inchesToMeters(-7.615),
@@ -64,7 +78,7 @@ public class VisionConstants {
   // (Adjust to trust some cameras more than others)
   public static double[] cameraStdDevFactors =
       new double[] {
-        1.5, // Camera 0
+        1, // Camera 0
         1, // Camera 1
         1.5,
         1.5 // Camera 3
