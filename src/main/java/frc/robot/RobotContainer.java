@@ -13,7 +13,6 @@ import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import choreo.auto.AutoChooser;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -51,7 +50,6 @@ import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
-import java.util.stream.Stream;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -214,11 +212,16 @@ public class RobotContainer {
     // Add options to the chooser
     autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
-    autoChooser.addRoutine("l4Preload", m_autoRoutines::l4Preload);
+    autoChooser.addRoutine("l4CenterPreload_H", m_autoRoutines::l4PreloadH);
+    autoChooser.addRoutine("l4CenterPreload_G", m_autoRoutines::l4PreloadG);
     autoChooser.addRoutine("mobilityTop", m_autoRoutines::mobilityTop);
     autoChooser.addRoutine("mobilityBottom", m_autoRoutines::mobilityBottom);
-    autoChooser.addRoutine("l4PreloadBottomSource1", m_autoRoutines::l4PreloadBottomSource1);
-    autoChooser.addRoutine("l4PreloadBottomSource2", m_autoRoutines::l4PreloadBottomSource2);
+    autoChooser.addRoutine(
+        "l4CenterPreloadRightSource1", m_autoRoutines::l4CenterPreloadRightSource1);
+    autoChooser.addRoutine(
+        "l4CenterPreloadRightSource2", m_autoRoutines::l4CenterPreloadRightSource2);
+    autoChooser.addRoutine(
+        "l4RightPreloadRightSource2", m_autoRoutines::l4RightPreloadRightSource2);
     autoChooser.addRoutine("dsadadad", m_autoRoutines::test);
 
     SmartDashboard.putData("auto chooser", autoChooser);
@@ -528,11 +531,11 @@ public class RobotContainer {
     Logger.recordOutput(
         "Stick Angle Radians",
         Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
-    Logger.recordOutput(
-        "AutoAim/Targets/Coral",
-        Stream.of(CoralTargets.values())
-            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
-            .toArray(Pose2d[]::new));
+    //    Logger.recordOutput(
+    //        "AutoAim/Targets/Coral",
+    //        Stream.of(CoralTargets.values())
+    //            .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+    //            .toArray(Pose2d[]::new));
     //    // Log locations of all autoaim targets
     //    Logger.recordOutput(
     //        "AutoAim/Targets/Algae",
@@ -548,12 +551,12 @@ public class RobotContainer {
     //
     //    Logger.recordOutput(
     //        "AutoAim/CoralTarget", CoralTargets.getClosestTarget(drivetrain.getState().Pose));
-    Logger.recordOutput(
-        "AutoAim/LeftHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
-    Logger.recordOutput(
-        "AutoAim/RightHandedCoralTarget",
-        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
+    //    Logger.recordOutput(
+    //        "AutoAim/LeftHandedCoralTarget",
+    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
+    //    Logger.recordOutput(
+    //        "AutoAim/RightHandedCoralTarget",
+    //        CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
     //    Logger.recordOutput(
     //        "AutoAim/NameOfLHCoralTarget",
     //        CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose, true).name());

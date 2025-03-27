@@ -68,8 +68,8 @@ public class AutoRoutines {
     return routine;
   }
 
-  public AutoRoutine l4Preload() {
-    final AutoRoutine routine = m_factory.newRoutine("l4Preload");
+  public AutoRoutine l4PreloadH() {
+    final AutoRoutine routine = m_factory.newRoutine("l4PreloadH");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
 
     routine
@@ -104,8 +104,44 @@ public class AutoRoutines {
     return routine;
   }
 
+  public AutoRoutine l4PreloadG() {
+    final AutoRoutine routine = m_factory.newRoutine("l4PreloadG");
+    final AutoTrajectory preloadG = routine.trajectory("MID-G");
+
+    routine
+        .active()
+        .onTrue(preloadG.resetOdometry().andThen(Commands.waitSeconds(5)).andThen(preloadG.cmd()));
+    preloadG.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    preloadG
+        .done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(m_endEffector.coralBeamBreak.negate().debounce(.5))
+                .deadlineFor(
+                    m_drivetrain.pidToPose(
+                        () -> preloadG.getFinalPose().orElse(CoralTargets.BLUE_G.location)))
+                .andThen(m_autoCommands.home()));
+    //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    //    l4Preload
+    //        .done()
+    //        .onTrue(
+    //
+    // Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+    //                .andThen(m_autoCommands.scoreL4())
+    //                .andThen(
+    //                    Commands.waitUntil(
+    //                        m_endEffector
+    //                            .leftBeamBreak
+    //                            .negate()
+    //                            .and(m_endEffector.rightBeamBreak.negate())))
+    //                .andThen(m_autoCommands.home()));
+
+    return routine;
+  }
+
   public AutoRoutine test() {
-    final AutoRoutine routine = m_factory.newRoutine("l4PreloadBottomSource2");
+    final AutoRoutine routine = m_factory.newRoutine("l4CenterPreloadRightSource2");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
     final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
     final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
@@ -122,8 +158,8 @@ public class AutoRoutines {
     return routine;
   }
 
-  public AutoRoutine l4PreloadBottomSource1() {
-    final AutoRoutine routine = m_factory.newRoutine("l4PreloadBottomSource1");
+  public AutoRoutine l4CenterPreloadRightSource1() {
+    final AutoRoutine routine = m_factory.newRoutine("l4CenterPreloadRightSource1");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
     final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
     final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
@@ -158,8 +194,8 @@ public class AutoRoutines {
     return routine;
   }
 
-  public AutoRoutine l4PreloadBottomSource2() {
-    final AutoRoutine routine = m_factory.newRoutine("l4PreloadBottomSource2");
+  public AutoRoutine l4CenterPreloadRightSource2() {
+    final AutoRoutine routine = m_factory.newRoutine("l4CenterPreloadRightSource2");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
     final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
     final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
@@ -191,6 +227,80 @@ public class AutoRoutines {
                     m_drivetrain.pidToPose(
                         () ->
                             HtoSource.getFinalPose()
+                                .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
+                .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
+    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    SourceToC.done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(m_endEffector.coralBeamBreak.negate())
+                .deadlineFor(
+                    m_drivetrain.pidToPose(
+                        () -> SourceToC.getFinalPose().orElse(CoralTargets.BLUE_C.location)))
+                .andThen(
+                    m_autoCommands
+                        .home()
+                        .alongWith(Commands.waitSeconds(.5).andThen(CToSource.spawnCmd()))));
+
+    CToSource.atTimeBeforeEnd(.5)
+        .onTrue(
+            m_autoCommands
+                .goToSource()
+                .until(m_endEffector.coralBeamBreak)
+                .deadlineFor(
+                    m_drivetrain.pidToPose(
+                        () ->
+                            CToSource.getFinalPose()
+                                .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
+                .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
+    SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    SourceToD.done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(m_endEffector.coralBeamBreak.negate())
+                .deadlineFor(
+                    m_drivetrain.pidToPose(
+                        () -> SourceToD.getFinalPose().orElse(CoralTargets.BLUE_D.location)))
+                .andThen(m_autoCommands.home()));
+
+    return routine;
+  }
+
+  public AutoRoutine l4RightPreloadRightSource2() {
+    final AutoRoutine routine = m_factory.newRoutine("l4RightPreloadRightSource2");
+    final AutoTrajectory preloadF = routine.trajectory("RIGHT-F");
+    final AutoTrajectory FtoSource = routine.trajectory("F-Source2");
+    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
+    final AutoTrajectory CToSource = routine.trajectory("C-Source2");
+    final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
+
+    routine.active().onTrue(preloadF.resetOdometry().andThen(preloadF.cmd()));
+    preloadF.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    preloadF
+        .done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4())
+                .until(m_endEffector.coralBeamBreak.negate())
+                .deadlineFor(
+                    m_drivetrain.pidToPose(
+                        () -> preloadF.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
+                .andThen(
+                    m_autoCommands
+                        .home()
+                        .alongWith(Commands.waitSeconds(.5).andThen(FtoSource.spawnCmd()))));
+
+    FtoSource.atTimeBeforeEnd(.5)
+        .onTrue(
+            m_autoCommands
+                .goToSource()
+                .until(m_endEffector.coralBeamBreak)
+                .deadlineFor(
+                    m_drivetrain.pidToPose(
+                        () ->
+                            FtoSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
