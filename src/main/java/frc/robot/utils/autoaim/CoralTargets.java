@@ -20,43 +20,43 @@ public enum CoralTargets {
   // were extended beyond the coral station
   // All angles from the center of the coral with 0° across the width of the
   // field, counterclockwise
-  BLUE_A(new Pose2d(3.22, 4.20, Rotation2d.fromDegrees(90)), true),
-  BLUE_B(new Pose2d(3.18, 3.85, Rotation2d.fromDegrees(90)), false),
-  BLUE_C(new Pose2d(3.70, 3.00, Rotation2d.fromDegrees(148)), true),
-  BLUE_D(new Pose2d(4.00, 2.82, Rotation2d.fromDegrees(150)), false),
-  BLUE_E(new Pose2d(4.95, 2.83, Rotation2d.fromDegrees(-150)), true),
-  BLUE_F(new Pose2d(5.26, 2.95, Rotation2d.fromDegrees(-150)), false),
-  BLUE_G(new Pose2d(5.76, 3.85, Rotation2d.fromDegrees(-90)), true),
-  BLUE_H(new Pose2d(5.74, 4.30, Rotation2d.fromDegrees(-90)), false),
-  BLUE_I(new Pose2d(5.28, 5.02, Rotation2d.fromDegrees(-30)), true),
-  BLUE_J(new Pose2d(4.75, 5.35, Rotation2d.fromDegrees(-30)), false),
-  BLUE_K(new Pose2d(4.01, 5.22, Rotation2d.fromDegrees(30)), true),
-  BLUE_L(new Pose2d(3.73, 5.12, Rotation2d.fromDegrees(30)), false),
+  BLUE_A(new Pose2d(3.24, 4.20, Rotation2d.fromDegrees(90)), true), // did
+  BLUE_B(new Pose2d(3.24, 3.865, Rotation2d.fromDegrees(90)), false), // did
+  BLUE_C(new Pose2d(3.70, 3.02, Rotation2d.fromDegrees(148)), true), // did
+  BLUE_D(new Pose2d(3.98, 2.86, Rotation2d.fromDegrees(150)), false), // did
+  BLUE_E(new Pose2d(4.97, 2.85, Rotation2d.fromDegrees(-150)), true), // did
+  BLUE_F(new Pose2d(5.25, 3.01, Rotation2d.fromDegrees(-150)), false), // did
+  BLUE_G(new Pose2d(5.75, 3.85, Rotation2d.fromDegrees(-90)), true), // did
+  BLUE_H(new Pose2d(5.75, 4.19, Rotation2d.fromDegrees(-90)), false), // did
+  BLUE_I(new Pose2d(5.28, 5.03, Rotation2d.fromDegrees(-30)), true), //
+  BLUE_J(new Pose2d(4.98, 5.20, Rotation2d.fromDegrees(-30)), false), // did
+  BLUE_K(new Pose2d(4.03, 5.22, Rotation2d.fromDegrees(30)), true), // did
+  BLUE_L(new Pose2d(3.70, 5.02, Rotation2d.fromDegrees(30)), false), // did
 
   //  RED_A(new Pose2d(3.22, 4.20, Rotation2d.fromDegrees(90)), true),
   //  RED_B(new Pose2d(3.18, 3.85, Rotation2d.fromDegrees(90)), false),
   //  RED_C(new Pose2d(3.70, 3.00, Rotation2d.fromDegrees(148)), true),
-  RED_D(new Pose2d(13.49, 5.30, Rotation2d.fromDegrees(-30)), false),
+  RED_D(new Pose2d(13.54, 5.20, Rotation2d.fromDegrees(-30)), false),
   //  //  RED_E(new Pose2d(4.95, 2.83, Rotation2d.fromDegrees(-150)), true),
   //  RED_F(new Pose2d(5.26, 2.95, Rotation2d.fromDegrees(-150)), false),
-  RED_G(new Pose2d(11.79, 4.22, Rotation2d.fromDegrees(90)), true),
-  RED_H(new Pose2d(11.82, 3.69, Rotation2d.fromDegrees(90)), false),
-  RED_I(new Pose2d(12.27, 3.02, Rotation2d.fromDegrees(150)), true), // wrong
+  RED_G(new Pose2d(11.80, 4.21, Rotation2d.fromDegrees(90)), true),
+  RED_H(new Pose2d(11.80, 3.87, Rotation2d.fromDegrees(90)), false),
+  RED_I(new Pose2d(12.28, 3.02, Rotation2d.fromDegrees(150)), true), // did
   //  RED_J(new Pose2d(12.37, 5.05, Rotation2d.fromDegrees(30)), false),
   //  RED_K(new Pose2d(13.55, 2.84, Rotation2d.fromDegrees(-150)), true),
   //  RED_L(new Pose2d(12.27, 3.02, Rotation2d.fromDegrees(150)), false),
-  RED_A(new Pose2d(14.3, 3.84, Rotation2d.fromDegrees(-90)), true),
-  RED_B(new Pose2d(14.3, 4.26, Rotation2d.fromDegrees(-90)), false),
-  RED_C(new Pose2d(13.84, 5.04, Rotation2d.fromDegrees(-30)), true),
+  RED_A(new Pose2d(14.33, 3.85, Rotation2d.fromDegrees(-90)), true),
+  RED_B(new Pose2d(14.32, 4.20, Rotation2d.fromDegrees(-90)), false),
+  RED_C(new Pose2d(13.84, 5.03, Rotation2d.fromDegrees(-30)), true),
   //  //  RED_D(ChoreoAllianceFlipUtil.flip(BLUE_D.location), false),
-  RED_E(new Pose2d(12.57, 5.21, Rotation2d.fromDegrees(30)), false),
-  RED_F(new Pose2d(12.34, 5.09, Rotation2d.fromDegrees(30)), true),
+  RED_E(new Pose2d(12.60, 5.20, Rotation2d.fromDegrees(30)), false),
+  RED_F(new Pose2d(12.30, 5.03, Rotation2d.fromDegrees(30)), true),
   //  RED_G(ChoreoAllianceFlipUtil.flip(BLUE_G.location), false),
   //  RED_H(ChoreoAllianceFlipUtil.flip(BLUE_H.location), true),
   //  RED_I(ChoreoAllianceFlipUtil.flip(BLUE_I.location), false),
-  RED_J(new Pose2d(12.47, 2.84, Rotation2d.fromDegrees(150)), true),
-  RED_K(new Pose2d(13.55, 2.84, Rotation2d.fromDegrees(-150)), true),
-  RED_L(new Pose2d(13.8, 2.98, Rotation2d.fromDegrees(-150)), false);
+  RED_J(new Pose2d(12.57, 2.86, Rotation2d.fromDegrees(150)), true), // did
+  RED_K(new Pose2d(13.52, 2.84, Rotation2d.fromDegrees(-150)), true), // did
+  RED_L(new Pose2d(13.83, 3.02, Rotation2d.fromDegrees(-150)), false); // did
 
   public final Pose2d location;
   public final boolean leftHanded;
