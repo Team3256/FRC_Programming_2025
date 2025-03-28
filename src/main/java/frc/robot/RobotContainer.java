@@ -210,7 +210,6 @@ public class RobotContainer {
   private void configureChoreoAutoChooser() {
 
     // Add options to the chooser
-    autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
     autoChooser.addRoutine("l4CenterPreload_H", m_autoRoutines::l4PreloadH);
     autoChooser.addRoutine("l4CenterPreload_G", m_autoRoutines::l4PreloadG);
@@ -222,7 +221,7 @@ public class RobotContainer {
         "l4CenterPreloadRightSource2", m_autoRoutines::l4CenterPreloadRightSource2);
     autoChooser.addRoutine(
         "l4RightPreloadRightSource2", m_autoRoutines::l4RightPreloadRightSource2);
-    autoChooser.addRoutine("dsadadad", m_autoRoutines::test);
+    autoChooser.addRoutine("dealgae2LeftPreloadL4_H", m_autoRoutines::dealgae2LeftPreloadL4H);
 
     SmartDashboard.putData("auto chooser", autoChooser);
 

@@ -63,7 +63,7 @@ public final class ElevatorConstants {
   public static final int kEncoderATeethCount = 29;
   public static final int kEncoderBTeethCount = 31;
 
-  public static final Angle armSafePosition = Rotations.of(3.39);
+  public static final Angle armSafePosition = Rotations.of(2);
 
   public static final CANcoderConfiguration kEncoderAConfig =
       new CANcoderConfiguration()
