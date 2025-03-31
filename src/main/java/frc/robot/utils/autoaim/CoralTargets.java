@@ -22,7 +22,7 @@ public enum CoralTargets {
   // field, counterclockwise
   BLUE_A(new Pose2d(3.24, 4.20, Rotation2d.fromDegrees(90)), true), // did
   BLUE_B(new Pose2d(3.24, 3.865, Rotation2d.fromDegrees(90)), false), // did
-  BLUE_C(new Pose2d(3.70, 3.02, Rotation2d.fromDegrees(148)), true), // did
+  BLUE_C(new Pose2d(3.70, 3.02, Rotation2d.fromDegrees(150)), true), // did
   BLUE_D(new Pose2d(3.98, 2.86, Rotation2d.fromDegrees(150)), false), // did
   BLUE_E(new Pose2d(4.97, 2.85, Rotation2d.fromDegrees(-150)), true), // did
   BLUE_F(new Pose2d(5.25, 3.01, Rotation2d.fromDegrees(-150)), false), // did

@@ -18,28 +18,29 @@ import frc.robot.subsystems.swerve.generated.TunerConstants;
 public final class SwerveConstants {
 
   // source 1, 5 degree overshoot for weight drag from elevator // + (2 * Math.PI)
-  public static final Rotation2d sourceLeft1 = new Rotation2d(0.696 - (2 * 0.087266));
+  // overshoot if weight concentrated = (0.0872665)
+  public static final Rotation2d sourceLeft1 = new Rotation2d(0.696);
 
   // source 2, 5 degree overshoot
-  public static final Rotation2d sourceRight2 = new Rotation2d(2.527 - (2 * 0.0872665));
+  public static final Rotation2d sourceRight2 = new Rotation2d(2.527);
 
   // climb
-  public static final Rotation2d hang = new Rotation2d(Math.PI);
+  public static final Rotation2d hang = new Rotation2d(0);
+  public static final Rotation2d hangBack = new Rotation2d(Math.PI);
 
   // barge
-  public static final Rotation2d barge = new Rotation2d(-Math.PI / 2);
+  public static final Rotation2d barge = new Rotation2d(Math.PI / 2);
 
   // angle backups
-  public static final Rotation2d reefAB = new Rotation2d(0 + (Math.PI / 2) - (2 * 0.0872665));
-  public static final Rotation2d reefCD =
-      new Rotation2d((Math.PI / 3) + (Math.PI / 2) - (2 * 0.0872665));
-  public static final Rotation2d reefEF =
-      new Rotation2d((2 * reefCD.getRadians()) + (Math.PI / 2) - (2 * 0.0872665));
-  public static final Rotation2d reefGH = new Rotation2d(Math.PI + (Math.PI / 2) - (2 * 0.0872665));
-  public static final Rotation2d reefIJ = new Rotation2d(-reefCD.getRadians());
-  public static final Rotation2d reefKL = new Rotation2d(-reefEF.getRadians());
+  public static final Rotation2d reefAB = Rotation2d.fromDegrees(90 - 5);
+  public static final Rotation2d reefCD = Rotation2d.fromDegrees(149 - 5);
+  public static final Rotation2d reefEF = Rotation2d.fromDegrees(-150 - 5);
+  public static final Rotation2d reefGH = Rotation2d.fromDegrees(-90 - 5);
+  public static final Rotation2d reefIJ = Rotation2d.fromDegrees(-30 - 5);
+  public static final Rotation2d reefKL = Rotation2d.fromDegrees(30 - 5);
 
   public static final double aziTimeout = 1;
+  public static final double aziTimeout2 = 1.2;
 
   public static final Mass robotMass = Pounds.of(120);
   public static final MomentOfInertia robotMOI = KilogramSquareMeters.of(36);

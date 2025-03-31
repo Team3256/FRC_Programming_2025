@@ -19,7 +19,7 @@ public final class EndEffectorConstants {
   public static final int coralMotorID = 43;
 
   public static final AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
-  public static final AngularVelocity l2l3Velocity = RotationsPerSecond.of(50.0);
+  public static final AngularVelocity l2l3Velocity = RotationsPerSecond.of(32);
   public static final double l4Voltage = 2.592;
 
   // algae first then coral

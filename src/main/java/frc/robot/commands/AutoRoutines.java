@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -77,7 +78,7 @@ public class AutoRoutines {
     routine
         .active()
         .onTrue(preloadH.resetOdometry().andThen(Commands.waitSeconds(5)).andThen(preloadH.cmd()));
-    preloadH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     preloadH
         .done()
         .onTrue(
@@ -113,7 +114,7 @@ public class AutoRoutines {
     routine
         .active()
         .onTrue(preloadG.resetOdometry().andThen(Commands.waitSeconds(5)).andThen(preloadG.cmd()));
-    preloadG.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    preloadG.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     preloadG
         .done()
         .onTrue(
@@ -167,7 +168,7 @@ public class AutoRoutines {
     final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
 
     routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
-    preloadH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     preloadH
         .done()
         .onTrue(
@@ -179,13 +180,13 @@ public class AutoRoutines {
                         .home()
                         .alongWith(Commands.waitSeconds(.5).andThen(HtoSource.spawnCmd()))));
 
-    HtoSource.atTimeBeforeEnd(.7)
+    HtoSource.atTimeBeforeEnd(.5)
         .onTrue(
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.coralBeamBreak)
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
-    SourceToC.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -205,7 +206,7 @@ public class AutoRoutines {
     final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
 
     routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
-    preloadH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     preloadH
         .done()
         .onTrue(
@@ -220,7 +221,7 @@ public class AutoRoutines {
                         .home()
                         .alongWith(Commands.waitSeconds(.5).andThen(HtoSource.spawnCmd()))));
 
-    HtoSource.atTimeBeforeEnd(.7)
+    HtoSource.atTimeBeforeEnd(.5)
         .onTrue(
             m_autoCommands
                 .goToSource()
@@ -231,7 +232,7 @@ public class AutoRoutines {
                             HtoSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
-    SourceToC.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -245,7 +246,7 @@ public class AutoRoutines {
                         .home()
                         .alongWith(Commands.waitSeconds(.5).andThen(CToSource.spawnCmd()))));
 
-    CToSource.atTimeBeforeEnd(.7)
+    CToSource.atTimeBeforeEnd(.5)
         .onTrue(
             m_autoCommands
                 .goToSource()
@@ -256,7 +257,7 @@ public class AutoRoutines {
                             CToSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
-    SourceToD.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -279,7 +280,7 @@ public class AutoRoutines {
     final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
 
     routine.active().onTrue(preloadF.resetOdometry().andThen(preloadF.cmd()));
-    preloadF.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    preloadF.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     preloadF
         .done()
         .onTrue(
@@ -288,13 +289,13 @@ public class AutoRoutines {
                 .until(m_endEffector.coralBeamBreak.negate())
                 .deadlineFor(
                     m_drivetrain.pidToPose(
-                        () -> preloadF.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
+                        () -> preloadF.getFinalPose().orElse(CoralTargets.BLUE_F.location)))
                 .andThen(
                     m_autoCommands
-                        .home()
+                        .goToSource()
                         .alongWith(Commands.waitSeconds(.5).andThen(FtoSource.spawnCmd()))));
 
-    FtoSource.atTimeBeforeEnd(.7)
+    FtoSource.atTimeBeforeEnd(.5)
         .onTrue(
             m_autoCommands
                 .goToSource()
@@ -305,7 +306,7 @@ public class AutoRoutines {
                             FtoSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
-    SourceToC.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -316,10 +317,10 @@ public class AutoRoutines {
                         () -> SourceToC.getFinalPose().orElse(CoralTargets.BLUE_C.location)))
                 .andThen(
                     m_autoCommands
-                        .home()
+                        .goToSource()
                         .alongWith(Commands.waitSeconds(.5).andThen(CToSource.spawnCmd()))));
 
-    CToSource.atTimeBeforeEnd(.7)
+    CToSource.atTimeBeforeEnd(.5)
         .onTrue(
             m_autoCommands
                 .goToSource()
@@ -330,7 +331,7 @@ public class AutoRoutines {
                             CToSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
-    SourceToD.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -339,7 +340,7 @@ public class AutoRoutines {
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () -> SourceToD.getFinalPose().orElse(CoralTargets.BLUE_D.location)))
-                .andThen(m_autoCommands.home()));
+                .andThen(m_autoCommands.goToSource()));
 
     return routine;
   }
@@ -355,7 +356,7 @@ public class AutoRoutines {
     routine
         .active()
         .onTrue(MidToGH.resetOdometry().andThen(Commands.waitSeconds(5)).andThen(MidToGH.cmd()));
-    MidToGH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL2Dealgae());
+    MidToGH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL2Dealgae());
     MidToGH.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -387,7 +388,7 @@ public class AutoRoutines {
                     m_autoCommands
                         .home()
                         .alongWith(Commands.waitSeconds(.5).andThen(Barge3ToIJ.spawnCmd()))));
-    Barge3ToIJ.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL3Dealgae());
+    Barge3ToIJ.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL3Dealgae());
     Barge3ToIJ.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -419,7 +420,7 @@ public class AutoRoutines {
                     m_autoCommands
                         .home()
                         .alongWith(Commands.waitSeconds(.5).andThen(Barge2ToH.spawnCmd()))));
-    Barge2ToH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL4());
+    Barge2ToH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     Barge2ToH.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -447,7 +448,12 @@ public class AutoRoutines {
     }
 
     public Command goToL4() {
-      return m_elevator.toReefLevel(3).alongWith(m_arm.toReefLevel(2, () -> true));
+      return m_elevator
+          .toReefLevel(3)
+          .alongWith(
+              Commands.waitUntil(new Trigger(() -> m_elevator.getPosition() > 2.6))
+                  .withTimeout(.3)
+                  .andThen(m_arm.toReefLevel(2, () -> true)));
     }
 
     public Command goToL3Dealgae() {

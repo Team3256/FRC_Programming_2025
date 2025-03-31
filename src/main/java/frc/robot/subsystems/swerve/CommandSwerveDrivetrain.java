@@ -85,13 +85,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       new SwerveRequest.ApplyFieldSpeeds()
           .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
-  private final PIDController m_pathXController = new PIDController(25, 0, 0);
-  private final PIDController m_pathYController = new PIDController(25, 0, 0);
-  private final PIDController m_pathThetaController = new PIDController(6, 0, 0);
-
-  private final PIDController xController = new PIDController(5.0, 0.0, 0.1);
-  private final PIDController yController = new PIDController(5.0, 0.0, 0.1);
-  private final PIDController headingController = new PIDController(6, 0, 0);
+  private final PIDController xController = new PIDController(5.0, 0.0, 0);
+  private final PIDController yController = new PIDController(5.0, 0.0, 0);
+  private final PIDController headingController = new PIDController(5, 0, 0);
 
   /* Swerve requests to apply during SysId characterization */
   private final SwerveRequest.SysIdSwerveTranslation m_translationCharacterization =

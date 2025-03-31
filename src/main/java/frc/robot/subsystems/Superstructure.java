@@ -161,12 +161,12 @@ public class Superstructure {
         .onTrue(elevator.toBargePosition())
         .onTrue(arm.toBargeLevel(rightManipulatorSide));
 
-    //    stateTriggers
-    //        .get(StructureState.PROCESSOR)
-    //        .onTrue(elevator.toProcessorPosition())
-    //        .and(elevator.reachedPosition)
-    //        .debounce(.04) // wait two loop times
-    //        .onTrue(arm.toProcessorLevel(rightManipulatorSide));
+    stateTriggers
+        .get(StructureState.PROCESSOR)
+        .onTrue(elevator.toProcessorPosition())
+        .and(elevator.reachedPosition)
+        .debounce(.04) // wait two loop times
+        .onTrue(arm.toProcessorLevel(() -> true));
 
     //    stateTriggers
     //        .get(StructureState.GROUND_ALGAE)

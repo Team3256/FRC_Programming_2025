@@ -50,7 +50,6 @@ import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -234,7 +233,7 @@ public class RobotContainer {
     final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
     final double MaxAngularRate = 1.5 * Math.PI;
     final double SlowMaxSpeed = MaxSpeed * 0.3;
-    final double SlowMaxAngular = MaxAngularRate * 0.3;
+    final double SlowMaxAngular = MaxAngularRate * 0.4;
 
     SwerveRequest.FieldCentric drive =
         new SwerveRequest.FieldCentric()
@@ -307,7 +306,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceLeft1))
-                .withTimeout(aziTimeout));
+                .withTimeout(aziTimeout2));
 
     m_driverController
         .b()
@@ -319,10 +318,10 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceRight2))
-                .withTimeout(aziTimeout));
+                .withTimeout(aziTimeout2));
 
     m_driverController
-        .povDown()
+        .rightBumper()
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -330,8 +329,8 @@ public class RobotContainer {
                         azimuth
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(hang))
-                .withTimeout(aziTimeout));
+                            .withTargetDirection(barge))
+                .withTimeout(aziTimeout2));
 
     m_driverController
         .povUp()
@@ -342,8 +341,19 @@ public class RobotContainer {
                         azimuth
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(barge))
-                .withTimeout(aziTimeout));
+                            .withTargetDirection(hang))
+                .withTimeout(aziTimeout2));
+
+    m_driverController
+        .povDown()
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(hangBack))
+                .withTimeout(aziTimeout2));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
@@ -351,9 +361,9 @@ public class RobotContainer {
             () ->
                 ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
                     && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        < 1) // upper bound
+                        < 1.523 + 0.0872665) // upper bound
                     && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        > 0)))) // lower bound
+                        > 1.523 - 0.0872665)))) // lower bound
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -368,9 +378,9 @@ public class RobotContainer {
             () ->
                 ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
                     && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        < 1)
+                        < 0.483 + 0.0872665)
                     && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        > 0))))
+                        > 0.483 - 0.0872665))))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -385,9 +395,9 @@ public class RobotContainer {
             () ->
                 ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
                     && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        < 1)
+                        < -0.612 + 0.0872665)
                     && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        > 0))))
+                        > -0.612 - 0.0872665))))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -402,9 +412,9 @@ public class RobotContainer {
             () ->
                 ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
                     && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        < 1)
+                        < -1.534 + 0.0872665)
                     && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        > 0))))
+                        > -1.534 - 0.0872665))))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -419,9 +429,9 @@ public class RobotContainer {
             () ->
                 ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
                     && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        < 1)
+                        < -2.437 + 0.0872665)
                     && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        > 0))))
+                        > -2.437 - 0.0872665))))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -436,9 +446,9 @@ public class RobotContainer {
             () ->
                 ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
                     && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        < 1)
+                        < 2.793 + 0.0872665)
                     && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        > 0))))
+                        > 2.793 - 0.0872665))))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -492,9 +502,9 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    Logger.recordOutput(
-        "Stick Angle Radians",
-        Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
+    //    Logger.recordOutput(
+    //        "Stick Angle Radians",
+    //        Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
     //    Logger.recordOutput(
     //        "AutoAim/Targets/Coral",
     //        Stream.of(CoralTargets.values())
