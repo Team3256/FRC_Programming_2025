@@ -252,6 +252,10 @@ public class Superstructure {
     //    RobotModeTriggers.autonomous().whileTrue(this.setState(StructureState.AUTO));
   }
 
+  public Trigger coralBeamBreak() {
+    return endEffector.coralBeamBreak;
+  }
+
   // call manually
   public void periodic() {
     Logger.recordOutput(

@@ -41,7 +41,7 @@ public class AutoAim {
   public static double BLUE_NET_X = 8.76 + Units.inchesToMeters(30.0);
   public static double RED_NET_X = ChoreoAllianceFlipUtil.flipX(BLUE_NET_X);
 
-  public static final double TRANSLATION_TOLERANCE_METERS = Units.inchesToMeters(2.0);
+  public static final double TRANSLATION_TOLERANCE_METERS = Units.inchesToMeters(5.0);
   public static final double ROTATION_TOLERANCE_RADIANS = Units.degreesToRadians(2.0);
 
   public static Command translateToPose(CommandSwerveDrivetrain swerve, Supplier<Pose2d> target) {
@@ -189,6 +189,14 @@ public class AutoAim {
 
   public static boolean isInToleranceCoral(Pose2d pose) {
     final var diff = pose.minus(CoralTargets.getClosestTarget(pose));
+    // System.out.println("AADiff: " + diff);
+    // System.out.println("isNearX: " + MathUtil.isNear(0.0, diff.getX(),
+    // AutoAim.TRANSLATION_TOLERANCE_METERS));
+    // System.out.println("isNearY: " + MathUtil.isNear(0.0, diff.getY(),
+    // AutoAim.TRANSLATION_TOLERANCE_METERS));
+    // System.out.println("isNearRot: " + MathUtil.isNear(0.0,
+    // diff.getRotation().getRadians(),
+    // AutoAim.ROTATION_TOLERANCE_RADIANS));
     return MathUtil.isNear(
             0.0, Math.hypot(diff.getX(), diff.getY()), AutoAim.TRANSLATION_TOLERANCE_METERS)
         && MathUtil.isNear(

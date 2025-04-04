@@ -9,6 +9,7 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Rotations;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -127,6 +128,11 @@ public class Elevator extends DisableSubsystem {
 
   public Command toHome() {
     return this.setPosition(ElevatorConstants.homePosition.in(Rotations));
+  }
+
+  // Careful!
+  public TalonFX getMotor() {
+    return motorIO.getMotor();
   }
 
   // TODO: Grab coral level from NT/selector
