@@ -181,7 +181,7 @@ public class RobotContainer {
                 () -> {
                   m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
                 }));
-    autoAlignTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAlign).repeatedly());
+    autoAlignTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned).repeatedly());
     // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
 
   }
@@ -407,9 +407,11 @@ public class RobotContainer {
             () ->
                 ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
                     && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        < 1.523 + 0.0872665) // upper bound
+                        < 1.523 + 0.0872665) // upper
+                    // bound
                     && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
-                        > 1.523 - 0.0872665)))) // lower bound
+                        > 1.523 - 0.0872665)))) // lower
+        // bound
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -510,15 +512,19 @@ public class RobotContainer {
     m_driverController
         .povLeft()
         .whileTrue(
-            drivetrain.pidToPose(
-                () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true)));
+            Commands.parallel(
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true)),
+                leds.animate(IndicatorAnimation.AutoAlignRunning)));
 
     // Same as prev, except find the NOT lefthanded one.
     m_driverController
         .povRight()
         .whileTrue( // Both run AutoAlign & check tolerance
-            drivetrain.pidToPose(
-                () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false)));
+            Commands.parallel(
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false)),
+                leds.animate(IndicatorAnimation.AutoAlignRunning)));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
   }

@@ -14,8 +14,8 @@ import com.ctre.phoenix.led.StrobeAnimation;
 
 public enum IndicatorAnimation {
   Default(new LarsonAnimation(255, 0, 255, 1, 0.54, 64, LarsonAnimation.BounceMode.Center, 6)),
-  AutoAlign(new RainbowAnimation()), // Or, alternatively:
-  // AutoAlign(new StrobeAnimation(0, 0, 244, 255, 0.1, 64)),
+  AutoAlignRunning(new RainbowAnimation()), // Or, alternatively:
+  AutoAligned(new StrobeAnimation(0, 0, 244, 255, 0.1, 64)),
   CoralIntaken(new StrobeAnimation(0, 255, 0, 255, 0.1, 64));
 
   private Animation curAnimation;
