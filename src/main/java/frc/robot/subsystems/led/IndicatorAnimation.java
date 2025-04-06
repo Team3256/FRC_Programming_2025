@@ -9,13 +9,12 @@ package frc.robot.subsystems.led;
 
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.LarsonAnimation;
-import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 
 public enum IndicatorAnimation {
-  Default(new LarsonAnimation(255, 0, 255, 1, 0.54, 64, LarsonAnimation.BounceMode.Center, 6)),
-  AutoAlignRunning(new RainbowAnimation()), // Or, alternatively:
-  AutoAligned(new StrobeAnimation(0, 0, 244, 255, 0.1, 64)),
+  Default(new LarsonAnimation(0, 0, 255, 1, 0.54, 8, LarsonAnimation.BounceMode.Center, 6)),
+  AutoAlignRunning(new StrobeAnimation(255, 0, 255, 255, 0.1, 64)), // Or, alternatively:
+  AutoAligned(new StrobeAnimation(255, 0, 0, 255, 0.01, 64)),
   CoralIntaken(new StrobeAnimation(0, 255, 0, 255, 0.1, 64));
 
   private Animation curAnimation;

@@ -28,6 +28,10 @@ import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.ManipulatorSide;
 import frc.robot.subsystems.Superstructure.StructureState;
+import frc.robot.subsystems.algaearm.AlgaeArm;
+import frc.robot.subsystems.algaearm.AlgaeArmTalonFX;
+import frc.robot.subsystems.algaerollers.AlgaeRoller;
+import frc.robot.subsystems.algaerollers.AlgaeRollerIOTalonFX;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
@@ -77,11 +81,13 @@ public class RobotContainer {
       new Elevator(true, Utils.isSimulation() ? new ElevatorIOSim() : new ElevatorIOTalonFX());
 
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
+  private final AlgaeRoller algaeRoller = new AlgaeRoller(true, new AlgaeRollerIOTalonFX());
   private final EndEffector endEffector =
       new EndEffector(
           true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
+  private final AlgaeArm algaeArm = new AlgaeArm(true, new AlgaeArmTalonFX());
   private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
   private final LED leds = new LED();
 
@@ -168,7 +174,8 @@ public class RobotContainer {
 
   // sets up LEDs & rumble
   private void configureLEDs() {
-    leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default).ignoringDisable(true));
+    leds._animate(IndicatorAnimation.Default);
+    //    leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default).ignoringDisable(true));
     superstructure
         .coralBeamBreak()
         .whileTrue(leds.animate(IndicatorAnimation.CoralIntaken).ignoringDisable(true));
@@ -181,7 +188,7 @@ public class RobotContainer {
                 () -> {
                   m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
                 }));
-    autoAlignTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned).repeatedly());
+    autoAlignTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned));
     // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
 
   }

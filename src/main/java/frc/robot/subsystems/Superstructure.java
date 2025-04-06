@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.algaearm.AlgaeArm;
+import frc.robot.subsystems.algaerollers.AlgaeRoller;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -67,11 +69,20 @@ public class Superstructure {
   private final Elevator elevator;
   private final EndEffector endEffector;
   private final Arm arm;
+  private final AlgaeRoller algaeRoller;
+  private final AlgaeArm algaeArm;
 
-  public Superstructure(Elevator elevator, EndEffector endEffector, Arm arm) {
+  public Superstructure(
+      Elevator elevator,
+      EndEffector endEffector,
+      Arm arm,
+      AlgaeArm algaeArm,
+      AlgaeRoller algaeRoller) {
     this.elevator = elevator;
     this.endEffector = endEffector;
     this.arm = arm;
+    this.algaeArm = algaeArm;
+    this.algaeRoller = algaeRoller;
 
     stateTimer.start();
 
@@ -174,6 +185,11 @@ public class Superstructure {
     //        .and(elevator.reachedPosition)
     //        .debounce(.04) // same as above cuz this lowk might break
     //        .onTrue(arm.toGroundAlgaeLevel(rightManipulatorSide));
+
+    stateTriggers
+        .get(StructureState.GROUND_ALGAE)
+        .onTrue(algaeArm.toGroundAlgae())
+        .onTrue(algaeRoller.setIntakeVoltage());
 
     stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
 
