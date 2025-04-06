@@ -25,23 +25,23 @@ import frc.robot.utils.PhoenixUtil;
 
 public class AlgaeArmTalonFX implements AlgaeArmIO {
 
-  private final TalonFX armMotor = new TalonFX(AlgaeArmConstants.armMotorId);
+  private final TalonFX algaeArmMotor = new TalonFX(AlgaeArmConstants.armMotorId);
   private final PositionVoltage positionRequest =
       new PositionVoltage(0).withSlot(0).withEnableFOC(AlgaeArmConstants.kUseFOC);
   private final MotionMagicVoltage motionMagicRequest =
       new MotionMagicVoltage(0).withSlot(0).withEnableFOC(AlgaeArmConstants.kUseFOC);
   private final VoltageOut voltageReq = new VoltageOut(0);
 
-  private final StatusSignal<Voltage> armMotorVoltage = armMotor.getMotorVoltage();
-  private final StatusSignal<AngularVelocity> armMotorVelocity = armMotor.getVelocity();
-  private final StatusSignal<Angle> armMotorPosition = armMotor.getPosition();
-  private final StatusSignal<Current> armMotorStatorCurrent = armMotor.getStatorCurrent();
-  private final StatusSignal<Current> armMotorSupplyCurrent = armMotor.getSupplyCurrent();
+  private final StatusSignal<Voltage> armMotorVoltage = algaeArmMotor.getMotorVoltage();
+  private final StatusSignal<AngularVelocity> armMotorVelocity = algaeArmMotor.getVelocity();
+  private final StatusSignal<Angle> armMotorPosition = algaeArmMotor.getPosition();
+  private final StatusSignal<Current> armMotorStatorCurrent = algaeArmMotor.getStatorCurrent();
+  private final StatusSignal<Current> armMotorSupplyCurrent = algaeArmMotor.getSupplyCurrent();
 
   public AlgaeArmTalonFX() {
 
     PhoenixUtil.applyMotorConfigs(
-        armMotor, AlgaeArmConstants.motorConfigs, AlgaeArmConstants.flashConfigRetries);
+        algaeArmMotor, AlgaeArmConstants.motorConfigs, AlgaeArmConstants.flashConfigRetries);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         AlgaeArmConstants.updateFrequency,
@@ -51,7 +51,7 @@ public class AlgaeArmTalonFX implements AlgaeArmIO {
         armMotorStatorCurrent,
         armMotorSupplyCurrent);
 
-    armMotor.optimizeBusUtilization();
+    algaeArmMotor.optimizeBusUtilization();
     //    cancoder.optimizeBusUtilization();
   }
 
@@ -73,43 +73,43 @@ public class AlgaeArmTalonFX implements AlgaeArmIO {
   @Override
   public void setPosition(Angle position) {
     if (AlgaeArmConstants.kUseMotionMagic) {
-      armMotor.setControl(motionMagicRequest.withPosition(position));
+      algaeArmMotor.setControl(motionMagicRequest.withPosition(position));
     } else {
-      armMotor.setControl(positionRequest.withPosition(position));
+      algaeArmMotor.setControl(positionRequest.withPosition(position));
     }
   }
 
   @Override
   public void setPosition(double position) {
     if (AlgaeArmConstants.kUseMotionMagic) {
-      armMotor.setControl(motionMagicRequest.withPosition(position));
+      algaeArmMotor.setControl(motionMagicRequest.withPosition(position));
     } else {
-      armMotor.setControl(positionRequest.withPosition(position));
+      algaeArmMotor.setControl(positionRequest.withPosition(position));
     }
   }
 
   @Override
   public void setPosition(Angle position, AngularVelocity velocity) {
-    armMotor.setControl(positionRequest.withPosition(position).withVelocity(velocity));
+    algaeArmMotor.setControl(positionRequest.withPosition(position).withVelocity(velocity));
   }
 
   @Override
   public void setVoltage(Voltage voltage) {
-    armMotor.setVoltage(voltage.in(Volt));
+    algaeArmMotor.setVoltage(voltage.in(Volt));
   }
 
   @Override
   public void off() {
-    armMotor.setControl(new NeutralOut());
+    algaeArmMotor.setControl(new NeutralOut());
   }
 
   @Override
   public TalonFX getMotor() {
-    return armMotor;
+    return algaeArmMotor;
   }
 
   @Override
   public void resetPosition(Angle angle) {
-    armMotor.setPosition(angle);
+    algaeArmMotor.setPosition(angle);
   }
 }

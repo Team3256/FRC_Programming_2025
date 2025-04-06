@@ -28,30 +28,30 @@ public final class AlgaeArmConstants {
   public static final double updateFrequency = 50.0;
 
   public static final Angle homePosition = Rotations.of(.25);
-  public static Angle groundAlgaePosition = Rotations.of(.4);
+  public static Angle groundAlgaePosition = Rotations.of(.45);
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
-                  .withKS(.05)
-                  .withKV(3.57)
-                  .withKP(.2)
+                  .withKS(.2)
+                  .withKV(1.6065)
+                  .withKP(100)
                   .withKI(0)
-                  .withKD(0)
+                  .withKD(4)
                   .withKA(0)
-                  .withKG(.2)
+                  .withKG(.05)
                   .withGravityType(GravityTypeValue.Arm_Cosine) // Original 0.145
               )
           .withMotorOutput(
               new MotorOutputConfigs()
-                  .withNeutralMode(NeutralModeValue.Brake)
+                  .withNeutralMode(NeutralModeValue.Coast)
                   .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicJerk(0)
-                  .withMotionMagicAcceleration(18)
-                  .withMotionMagicCruiseVelocity(3))
+                  .withMotionMagicAcceleration(36)
+                  .withMotionMagicCruiseVelocity(6))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
@@ -59,7 +59,7 @@ public final class AlgaeArmConstants {
           .withFeedback(
               new FeedbackConfigs()
                   .withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
-                  .withSensorToMechanismRatio(30)
+                  .withSensorToMechanismRatio(13.5)
                   .withRotorToSensorRatio(1));
 
   public static final class Sim {

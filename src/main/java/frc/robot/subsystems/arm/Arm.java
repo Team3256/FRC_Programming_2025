@@ -182,14 +182,8 @@ public class Arm extends DisableSubsystem {
     return this.setPosition(() -> ArmConstants.climbPosition, true, () -> 0);
   }
 
-  public Command toProcessorLevel(BooleanSupplier rightSide) {
-    return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.processorRightPosition
-                : ArmConstants.processorLeftPosition,
-        true,
-        () -> 0);
+  public Command toProcessorLevel() {
+    return this.setPosition(() -> ArmConstants.processorRightPosition, true, () -> 0);
   }
 
   @AutoLogOutput
@@ -212,14 +206,8 @@ public class Arm extends DisableSubsystem {
         () -> 0);
   }
 
-  public Command toGroundAlgaeLevel(BooleanSupplier rightSide) {
-    return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.groundAlgaeRightPosition
-                : ArmConstants.groundAlgaeLeftPosition,
-        true,
-        () -> 0);
+  public Command toGroundAlgaeLevel() {
+    return this.setPosition(() -> ArmConstants.groundAlgaeRightPosition, true, () -> 0);
   }
 
   @AutoLogOutput

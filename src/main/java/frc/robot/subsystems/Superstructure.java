@@ -104,7 +104,11 @@ public class Superstructure {
         .onTrue(elevator.toReefLevel(0))
         .onTrue(arm.toReefLevel(0, rightManipulatorSide));
 
-    stateTriggers.get(StructureState.CLIMB).onTrue(elevator.toHome()).onTrue(arm.toClimb());
+    stateTriggers
+        .get(StructureState.CLIMB)
+        .onTrue(elevator.toHome())
+        .onTrue(arm.toClimb())
+        .onTrue(algaeArm.toGroundAlgae());
 
     // L2 and L3 are same arm position so they are put together, once again no safety limits
     stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(1));
@@ -140,7 +144,8 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .onTrue(elevator.toDealgaeLevel(0))
-        .onTrue(arm.toDealgaeLevel(0, () -> true));
+        .onTrue(arm.toDealgaeLevel(0, () -> true))
+        .onTrue(algaeArm.toGroundAlgae());
 
     stateTriggers
         .get(StructureState.DEALGAE_L3)
@@ -149,6 +154,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
+        .or(stateTriggers.get(StructureState.GROUND_ALGAE))
         .onTrue(endEffector.setAlgaeIntakeVelocity());
 
     // Arm needs to wrap 180, so elevator has to be safe before we fully move
@@ -177,7 +183,7 @@ public class Superstructure {
         .onTrue(elevator.toProcessorPosition())
         .and(elevator.reachedPosition)
         .debounce(.04) // wait two loop times
-        .onTrue(arm.toProcessorLevel(() -> true));
+        .onTrue(arm.toProcessorLevel());
 
     //    stateTriggers
     //        .get(StructureState.GROUND_ALGAE)
@@ -189,7 +195,16 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.GROUND_ALGAE)
         .onTrue(algaeArm.toGroundAlgae())
-        .onTrue(algaeRoller.setIntakeVoltage());
+        .onTrue(elevator.toGroundAlgaePosition())
+        .and(elevator.reachedPosition)
+        .debounce(.03) // wait two loop times
+        .onTrue(arm.toGroundAlgaeLevel())
+        .and(arm.reachedPosition)
+        .debounce(.05)
+        .onTrue(algaeRoller.setIntakeVoltage())
+        .and(endEffector.algaeBeamBreak)
+        .onTrue(this.setState(StructureState.PREHOME));
+    ;
 
     stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
 
@@ -247,14 +262,18 @@ public class Superstructure {
     //        .or(stateTriggers.get(StructureState.HOME))
     //        .and(endEffector.algaeBeamBreak.negate())
     //            .debounce(.025)
-    //        .onTrue(endEffector.algaeOff());
+    //        .onTrue(endEffector.off());
 
     stateTriggers
         .get(StructureState.HOME)
         .and(prevStateTriggers.get(StructureState.PREHOME))
         .onTrue(elevator.toHome())
         .onTrue(arm.toHome())
-        .and(arm.reachedPosition.and(elevator.reachedPosition))
+        .and(arm.reachedPosition)
+        .onTrue(algaeArm.toHome())
+        .onTrue(algaeRoller.off())
+        .and(algaeArm.reachedPosition)
+        .and(elevator.reachedPosition)
         .onTrue(this.setState(StructureState.IDLE));
 
     stateTriggers

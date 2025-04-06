@@ -52,7 +52,7 @@ public final class ArmConstants {
   public static final Angle bargeLeftPosition = Rotations.of(.17);
   public static final Angle bargeRightPosition = Rotations.of(.33);
 
-  public static final Angle homePosition = Rotations.of(.3);
+  public static final Angle homePosition = Rotations.of(.28);
 
   public static final Angle climbPosition = Rotations.of(.45);
 
@@ -100,10 +100,8 @@ public final class ArmConstants {
                   .withMagnetOffset(-0.6601640625)
                   .withAbsoluteSensorDiscontinuityPoint(Rotations.of(1)));
   public static final Angle processorRightPosition = Rotations.of(.576);
-  public static final Angle processorLeftPosition = Rotations.of(.924);
 
-  public static final Angle groundAlgaeRightPosition = Degrees.of(200);
-  public static final Angle groundAlgaeLeftPosition = Degrees.of(340);
+  public static final Angle groundAlgaeRightPosition = Rotations.of(.62);
 
   public static final class Sim {
     public static final double simGearing = 142.22;

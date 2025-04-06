@@ -12,11 +12,10 @@ import com.ctre.phoenix6.signals.*;
 
 public final class AlgaeRollerConstants {
   public static final boolean kUseFOC = true;
-  public static final int algaeMotorID = 45;
-  public static final int coralMotorID = 43;
+  public static final int algaeMotorID = 35;
 
-  public static final double intakeVoltage = 2.592;
-  public static final double processorVoltage = -2.592;
+  public static final double intakeVoltage = 3;
+  public static final double processorVoltage = -3;
 
   // algae first then coral
 
@@ -27,7 +26,7 @@ public final class AlgaeRollerConstants {
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
-                  .withInverted(InvertedValue.Clockwise_Positive))
+                  .withInverted(InvertedValue.CounterClockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicAcceleration(1600)

@@ -88,7 +88,8 @@ public class RobotContainer {
 
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
   private final AlgaeArm algaeArm = new AlgaeArm(true, new AlgaeArmTalonFX());
-  private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
+  private final Superstructure superstructure =
+      new Superstructure(elevator, endEffector, arm, algaeArm, algaeRoller);
   private final LED leds = new LED();
 
   private final Vision vision =
@@ -207,6 +208,9 @@ public class RobotContainer {
     m_operatorController.povUp("L4 Preset").onTrue(superstructure.setState(StructureState.L4));
     m_operatorController.povRight("L3 Preset").onTrue(superstructure.setState(StructureState.L3));
     m_operatorController.povDown("L2 Preset").onTrue(superstructure.setState(StructureState.L2));
+    m_operatorController
+        .povLeft("Ground Algae")
+        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
     m_operatorController
         .rightBumper("Manipulator Side Right")
         .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
