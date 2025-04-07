@@ -1,0 +1,48 @@
+# Borrowed from the WPILib repo
+
+name: Comment Commands
+on: 
+  workflow_dispatch: # This CI is broken. Prevents this from triggering...
+
+jobs:
+    format:
+        if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/format')
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        
+        container: wpilib/roborio-cross-ubuntu:2023-22.04
+
+        steps:
+            - name: React Rocket
+              uses: actions/github-script@v7
+              with:
+               script: |
+                 const {owner, repo} = context.issue
+                 github.rest.reactions.createForIssueComment({
+                   owner,
+                   repo,
+                   comment_id: context.payload.comment.id,
+                   content: "rocket",
+                 });
+
+            - uses: actions/checkout@v3
+              with:
+                fetch-depth: 0
+            
+            - name: Add repository to git safe directories
+              run: git config --global --add safe.directory $GITHUB_WORKSPACE
+            
+            - name: Grant execute permission for gradlew
+              run: chmod +x gradlew
+
+            - name: Run spotless
+              run: ./gradlew spotlessApply
+            
+            - name: Commit changes
+              uses: stefanzweifel/git-auto-commit-action@v5
+              with:
+                  commit_message: run spotless
+
+
+

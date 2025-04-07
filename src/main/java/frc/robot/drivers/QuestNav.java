@@ -7,117 +7,231 @@
 
 package frc.robot.drivers;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.FloatArraySubscriber;
+import edu.wpi.first.networktables.IntegerEntry;
 import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.IntegerSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 
+/** Add your docs here. */
 public class QuestNav {
-  // Configure Network Tables topics (questnav/...) to communicate with the Quest HMD
-  NetworkTableInstance nt4Instance = NetworkTableInstance.getDefault();
-  NetworkTable nt4Table = nt4Instance.getTable("questnav");
-  private IntegerSubscriber questMiso = nt4Table.getIntegerTopic("miso").subscribe(0);
-  private IntegerPublisher questMosi = nt4Table.getIntegerTopic("mosi").publish();
+  private boolean initializedPosition = false;
+  private String networkTableRoot = "questnav";
+  private NetworkTableInstance networkTableInstance = NetworkTableInstance.getDefault();
+  private NetworkTable networkTable;
+  private Transform3d robotToQuest;
+  private Pose3d initPose = new Pose3d();
 
-  // Subscribe to the Network Tables questnav data topics
-  private DoubleSubscriber questTimestamp = nt4Table.getDoubleTopic("timestamp").subscribe(0.0f);
-  private FloatArraySubscriber questPosition =
-      nt4Table.getFloatArrayTopic("position").subscribe(new float[] {0.0f, 0.0f, 0.0f});
-  private FloatArraySubscriber questQuaternion =
-      nt4Table.getFloatArrayTopic("quaternion").subscribe(new float[] {0.0f, 0.0f, 0.0f, 0.0f});
-  private FloatArraySubscriber questEulerAngles =
-      nt4Table.getFloatArrayTopic("eulerAngles").subscribe(new float[] {0.0f, 0.0f, 0.0f});
-  private DoubleSubscriber questBatteryPercent =
-      nt4Table.getDoubleTopic("batteryPercent").subscribe(0.0f);
+  private Transform3d softResetTransform = new Transform3d();
+  private Pose3d softResetPose = new Pose3d();
 
-  // Local heading helper variables
-  private float yaw_offset = 0.0f;
-  private Pose2d resetPosition = new Pose2d();
+  private IntegerEntry miso;
+  private IntegerPublisher mosi;
 
-  // Gets the Quest's measured position.
-  public Pose2d getPose() {
-    return new Pose2d(
-        getQuestNavPose().minus(resetPosition).getTranslation(),
-        Rotation2d.fromDegrees(getOculusYaw()));
+  private IntegerSubscriber frameCount;
+  private DoubleSubscriber timestamp;
+  private FloatArraySubscriber position;
+  private FloatArraySubscriber quaternion;
+  private FloatArraySubscriber eulerAngles;
+  private DoubleSubscriber battery;
+
+  private ChassisSpeeds velocity;
+  private Pose3d previousPose;
+  private double previousTime;
+  private double cyclesWithoutUpdates = 0;
+
+  private final double TIMESTAMP_DELAY = 0.002;
+
+  private long previousFrameCount;
+
+  private Translation2d _calculatedOffsetToRobotCenter = new Translation2d();
+  private int _calculatedOffsetToRobotCenterCount = 0;
+
+  public enum QuestCommand {
+    RESET(1);
+
+    public final int questRequestCode;
+
+    private QuestCommand(int command) {
+      this.questRequestCode = command;
+    }
+
+    public int getQuestRequest() {
+      return questRequestCode;
+    }
   }
 
-  // Gets the battery percent of the Quest.
-  public double getBatteryPercent() {
-    return questBatteryPercent.get();
+  public QuestNav(Transform3d robotToQuest) {
+    super();
+    this.robotToQuest = robotToQuest;
+    setupNetworkTables(networkTableRoot);
   }
 
-  // Returns if the Quest is connected.
+  public QuestNav(Transform3d robotToQuest, String networkTableRoot) {
+    super();
+    this.robotToQuest = robotToQuest;
+    this.networkTableRoot = networkTableRoot;
+    setupNetworkTables(networkTableRoot);
+  }
+
+  private void setupNetworkTables(String root) {
+    networkTable = networkTableInstance.getTable(root);
+    miso = networkTable.getIntegerTopic("miso").getEntry(0);
+    mosi = networkTable.getIntegerTopic("mosi").publish();
+    frameCount = networkTable.getIntegerTopic("frameCount").subscribe(0);
+    timestamp = networkTable.getDoubleTopic("timestamp").subscribe(0.0);
+    position = networkTable.getFloatArrayTopic("position").subscribe(new float[3]);
+    quaternion = networkTable.getFloatArrayTopic("quaternion").subscribe(new float[4]);
+    eulerAngles = networkTable.getFloatArrayTopic("eulerAngles").subscribe(new float[3]);
+    battery = networkTable.getDoubleTopic("battery").subscribe(0.0);
+  }
+
+  public Translation3d getRawPosition() {
+    return new Translation3d(position.get()[2], -position.get()[0], position.get()[2]);
+  }
+
+  private Translation3d rotateAxes(Translation3d raw, Rotation3d rotation) {
+    return raw.rotateBy(rotation);
+  }
+
+  private Translation3d correctWorldAxis(Translation3d rawPosition) {
+    return rotateAxes(rawPosition, robotToQuest.getRotation());
+  }
+
+  public Rotation3d getRawRotation() {
+    float[] euler = eulerAngles.get();
+    return new Rotation3d(Degrees.of(euler[2]), Degrees.of(euler[0]), Degrees.of(-euler[1]));
+  }
+
+  public Pose3d getRobotPose() {
+    return new Pose3d(getPosition(), getRotation());
+  }
+
+  public Translation3d getProcessedPosition() {
+    return rotateAxes(
+            correctWorldAxis(getRawPosition())
+                .plus(robotToQuest.getTranslation())
+                .plus(robotToQuest.getTranslation().times(-1).rotateBy(getRawRotation())),
+            initPose.getRotation())
+        .plus(initPose.getTranslation());
+  }
+
+  public Translation3d getPosition() {
+    Translation3d hardResetTransform = getProcessedPosition();
+    Translation3d softResetTransformation =
+        rotateAxes(
+                hardResetTransform.minus(softResetPose.getTranslation()),
+                softResetTransform.getRotation())
+            .plus(softResetPose.getTranslation())
+            .plus(softResetTransform.getTranslation());
+    return softResetTransformation;
+  }
+
+  public Rotation3d getProcessedRotation() {
+    return getRawRotation().plus(initPose.getRotation());
+  }
+
+  public Rotation3d getRotation() {
+    return getProcessedRotation().plus(softResetTransform.getRotation());
+  }
+
+  public double getConfidence() {
+    if (RobotBase.isReal()) {
+      return 0.0001;
+    } else {
+      return Double.MAX_VALUE;
+    }
+  }
+
+  public double getCaptureTime() {
+    return RobotController.getFPGATime() / 1E6 - TIMESTAMP_DELAY;
+  }
+
+  public void softReset(Pose3d pose) {
+    softResetTransform =
+        new Transform3d(
+            pose.getTranslation().minus(getProcessedPosition()),
+            pose.getRotation().minus(getProcessedRotation()));
+    softResetPose = new Pose3d(getProcessedPosition(), getProcessedRotation());
+  }
+
+  public boolean isActive() {
+    if (timestamp.get() == 0.0
+        || RobotBase.isSimulation()
+        || frameCount.get() == previousFrameCount) {
+      return false;
+    }
+    previousFrameCount = frameCount.get();
+    return true;
+  }
+
   public boolean connected() {
-    return ((RobotController.getFPGATime() - questBatteryPercent.getLastChange()) / 1000) < 250;
-  }
-
-  // Gets the Quaternion of the Quest.
-  public Quaternion getQuaternion() {
-    float[] qqFloats = questQuaternion.get();
-    return new Quaternion(qqFloats[0], qqFloats[1], qqFloats[2], qqFloats[3]);
-  }
-
-  // Gets the Quests's timestamp.
-  public double timestamp() {
-    return questTimestamp.get();
-  }
-
-  // Zero the relativerobot heading
-  public void zeroHeading() {
-    float[] eulerAngles = questEulerAngles.get();
-    yaw_offset = eulerAngles[1];
-  }
-
-  // Zero the absolute 3D position of the robot (similar to long-pressing the quest logo)
-  public void zeroPosition() {
-    resetPosition = getPose();
-    if (questMiso.get() != 99) {
-      questMosi.set(1);
+    if (previousTime == timestamp.getAsDouble()) {
+      cyclesWithoutUpdates += 1;
+      return cyclesWithoutUpdates < 10;
     }
-    questMosi.set(0);
+    cyclesWithoutUpdates = 0;
+    previousTime = timestamp.getAsDouble();
+    return true;
   }
 
-  // Clean up questnav subroutine messages after processing on the headset
-  public void cleanUpQuestNavMessages() {
-    if (questMiso.get() == 99) {
-      questMosi.set(0);
+  public boolean processQuestCommand(QuestCommand command) {
+    if (miso.get() == 99) {
+      return false;
+    }
+    mosi.set(command.getQuestRequest());
+    return true;
+  }
+
+  private void resetQuestPose() {
+    processQuestCommand(QuestCommand.RESET);
+  }
+
+  public void resetPose(Pose3d pose) {
+    initializedPosition = true;
+    initPose = pose;
+    resetQuestPose();
+  }
+
+  public void resetPose() {
+    initializedPosition = true;
+    resetQuestPose();
+  }
+
+  public void cleanUpQuestCommand() {
+    if (miso.get() == 99) {
+      mosi.set(0);
     }
   }
 
-  // Should only done when intializing the robot and needs to be as accurate as possible
-  public void setResetPosition(Pose2d resetPosition) {
-    this.resetPosition = resetPosition;
-    //    if (questMiso.get() != 99) {
-    //      questMosi.set(1);
-    //    }
-  }
+  public Translation2d calculateOffsetToRobotCenter() {
+    Pose3d currentPose = getRobotPose();
+    Pose2d currentPose2d = currentPose.toPose2d();
 
-  // Get the yaw Euler angle of the headset
-  private float getOculusYaw() {
-    float[] eulerAngles = questEulerAngles.get();
-    var ret = eulerAngles[1] - yaw_offset;
-    ret %= 360;
-    if (ret < 0) {
-      ret += 360;
-    }
-    return ret;
-  }
+    Rotation2d angle = currentPose2d.getRotation();
+    Translation2d displacement = currentPose2d.getTranslation();
 
-  private Translation2d getQuestNavTranslation() {
-    float[] questnavPosition = questPosition.get();
-    return new Translation2d(questnavPosition[2], -questnavPosition[0]);
-  }
+    double x =
+        ((angle.getCos() - 1) * displacement.getX() + angle.getSin() * displacement.getY())
+            / (2 * (1 - angle.getCos()));
+    double y =
+        ((-1 * angle.getSin()) * displacement.getX() + (angle.getCos() - 1) * displacement.getY())
+            / (2 * (1 - angle.getCos()));
 
-  private Pose2d getQuestNavPose() {
-    var oculousPositionCompensated =
-        getQuestNavTranslation().minus(new Translation2d(0, 0.68)); // 6.5
-    return new Pose2d(oculousPositionCompensated, Rotation2d.fromDegrees(getOculusYaw()));
+    return new Translation2d(x, y);
   }
 }

@@ -15,21 +15,23 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public final class EndEffectorConstants {
   public static final boolean kUseFOC = true;
-  public static int algaeMotorID = 43;
-  public static int coralMotorID = 48;
+  public static final int algaeMotorID = 45;
+  public static final int coralMotorID = 43;
 
-  public static AngularVelocity l1Velocity = RotationsPerSecond.of(0.0);
-  public static AngularVelocity l2l3Velocity = RotationsPerSecond.of(0.0);
-  public static AngularVelocity l4Velocity = RotationsPerSecond.of(0.0);
+  public static final AngularVelocity l1Velocity = RotationsPerSecond.of(50.0);
+  public static final AngularVelocity l2l3Velocity = RotationsPerSecond.of(32);
+  public static final double l4Voltage = 2.592;
 
-  public static AngularVelocity[] sourceVelocity = {
-    RotationsPerSecond.of(0.0), RotationsPerSecond.of(0)
-  };
+  // algae first then coral
+  public static final AngularVelocity sourceVelocity = RotationsPerSecond.of(30);
+
+  public static final AngularVelocity algaeIntakeVelocity = RotationsPerSecond.of(50);
+  public static final AngularVelocity algaeOuttakeVelocity = RotationsPerSecond.of(-100);
 
   public static TalonFXConfiguration algaeMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.15).withKA(0).withKP(8).withKI(0).withKD(0.1))
+              new Slot0Configs().withKS(0).withKV(.12).withKA(0).withKP(.3).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
@@ -41,15 +43,15 @@ public final class EndEffectorConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(60));
+                  .withStatorCurrentLimit(40));
   public static TalonFXConfiguration coralMotorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
-              new Slot0Configs().withKS(0).withKV(0.15).withKA(0).withKP(8).withKI(0).withKD(0.1))
+              new Slot0Configs().withKS(0).withKV(.118).withKA(0).withKP(.2).withKI(0).withKD(0))
           .withMotorOutput(
               new MotorOutputConfigs()
                   .withNeutralMode(NeutralModeValue.Brake)
-                  .withInverted(InvertedValue.CounterClockwise_Positive))
+                  .withInverted(InvertedValue.Clockwise_Positive))
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicAcceleration(1600)
@@ -57,20 +59,18 @@ public final class EndEffectorConstants {
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)
-                  .withStatorCurrentLimit(60))
-          .withHardwareLimitSwitch(
-              new HardwareLimitSwitchConfigs()
-                  .withForwardLimitSource(ForwardLimitSourceValue.RemoteCANdiS1)
-                  .withReverseLimitSource(ReverseLimitSourceValue.RemoteCANdiS2)
-                  .withForwardLimitEnable(true)
-                  .withReverseLimitEnable(true));
+                  .withStatorCurrentLimit(80)
+                  .withSupplyCurrentLimit(60)
+                  .withSupplyCurrentLimitEnable(true)
+                  .withSupplyCurrentLowerTime(1)
+                  .withSupplyCurrentLowerLimit(40));
 
   public static final CANdiConfiguration canDiConfigs =
       new CANdiConfiguration()
           .withDigitalInputs(
               new DigitalInputsConfigs()
-                  .withS1CloseState(S1CloseStateValue.CloseWhenHigh)
-                  .withS2CloseState(S2CloseStateValue.CloseWhenLow));
+                  .withS1CloseState(S1CloseStateValue.CloseWhenFloating)
+                  .withS2CloseState(S2CloseStateValue.CloseWhenFloating));
 
   public static final int candiID = 21;
 

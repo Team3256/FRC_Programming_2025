@@ -14,11 +14,13 @@ import static edu.wpi.first.units.Units.Rotations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
+import frc.robot.utils.LoggedTracer;
 import frc.robot.utils.Util;
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,7 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 import org.json.simple.JSONObject;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends DisableSubsystem {
@@ -42,29 +49,38 @@ public class Arm extends DisableSubsystem {
   private Iterator<Map<String, Double>> trajIterator = null;
 
   private ArrayList<Map<String, Double>> selectedTraj = null;
-  public final Trigger reachedPosition = new Trigger(() -> isAtPosition());
-  private Angle requestedPosition = Rotations.of(0.0);
+  public final Trigger reachedPosition = new Trigger(this::isAtPosition);
+  public final Trigger isSafePosition = new Trigger(this::isSafePosition);
+
+  private double cachedArmMotorPosition = 0.0;
+  private int cachedDirection = 0;
+  private final MutAngle requestedPosition = Rotations.of(0.0).mutableCopy();
 
   public Arm(boolean enabled, ArmIO armIO) {
     super(enabled);
 
     this.armIO = armIO;
-    loadAllTraj();
+    //    armIO.resetPosition(Rotations.of(.25));
   }
 
   @Override
   public void periodic() {
     super.periodic();
+    //    Logger.recordOutput(
+    //        this.getClass().getSimpleName() + "/requestedPosition",
+    // requestedPosition.in(Rotations));
     armIO.updateInputs(armIOAutoLogged);
-    Logger.processInputs(this.getClass().getSimpleName(), armIOAutoLogged);
+    Logger.processInputs("Arm", armIOAutoLogged);
 
-    if (trajIterator != null && trajIterator.hasNext()) {
-      armIO.setPosition(
-          Radians.of(trajIterator.next().get("position")),
-          RadiansPerSecond.of(trajIterator.next().get("velocity")));
-    } else if (selectedTraj != null) {
-      trajIterator = selectedTraj.iterator();
-    }
+    LoggedTracer.record("Arm");
+
+    //    if (trajIterator != null && trajIterator.hasNext()) {
+    //      armIO.setPosition(
+    //          Radians.of(trajIterator.next().get("position")),
+    //          RadiansPerSecond.of(trajIterator.next().get("velocity")));
+    //    } else if (selectedTraj != null) {
+    //      trajIterator = selectedTraj.iterator();
+    //    }
   }
 
   public Command runTraj(String trajName) {
@@ -109,53 +125,134 @@ public class Arm extends DisableSubsystem {
     //    System.out.println(o.toString());
   }
 
-  public Command setPosition(Angle position) {
+  public Command setPosition(Supplier<Angle> position, boolean continuous, IntSupplier direction) {
     return this.run(
-        () -> {
-          armIO.setPosition(position);
-          requestedPosition = position;
-        });
+            () -> {
+              cachedArmMotorPosition =
+                  direction.getAsInt() == cachedDirection
+                      ? cachedArmMotorPosition
+                      : armIOAutoLogged.armMotorPosition;
+              requestedPosition.mut_replace(
+                  continuous
+                      ? continuousWrapAtHome(position.get(), direction.getAsInt())
+                      : position.get());
+              armIO.setPosition(requestedPosition);
+              cachedDirection = direction.getAsInt();
+            })
+        .beforeStarting(() -> cachedArmMotorPosition = armIOAutoLogged.armMotorPosition);
+  }
+
+  public Command setPosition(Angle position, boolean continuous, int direction) {
+    return setPosition(() -> position, continuous, () -> direction);
+  }
+
+  public Command setPosition(double position, boolean continuous, int direction) {
+    return setPosition(() -> Rotations.of(position), continuous, () -> direction);
+  }
+
+  public Command setPosition(DoubleSupplier position, boolean continuous, IntSupplier direction) {
+    return setPosition(() -> Rotations.of(position.getAsDouble()), continuous, direction);
   }
 
   public Command setVoltage(Voltage voltage) {
     return this.run(() -> armIO.setVoltage(voltage));
   }
 
-  public Command toRightReefLevel(int level) {
-    return this.setPosition(ArmConstants.reefRightPositions[level]);
+  public Command toReefLevel(int level, BooleanSupplier rightSide) {
+    return setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.reefRightPositions[level]
+                : ArmConstants.reefLeftPositions[level],
+        true,
+        () -> 0);
   }
 
-  public Command toLeftReefLevel(int level) {
-    return this.setPosition(ArmConstants.reefLeftPositions[level]);
+  public Command toDealgaeLevel(int level, BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.dealgaeRightPosition[level]
+                : ArmConstants.dealgaeLeftPosition[level],
+        true,
+        () -> 0);
   }
 
-  public Command toRightDealgaeLevel() {
-    return this.setPosition(ArmConstants.dealgaeRightPosition);
+  public Command toClimb() {
+    return this.setPosition(() -> ArmConstants.climbPosition, true, () -> 0);
   }
 
-  public Command toLeftDealgaeLevel(int level) {
-    return this.setPosition(ArmConstants.dealgaeLeftPosition);
+  public Command toProcessorLevel() {
+    return this.setPosition(() -> ArmConstants.processorRightPosition, true, () -> 0);
   }
 
-  public Command toRightSourceLevel() {
-    return this.setPosition(ArmConstants.sourceRightPositions);
+  @AutoLogOutput
+  public boolean isSafePosition() {
+    return (armIOAutoLogged.armMotorPosition + 5) % 1 >= ArmConstants.safeLeftPosition
+        && (armIOAutoLogged.armMotorPosition + 5) % 1 <= ArmConstants.safeRightPosition;
   }
 
-  public Command toLeftSourceLevel() {
-    return this.setPosition(ArmConstants.sourceLeftPositions);
+  public Command toSourceLevel() {
+    return this.setPosition(() -> ArmConstants.sourcePosition, true, () -> 0);
   }
 
+  public Command toBargeLevel(BooleanSupplier rightSide) {
+    return this.setPosition(
+        () ->
+            rightSide.getAsBoolean()
+                ? ArmConstants.bargeRightPosition
+                : ArmConstants.bargeLeftPosition,
+        true,
+        () -> 0);
+  }
+
+  public Command toGroundAlgaeLevel() {
+    return this.setPosition(() -> ArmConstants.groundAlgaeRightPosition, true, () -> 0);
+  }
+
+  @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(
-        armIOAutoLogged.armEncoderAbsolutePosition, requestedPosition.in(Rotations), 0.01);
+        armIOAutoLogged.armMotorPosition, requestedPosition.in(Rotations), 0.05);
   }
 
   public Command toHome() {
-    return this.setPosition(ArmConstants.homePosition);
+    return this.setPosition(ArmConstants.homePosition, true, 0);
+  }
+
+  public Command toHome(BooleanSupplier preferRightSide) {
+    return this.setPosition(
+        () -> ArmConstants.homePosition, true, () -> preferRightSide.getAsBoolean() ? -1 : 1);
   }
 
   public Command off() {
-
     return this.runOnce(armIO::off);
+  }
+
+  public Angle continuousWrapAtHome(Angle angle, int direction) {
+    return Rotations.of(continuousWrapAtHome(angle.in(Rotations), direction));
+  }
+
+  public double continuousWrapAtHome(double angle, int direction) {
+    return continuousWrapAtHome(angle, cachedArmMotorPosition, direction);
+  }
+
+  public static double continuousWrapAtHome(
+      double reqAbsAngle, double currentAngle, double forcedDirection) {
+    int n_min = (int) Math.ceil(-ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+    int n_max = (int) Math.floor(ArmConstants.maxRotations.in(Rotations) - reqAbsAngle);
+    int nIdeal = (int) Math.round(currentAngle - reqAbsAngle);
+    int nCandidate = Math.min(n_max, Math.max(n_min, nIdeal));
+    double candidate = reqAbsAngle + nCandidate;
+    double diff = candidate - currentAngle;
+
+    int adjustment =
+        (int)
+            ((1 - Math.max(Math.signum(diff) * Math.signum(forcedDirection), 0))
+                * Math.signum(forcedDirection));
+
+    int nLong = nCandidate + adjustment;
+    nLong = Math.min(n_max, Math.max(n_min, nLong));
+    return reqAbsAngle + nLong;
   }
 }

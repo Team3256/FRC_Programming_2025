@@ -7,42 +7,55 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.subsystems.swerve.AngleCalculator.getStickAngle;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FeatureFlags;
-import frc.robot.autogen.*;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
+import frc.robot.subsystems.Superstructure;
+import frc.robot.subsystems.Superstructure.ManipulatorSide;
+import frc.robot.subsystems.Superstructure.StructureState;
+import frc.robot.subsystems.algaearm.AlgaeArm;
+import frc.robot.subsystems.algaearm.AlgaeArmTalonFX;
+import frc.robot.subsystems.algaerollers.AlgaeRoller;
+import frc.robot.subsystems.algaerollers.AlgaeRollerIOTalonFX;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
 import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.climb.ClimbIOTalonFX;
-import frc.robot.subsystems.rollers.Roller;
-import frc.robot.subsystems.rollers.RollerIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIOSim;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.endeffector.EndEffectorIOSim;
+import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
+import frc.robot.subsystems.led.IndicatorAnimation;
+import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.utils.MappedXboxController;
+import frc.robot.utils.autoaim.AutoAim;
+import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
-import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -64,11 +77,49 @@ public class RobotContainer {
 
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private final Roller roller = new Roller(true, new RollerIOTalonFX());
+  private final Elevator elevator =
+      new Elevator(true, Utils.isSimulation() ? new ElevatorIOSim() : new ElevatorIOTalonFX());
 
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
-  private final Climb climb = new Climb(true, new ClimbIOTalonFX());
+  private final AlgaeRoller algaeRoller = new AlgaeRoller(true, new AlgaeRollerIOTalonFX());
+  private final EndEffector endEffector =
+      new EndEffector(
+          true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
+  private final Climb climb = new Climb(true, new ClimbIOTalonFX());
+  private final AlgaeArm algaeArm = new AlgaeArm(true, new AlgaeArmTalonFX());
+  private final Superstructure superstructure =
+      new Superstructure(elevator, endEffector, arm, algaeArm, algaeRoller);
+  private final LED leds = new LED();
+
+  private final Vision vision =
+      new Vision(
+          drivetrain::addPhotonEstimate,
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.leftCam,
+                  VisionConstants.robotToLeftCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.leftCam, VisionConstants.robotToLeftCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.rightCam,
+                  VisionConstants.robotToRightCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.rightCam, VisionConstants.robotToRightCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.backCam,
+                  VisionConstants.robotToBackCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(VisionConstants.backCam, VisionConstants.robotToBackCam),
+          Utils.isSimulation()
+              ? new VisionIOPhotonVisionSim(
+                  VisionConstants.frontCam,
+                  VisionConstants.robotToFrontCam,
+                  () -> drivetrain.getState().Pose)
+              : new VisionIOPhotonVision(
+                  VisionConstants.frontCam, VisionConstants.robotToFrontCam));
   /* Swerve Rate Limiting */
   private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
       new AdaptiveSlewRateLimiter(
@@ -86,14 +137,27 @@ public class RobotContainer {
   private final AutoRoutines m_autoRoutines;
   private AutoChooser autoChooser = new AutoChooser();
 
+  private final Trigger autoAlignTrigger =
+      new Trigger(
+          () -> {
+            return AutoAim.isInToleranceCoral(drivetrain.getState().Pose);
+          });
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the trigger bindings
-    configureBindings();
-    m_autoRoutines = new AutoRoutines(drivetrain.createAutoFactory(drivetrain::trajLogger), roller);
+    configureOperatorBinds();
+    m_autoRoutines =
+        new AutoRoutines(
+            drivetrain.createAutoFactory(drivetrain::trajLogger),
+            elevator,
+            arm,
+            endEffector,
+            drivetrain);
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
     configureSwerve();
+    configureLEDs();
     if (Utils.isSimulation()) {
       SimMechs.getInstance().publishToNT();
     }
@@ -108,81 +172,97 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is
-    // pressed,
-    // cancelling on release.
-    // m_driverController.b("Example
-    // method").whileTrue(m_exampleSubsystem.exampleMethodCommand());
+  // sets up LEDs & rumble
+  private void configureLEDs() {
+    leds._animate(IndicatorAnimation.Default);
+    //    leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default).ignoringDisable(true));
+    superstructure
+        .coralBeamBreak()
+        .whileTrue(leds.animate(IndicatorAnimation.CoralIntaken).ignoringDisable(true));
+    autoAlignTrigger.whileTrue(
+        Commands.run(
+                () -> {
+                  m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 1);
+                })
+            .finallyDo(
+                () -> {
+                  m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
+                }));
+    autoAlignTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned));
+    // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
+
+  }
+
+  private void configureOperatorBinds() {
 
     m_operatorController
-        .rightBumper("s")
-        .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
-    // m_operatorController.a("ds").onTrue(roller.setRollerVoltage(6));
-    // m_operatorController.b("dsa").onTrue(roller.setRollerVoltage(-6));
-    // m_operatorController.y("off").onTrue(roller.off());
-    // m_operatorController
-    //     .rightBumper("s")
-    //     .onTrue(Commands.runOnce(() -> drivetrain.resetPose(new Pose2d())));
+        .x("Preset for source")
+        .onTrue(superstructure.setState(StructureState.PRESOURCE));
+    m_operatorController
+        .b("Home everything")
+        .onTrue(superstructure.setState(StructureState.PREHOME));
+    m_operatorController.a("Dealgae L2").onTrue(superstructure.setState(StructureState.DEALGAE_L2));
+    m_operatorController.y("Dealgae L3").onTrue(superstructure.setState(StructureState.DEALGAE_L3));
+
+    m_operatorController.povUp("L4 Preset").onTrue(superstructure.setState(StructureState.L4));
+    m_operatorController.povRight("L3 Preset").onTrue(superstructure.setState(StructureState.L3));
+    m_operatorController.povDown("L2 Preset").onTrue(superstructure.setState(StructureState.L2));
+    m_operatorController
+        .povLeft("Ground Algae")
+        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
+    m_operatorController
+        .rightBumper("Manipulator Side Right")
+        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
+    m_operatorController
+        .leftBumper("Manipulator Side Left")
+        .onTrue(superstructure.setManipulatorSide(ManipulatorSide.LEFT));
+
+    m_operatorController
+        .rightTrigger("Score Coral")
+        .onTrue(superstructure.setState(StructureState.SCORE_CORAL));
+    m_operatorController
+        .leftTrigger("Score Algae")
+        .onTrue(superstructure.setState(StructureState.SCORE_ALGAE));
+
+    new Trigger(() -> -m_operatorController.getLeftY() > .5)
+        .onTrue(superstructure.setState(StructureState.BARGE));
+    new Trigger(() -> -m_operatorController.getLeftY() < -.5)
+        .onTrue(superstructure.setState(StructureState.PROCESSOR));
+
+    new Trigger(() -> m_operatorController.getLeftX() > .5)
+        .onTrue(superstructure.setState(StructureState.CLIMB));
+
+    new Trigger(() -> m_operatorController.getRightX() > .5)
+        .onTrue(climb.setVoltage(ClimbConstants.kUpVoltage))
+        .or(new Trigger(() -> m_operatorController.getRightX() < -.5))
+        .onFalse(climb.setVoltage(0));
+    new Trigger(() -> m_operatorController.getRightX() < -.5)
+        .onTrue(climb.setVoltage(ClimbConstants.kDownVoltage));
+
+    new Trigger(() -> -m_operatorController.getRightY() > .5)
+        .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() + .1)))
+        .toggleOnFalse(elevator.setPosition(elevator::getPosition));
+    new Trigger(() -> -m_operatorController.getRightY() < -.5)
+        .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() - .1)))
+        .toggleOnFalse(elevator.setPosition(elevator::getPosition));
   }
 
   private void configureChoreoAutoChooser() {
 
     // Add options to the chooser
-    autoChooser.addRoutine("ion know", m_autoRoutines::simplePathAuto);
-    autoChooser.addCmd(
-        "Wheel Radius Change",
-        () ->
-            drivetrain.wheelRadiusCharacterization(
-                SwerveConstants.wheelRadiusMaxVelocity, SwerveConstants.wheelRadiusMaxRampRate));
-    autoChooser.addCmd(
-        "SysID forward translation dynamic",
-        () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID backward translation dynamic",
-        () -> drivetrain.sysIdTranslationDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd(
-        "SysID forward translation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID forward translation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kReverse));
-
-    autoChooser.addCmd(
-        "SysID forward rotation dynamic",
-        () -> drivetrain.sysIdRotationDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID backward rotation dynamic",
-        () -> drivetrain.sysIdRotationDynamic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd(
-        "SysID forward rotation quasitastic",
-        () -> drivetrain.sysIdTranslationQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addCmd(
-        "SysID forward rotation quasitastic",
-        () -> drivetrain.sysIdRotationQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addCmd("Start Signal Logger", () -> Commands.runOnce(SignalLogger::start));
-    autoChooser.addCmd("End Signal Logger", () -> Commands.runOnce(SignalLogger::stop));
-    //    SmartDashboard.updateValues();
-    // Put the auto chooser on the dashboard
-    NodeManager nodeManager =
-        new NodeManager(drivetrain, roller, drivetrain.createAutoFactory(drivetrain::trajLogger));
-    ArrayList<Node> nodes = new ArrayList<>();
-    nodes.add(new Node(NodeType.PRELOAD, IntakeLocations.Mid, ScoringLocations.H, ScoringTypes.L1));
-    nodes.add(
-        new Node(
-            NodeType.SCORE_AND_INTAKE,
-            IntakeLocations.Source2,
-            ScoringLocations.A,
-            ScoringTypes.L1));
-    nodes.add(new Node(NodeType.WAIT, Seconds.of(5)));
-    nodes.add(
-        new Node(
-            NodeType.SCORE_AND_INTAKE,
-            IntakeLocations.Source2,
-            ScoringLocations.B,
-            ScoringTypes.L1));
-    autoChooser.addRoutine("test", () -> nodeManager.createAuto(nodes));
+    autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
+    autoChooser.addRoutine("l4CenterPreload_H", m_autoRoutines::l4PreloadH);
+    autoChooser.addRoutine("l4CenterPreload_G", m_autoRoutines::l4PreloadG);
+    autoChooser.addRoutine("mobilityTop", m_autoRoutines::mobilityTop);
+    autoChooser.addRoutine("mobilityBottom", m_autoRoutines::mobilityBottom);
+    autoChooser.addRoutine(
+        "l4CenterPreloadRightSource1", m_autoRoutines::l4CenterPreloadRightSource1);
+    autoChooser.addRoutine(
+        "l4CenterPreloadRightSource2", m_autoRoutines::l4CenterPreloadRightSource2);
+    autoChooser.addRoutine(
+        "l4RightPreloadRightSource2", m_autoRoutines::l4RightPreloadRightSource2);
+    autoChooser.addRoutine("dealgae2LeftPreloadL4_H", m_autoRoutines::dealgae2LeftPreloadL4H);
 
     SmartDashboard.putData("auto chooser", autoChooser);
 
@@ -195,7 +275,7 @@ public class RobotContainer {
     final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
     final double MaxAngularRate = 1.5 * Math.PI;
     final double SlowMaxSpeed = MaxSpeed * 0.3;
-    final double SlowMaxAngular = MaxAngularRate * 0.3;
+    final double SlowMaxAngular = MaxAngularRate * 0.4;
 
     SwerveRequest.FieldCentric drive =
         new SwerveRequest.FieldCentric()
@@ -204,11 +284,13 @@ public class RobotContainer {
 
     SwerveRequest.ApplyRobotSpeeds driveAlt = new SwerveRequest.ApplyRobotSpeeds();
 
+    SwerveRequest.PointWheelsAt lockHoriz = new SwerveRequest.PointWheelsAt();
+
     SwerveRequest.FieldCentricFacingAngle azimuth =
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
     azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
-    azimuth.HeadingController.setPID(6, 250, 2);
+    azimuth.HeadingController.setPID(6, 0, 0);
 
     if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
       drivetrain.setDefaultCommand(
@@ -217,10 +299,14 @@ public class RobotContainer {
                   drive
                       .withVelocityX(
                           swerveVelXRateLimiter.calculate(
-                              m_driverController.getLeftY() * MaxSpeed)) // Drive -y is forward
+                              -m_driverController.getLeftY() * MaxSpeed)) // Drive
+                      // -y
+                      // is
+                      // forward
                       .withVelocityY(
-                          swerveVelYRateLimiter.calculate(m_driverController.getLeftX() * MaxSpeed))
-                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
+                          swerveVelYRateLimiter.calculate(
+                              -m_driverController.getLeftX() * MaxSpeed))
+                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
 
     } else {
       drivetrain.setDefaultCommand(
@@ -228,12 +314,17 @@ public class RobotContainer {
           drivetrain.applyRequest(
               () ->
                   drive
-                      .withVelocityX(
-                          -m_driverController.getLeftY()
-                              * MaxSpeed) // Drive forward with negative Y (forward)
+                      .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive
+                      // forward
+                      // with
+                      // negative
+                      // Y
+                      // (forward)
                       .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                      .withRotationalRate(m_driverController.getTriggerAxes() * MaxAngularRate)));
+                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
+
+    // m_driverController.povUp().whileTrue(drivetrain.wheelRadiusCharacterization(1));
 
     m_driverController
         .leftBumper()
@@ -241,15 +332,24 @@ public class RobotContainer {
             drivetrain.applyRequest(
                 () ->
                     drive
-                        .withVelocityX(
-                            -m_driverController.getLeftY()
-                                * SlowMaxSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(
-                            -m_driverController.getLeftX()
-                                * SlowMaxSpeed) // Drive left with negative X (left)
+                        .withVelocityX(-m_driverController.getLeftY() * SlowMaxSpeed) // Drive
+                        // forward
+                        // with
+                        // negative
+                        // Y
+                        // (forward)
+                        .withVelocityY(-m_driverController.getLeftX() * SlowMaxSpeed) // Drive
+                        // left
+                        // with
+                        // negative
+                        // X
+                        // (left)
                         .withRotationalRate(
-                            m_driverController.getTriggerAxes()
-                                * SlowMaxAngular) // Drive counterclockwise with negative X
+                            -m_driverController.getTriggerAxes() * SlowMaxAngular) // Drive
+                // counterclockwise
+                // with
+                // negative
+                // X
                 // (left)
                 ));
 
@@ -263,7 +363,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceLeft1))
-                .withTimeout(aziTimeout));
+                .withTimeout(aziTimeout2));
 
     m_driverController
         .b()
@@ -275,10 +375,22 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceRight2))
-                .withTimeout(aziTimeout));
+                .withTimeout(aziTimeout2));
 
     m_driverController
-        .a()
+        .rightBumper()
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(barge))
+                .withTimeout(aziTimeout2));
+
+    m_driverController
+        .povUp()
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -287,22 +399,189 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(hang))
-                .withTimeout(aziTimeout));
+                .withTimeout(aziTimeout2));
 
-    new Trigger(
-            () -> (m_driverController.getRightY() > 0.15 || m_driverController.getRightX() > 0.15))
+    m_driverController
+        .povDown()
         .onTrue(
             drivetrain
                 .applyRequest(
                     () ->
                         azimuth
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withTargetDirection(getStickAngle(m_driverController)))
-                .withTimeout(3));
+                            .withTargetDirection(hangBack))
+                .withTimeout(aziTimeout2));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+    new Trigger(
+            () ->
+                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
+                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        < 1.523 + 0.0872665) // upper
+                    // bound
+                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        > 1.523 - 0.0872665)))) // lower
+        // bound
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(reefAB))
+                .withTimeout(aziTimeout));
+
+    new Trigger(
+            () ->
+                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
+                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        < 0.483 + 0.0872665)
+                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        > 0.483 - 0.0872665))))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(reefCD))
+                .withTimeout(aziTimeout));
+
+    new Trigger(
+            () ->
+                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
+                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        < -0.612 + 0.0872665)
+                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        > -0.612 - 0.0872665))))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(reefEF))
+                .withTimeout(aziTimeout));
+
+    new Trigger(
+            () ->
+                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
+                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        < -1.534 + 0.0872665)
+                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        > -1.534 - 0.0872665))))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(reefGH))
+                .withTimeout(aziTimeout));
+
+    new Trigger(
+            () ->
+                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
+                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        < -2.437 + 0.0872665)
+                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        > -2.437 - 0.0872665))))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(reefIJ))
+                .withTimeout(aziTimeout));
+
+    new Trigger(
+            () ->
+                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() > 0.1)
+                    && (Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        < 2.793 + 0.0872665)
+                    && ((Math.atan2(m_driverController.getRightY(), m_driverController.getRightX())
+                        > 2.793 - 0.0872665))))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(reefKL))
+                .withTimeout(aziTimeout));
+
+    // Auto Align Begin
+    // preferably a check to make sure we're not in ALGAE state....
+    m_driverController
+        .povLeft()
+        .whileTrue(
+            Commands.parallel(
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true)),
+                leds.animate(IndicatorAnimation.AutoAlignRunning)));
+
+    // Same as prev, except find the NOT lefthanded one.
+    m_driverController
+        .povRight()
+        .whileTrue( // Both run AutoAlign & check tolerance
+            Commands.parallel(
+                drivetrain.pidToPose(
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false)),
+                leds.animate(IndicatorAnimation.AutoAlignRunning)));
+    // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public void periodic() {
+    // Logger.recordOutput(
+    // "Stick Angle Radians",
+    // Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
+    // Logger.recordOutput(
+    // "AutoAim/Targets/Coral",
+    // Stream.of(CoralTargets.values())
+    // .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
+    // .toArray(Pose2d[]::new));
+    // // Log locations of all autoaim targets
+    // Logger.recordOutput(
+    // "AutoAim/Targets/Algae",
+    // Stream.of(AlgaeIntakeTargets.values())
+    // .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
+    // .toArray(Pose2d[]::new));
+    //
+    // Logger.recordOutput(
+    // "AutoAim/Targets/SourceIntakes",
+    // Stream.of(SourceIntakeTargets.values())
+    // .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
+    // .toArray(Pose2d[]::new));
+    //
+    // Logger.recordOutput(
+    // "AutoAim/CoralTarget",
+    // CoralTargets.getClosestTarget(drivetrain.getState().Pose));
+    // Logger.recordOutput(
+    // "AutoAim/LeftHandedCoralTarget",
+    // CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
+    // Logger.recordOutput(
+    // "AutoAim/RightHandedCoralTarget",
+    // CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
+    // Logger.recordOutput(
+    // "AutoAim/NameOfLHCoralTarget",
+    // CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose,
+    // true).name());
+    // Logger.recordOutput(
+    // "AutoAim/NameOfRHCoralTarget",
+    // CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose,
+    // false).name());
+    // Logger.recordOutput(
+    // "AutoAim/AlgaeIntakeTarget",
+    // AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+    superstructure.periodic();
   }
 }

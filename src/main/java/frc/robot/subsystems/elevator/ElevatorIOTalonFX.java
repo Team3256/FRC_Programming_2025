@@ -21,56 +21,53 @@ import frc.robot.utils.PhoenixUtil;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
-  private final TalonFX motor;
+  private final TalonFX motor = new TalonFX(ElevatorConstants.kMotorID);
   private final PositionVoltage positionRequest = new PositionVoltage(0).withSlot(0);
   private final MotionMagicVoltage motionMagicRequest = new MotionMagicVoltage(0).withSlot(0);
   private final VoltageOut voltageReq = new VoltageOut(0);
 
-  private final StatusSignal<Voltage> motorVoltage;
-  private final StatusSignal<Angle> motorPosition;
-  private final StatusSignal<Current> motorStatorCurrent;
-  private final StatusSignal<Current> motorSupplyCurrent;
-  // private final StatusSignal<Double> motorTemperature;
-  private final StatusSignal<Double> motorReferenceSlope;
+  private final StatusSignal<Voltage> motorVoltage = motor.getMotorVoltage();
+  private final StatusSignal<Angle> motorPosition = motor.getPosition();
+  private final StatusSignal<Current> motorStatorCurrent = motor.getStatorCurrent();
+  private final StatusSignal<Current> motorSupplyCurrent = motor.getSupplyCurrent();
+
+  //  private final CANcoder encoderA = new CANcoder(ElevatorConstants.kEncoderAID);
+  //  private final CANcoder encoderB = new CANcoder(ElevatorConstants.kEncoderBID);
+  //
+  //  private final StatusSignal<Angle> encoderARawPosition = encoderA.getPosition();
+  //  private final StatusSignal<Angle> encoderAAbsolutePosition = encoderA.getAbsolutePosition();
+  //  private final StatusSignal<AngularVelocity> encoderAVelocity = encoderA.getVelocity();
+  //
+  //  private final StatusSignal<Angle> encoderBRawPosition = encoderB.getPosition();
+  //  private final StatusSignal<Angle> encoderBAbsolutePosition = encoderB.getAbsolutePosition();
+  //  private final StatusSignal<AngularVelocity> encoderBVelocity = encoderB.getVelocity();
 
   public ElevatorIOTalonFX() {
-    motor = new TalonFX(ElevatorConstants.kMotorID);
-    motorVoltage = motor.getMotorVoltage();
-    motorPosition = motor.getPosition();
-    motorStatorCurrent = motor.getStatorCurrent();
-    motorSupplyCurrent = motor.getSupplyCurrent();
-    // motorTemperature = motor.getDeviceTemp();
-    motorReferenceSlope = motor.getClosedLoopReferenceSlope();
-
     PhoenixUtil.applyMotorConfigs(
         motor, ElevatorConstants.kMotorConfig, ElevatorConstants.kFlashConfigRetries);
+
+    //    PhoenixUtil.applyCancoderConfig(
+    //        encoderA, ElevatorConstants.kEncoderAConfig, ElevatorConstants.kFlashConfigRetries);
+    //    PhoenixUtil.applyCancoderConfig(
+    //        encoderB, ElevatorConstants.kEncoderBConfig, ElevatorConstants.kFlashConfigRetries);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         ElevatorConstants.kStatusSignalUpdateFrequency,
         motorVoltage,
         motorPosition,
         motorStatorCurrent,
-        motorSupplyCurrent,
-        // motorTemperature,
-        motorReferenceSlope);
+        motorSupplyCurrent);
     motor.optimizeBusUtilization();
   }
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
     BaseStatusSignal.refreshAll(
-        motorVoltage,
-        motorPosition,
-        motorStatorCurrent,
-        motorSupplyCurrent,
-        // motorTemperature,
-        motorReferenceSlope);
+        motorVoltage, motorPosition, motorStatorCurrent, motorSupplyCurrent);
     inputs.motorVoltage = motorVoltage.getValueAsDouble();
     inputs.motorPosition = motorPosition.getValueAsDouble();
     inputs.motorStatorCurrent = motorStatorCurrent.getValueAsDouble();
     inputs.motorSupplyCurrent = motorSupplyCurrent.getValueAsDouble();
-    // inputs.motorTemperature = motorTemperature.getValueAsDouble();
-    inputs.motorReferenceSlope = motorReferenceSlope.getValueAsDouble();
   }
 
   @Override

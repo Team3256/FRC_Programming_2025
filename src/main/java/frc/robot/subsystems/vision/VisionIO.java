@@ -9,14 +9,13 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import java.util.List;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
   @AutoLog
   public static class VisionIOInputs {
     public boolean connected = false;
-    public TargetObservation latestTargetObservation =
-        new TargetObservation(new Rotation2d(), new Rotation2d());
     public PoseObservation[] poseObservations = new PoseObservation[0];
     public int[] tagIds = new int[0];
   }
@@ -31,7 +30,8 @@ public interface VisionIO {
       double ambiguity,
       int tagCount,
       double averageTagDistance,
-      PoseObservationType type) {}
+      PoseObservationType type,
+      List<Short> tagIds) {}
 
   public static enum PoseObservationType {
     MEGATAG_1,

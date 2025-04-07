@@ -46,32 +46,27 @@ public final class SimMechs {
   private final MechanismLigament2d armViz =
       elevatorViz.append(
           new MechanismLigament2d(
-              "Arm", ArmConstants.Sim.armLength.in(Meters), 0.0, 7, new Color8Bit(Color.kGreen)));
+              "Arm",
+              ArmConstants.Sim.armLength.in(Meters) / 4,
+              0.0,
+              7,
+              new Color8Bit(Color.kGreen)));
 
   private final MechanismLigament2d algaeEndEffectorViz =
       armViz.append(
           new MechanismLigament2d(
-              "Algae End Effector Flywheel", 0.35, 90, 2.5, new Color8Bit(Color.kRed)));
+              "Algae End Effector Flywheel", .1, 90, 2.5, new Color8Bit(Color.kRed)));
   private final MechanismLigament2d coralEndEffectorViz =
       armViz.append(
           new MechanismLigament2d(
-              "Coral End Effector Flywheel", .25, 0.0, 2.5, new Color8Bit(Color.kYellow)));
+              "Coral End Effector Flywheel", .1, 0.0, 2.5, new Color8Bit(Color.kYellow)));
 
   private final MechanismRoot2d climbRoot =
-      mech.getRoot(
-          "Climb",
-          Constants.SimulationConstants.kDrivebaseWidth.in(Meters) / 2,
-          ClimbConstants.sim.startingHeight.in(Meters));
+      mech.getRoot("Climb", Constants.SimulationConstants.kDrivebaseWidth.in(Meters) / 2, 1);
 
   private final MechanismLigament2d climbViz =
       climbRoot.append(
-          new MechanismLigament2d(
-              "Climb",
-              ClimbConstants.sim
-                  .startingHeight
-                  .plus(Inches.of(ClimbConstants.kClimbLength))
-                  .in(Meters),
-              180));
+          new MechanismLigament2d("Climb", ClimbConstants.sim.climbLength.in(Meters), 180));
   private static SimMechs instance = null;
 
   private SimMechs() {}
@@ -88,7 +83,7 @@ public final class SimMechs {
   }
 
   public void updateElevator(Distance height) {
-    elevatorViz.setLength(height.in(Meters));
+    elevatorViz.setLength(height.in(Meters) / 4);
   }
 
   public void updateClimb(Angle angle) {

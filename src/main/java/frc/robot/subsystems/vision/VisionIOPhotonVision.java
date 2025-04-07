@@ -10,7 +10,6 @@ package frc.robot.subsystems.vision;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,7 +26,7 @@ public class VisionIOPhotonVision implements VisionIO {
    * Creates a new VisionIOPhotonVision.
    *
    * @param name The configured name of the camera.
-   * @param rotationSupplier The 3D position of the camera relative to the robot.
+   * @param robotToCamera The 3D position of the camera relative to the robot.
    */
   public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
     camera = new PhotonCamera(name);
@@ -43,14 +42,6 @@ public class VisionIOPhotonVision implements VisionIO {
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : camera.getAllUnreadResults()) {
       // Update latest target observation
-      if (result.hasTargets()) {
-        inputs.latestTargetObservation =
-            new TargetObservation(
-                Rotation2d.fromDegrees(result.getBestTarget().getYaw()),
-                Rotation2d.fromDegrees(result.getBestTarget().getPitch()));
-      } else {
-        inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
-      }
 
       // Add pose observation
       if (result.multitagResult.isPresent()) { // Multitag result
@@ -78,7 +69,8 @@ public class VisionIOPhotonVision implements VisionIO {
                 multitagResult.estimatedPose.ambiguity, // Ambiguity
                 multitagResult.fiducialIDsUsed.size(), // Tag count
                 totalTagDistance / result.targets.size(), // Average tag distance
-                PoseObservationType.PHOTONVISION)); // Observation type
+                PoseObservationType.PHOTONVISION,
+                multitagResult.fiducialIDsUsed)); // Observation type
 
       } else if (!result.targets.isEmpty()) { // Single tag result
         var target = result.targets.get(0);
@@ -104,7 +96,8 @@ public class VisionIOPhotonVision implements VisionIO {
                   target.poseAmbiguity, // Ambiguity
                   1, // Tag count
                   cameraToTarget.getTranslation().getNorm(), // Average tag distance
-                  PoseObservationType.PHOTONVISION)); // Observation type
+                  PoseObservationType.PHOTONVISION,
+                  List.of((short) target.fiducialId))); // Observation type
         }
       }
     }
