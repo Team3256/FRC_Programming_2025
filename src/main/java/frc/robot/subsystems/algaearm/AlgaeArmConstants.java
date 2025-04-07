@@ -35,7 +35,7 @@ public final class AlgaeArmConstants {
           .withSlot0(
               new Slot0Configs()
                   .withKS(.2)
-                  .withKV(1.6065)
+                  .withKV(1.28428729983)
                   .withKP(100)
                   .withKI(0)
                   .withKD(4)
