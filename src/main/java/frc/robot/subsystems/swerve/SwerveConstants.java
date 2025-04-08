@@ -29,7 +29,8 @@ public final class SwerveConstants {
   public static final Rotation2d processorFar = new Rotation2d(Math.PI);
 
   // barge - add overshoot after testing
-  public static final Rotation2d barge = new Rotation2d((Math.PI / 2) + 0);
+  public static final Rotation2d bargeClose = new Rotation2d((Math.PI / 2) + 0);
+  public static final Rotation2d bargeFar = new Rotation2d(((Math.PI / 2) + Math.PI));
 
   // angle backups
   public static final Rotation2d reefAB = Rotation2d.fromDegrees(90 - 5);

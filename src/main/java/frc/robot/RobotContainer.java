@@ -389,17 +389,18 @@ public class RobotContainer {
                             .withTargetDirection(sourceRight2))
                 .withTimeout(aziTimeout2));
 
-    m_driverController
-        .rightBumper()
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(barge))
-                .withTimeout(aziTimeout2));
+//
+//    m_driverController
+//        .rightBumper()
+//        .onTrue(
+//            drivetrain
+//                .applyRequest(
+//                    () ->
+//                        azimuth
+//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+//                            .withTargetDirection(barge))
+//                .withTimeout(aziTimeout2));
 
     m_driverController
         .povUp()
@@ -410,7 +411,7 @@ public class RobotContainer {
                         azimuth
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(processorClose))
+                            .withTargetDirection(processorClose)) // doubles as climb facing cage
                 .withTimeout(aziTimeout2));
 
     m_driverController
@@ -421,7 +422,28 @@ public class RobotContainer {
                     () ->
                         azimuth
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(processorFar))
+                            .withTargetDirection(
+                                processorFar)) // double as climb from opposite side facing DS
+                .withTimeout(aziTimeout2));
+
+    new Trigger(() -> (m_driverController.getRightY() > 0.3))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(bargeClose))
+                .withTimeout(aziTimeout2));
+
+    new Trigger(() -> (m_driverController.getRightY() > 0.3))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(bargeFar))
                 .withTimeout(aziTimeout2));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
