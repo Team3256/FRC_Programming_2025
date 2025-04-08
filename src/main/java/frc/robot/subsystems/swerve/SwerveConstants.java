@@ -24,12 +24,12 @@ public final class SwerveConstants {
   // source 2, 5 degree overshoot
   public static final Rotation2d sourceRight2 = new Rotation2d(2.527);
 
-  // climb
-  public static final Rotation2d hang = new Rotation2d(0);
-  public static final Rotation2d hangBack = new Rotation2d(Math.PI);
+  // climb and processor - close preset doubles as climb target facing cage
+  public static final Rotation2d processorClose = new Rotation2d(0);
+  public static final Rotation2d processorFar = new Rotation2d(Math.PI);
 
-  // barge
-  public static final Rotation2d barge = new Rotation2d(Math.PI / 2);
+  // barge - add overshoot after testing
+  public static final Rotation2d barge = new Rotation2d((Math.PI / 2) + 0);
 
   // angle backups
   public static final Rotation2d reefAB = Rotation2d.fromDegrees(90 - 5);
