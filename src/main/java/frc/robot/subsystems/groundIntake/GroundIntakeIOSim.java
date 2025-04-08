@@ -1,3 +1,10 @@
+// Copyright (c) 2025 FRC 3256
+// https://github.com/Team3256
+//
+// Use of this source code is governed by a 
+// license that can be found in the LICENSE file at
+// the root directory of this project.
+
 package frc.robot.subsystems.groundIntake;
 
 import static edu.wpi.first.units.Units.*;
@@ -25,8 +32,8 @@ public class GroundIntakeIOSim extends GroundIntakeIOTalonFX {
           GroundIntakeConstants.Sim.minAngle.getRadians(),
           GroundIntakeConstants.Sim.maxAngle.getRadians(),
           true,
-          GroundIntakeConstants.Sim.startingAngle.getRadians()); //Change this model later to be Ground Intake
-
+          GroundIntakeConstants.Sim.startingAngle
+              .getRadians()); // Change this model later to be Ground Intake
 
   private TalonFXSimState groundIntakeSimState;
   private CANcoderSimState cancoderSimState;
@@ -47,9 +54,11 @@ public class GroundIntakeIOSim extends GroundIntakeIOTalonFX {
     groundIntakeSimModel.setInputVoltage(groundIntakeSimState.getMotorVoltage());
     groundIntakeSimModel.update(LoggedRobot.defaultPeriodSecs);
     groundIntakeSimState.setRawRotorPosition(
-        Units.radiansToRotations(groundIntakeSimModel.getAngleRads()) * GroundIntakeConstants.Sim.simGearing);
-        groundIntakeSimState.setRotorVelocity(
-        Units.radiansToRotations(groundIntakeSimModel.getVelocityRadPerSec()) * GroundIntakeConstants.Sim.simGearing);
+        Units.radiansToRotations(groundIntakeSimModel.getAngleRads())
+            * GroundIntakeConstants.Sim.simGearing);
+    groundIntakeSimState.setRotorVelocity(
+        Units.radiansToRotations(groundIntakeSimModel.getVelocityRadPerSec())
+            * GroundIntakeConstants.Sim.simGearing);
     RoboRioSim.setVInVoltage(
         BatterySim.calculateDefaultBatteryLoadedVoltage(groundIntakeSimModel.getCurrentDrawAmps()));
 

@@ -1,6 +1,11 @@
-package frc.robot.subsystems.groundIntake;
+// Copyright (c) 2025 FRC 3256
+// https://github.com/Team3256
+//
+// Use of this source code is governed by a 
+// license that can be found in the LICENSE file at
+// the root directory of this project.
 
-import static edu.wpi.first.units.Units.*;
+package frc.robot.subsystems.groundIntake;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -12,7 +17,6 @@ import edu.wpi.first.units.measure.Mass;
 
 public final class GroundIntakeConstants {
 
-    
   public static final int kMotorID = 38;
   public static final TalonFXConfiguration kMotorConfig = new TalonFXConfiguration();
   public static final int groundIntakeMotorEncoderId = 39;
@@ -75,5 +79,4 @@ public final class GroundIntakeConstants {
     public static final Rotation2d maxAngle = Rotation2d.fromDegrees(270);
     public static final Rotation2d startingAngle = Rotation2d.fromDegrees(0);
   }
-
 }
