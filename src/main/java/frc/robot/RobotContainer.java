@@ -438,7 +438,7 @@ public class RobotContainer {
                             .withTargetDirection(bargeClose))
                 .withTimeout(aziTimeout2));
 
-    new Trigger(() -> (m_driverController.getRightY() > 0.3))
+    new Trigger(() -> (m_driverController.getRightY() < -0.3))
         .onTrue(
             drivetrain
                 .applyRequest(
