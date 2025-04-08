@@ -278,6 +278,30 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             });
   }
 
+  public Command pidXLocked(
+      Supplier<Double> targetX,
+      Supplier<Double> yVelocitySupplier,
+      Supplier<Double> headingVelSupplier) {
+    if (targetX == null) {
+      System.out.println("**** pidToPose disabled because of null target");
+      return Commands.none();
+    }
+    xController.setTolerance(.1);
+    return run(() -> {
+          Logger.recordOutput("AutoAlign/Running", true);
+          this.setControl(
+              m_pathApplyFieldSpeeds.withSpeeds(
+                  new ChassisSpeeds(
+                      xController.calculate(this.getState().Pose.getX(), targetX.get()),
+                      yVelocitySupplier.get(),
+                      headingVelSupplier.get())));
+        })
+        .finallyDo(
+            () -> {
+              Logger.recordOutput("AutoAlign/Running", false);
+            });
+  }
+
   /**
    * Creates a new auto factory for this drivetrain.
    *
@@ -423,25 +447,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Logger.recordOutput("QuestNav/pose", questNav.getRobotPose());
       Logger.recordOutput("QuestNav/x", questNav.calculateOffsetToRobotCenter().getX());
       Logger.recordOutput("QuestNav/y", questNav.calculateOffsetToRobotCenter().getY());
-      //      if (!DriverStation.isDisabled()) {
-      //        super.addVisionMeasurement(
-      //            questNav.getRobotPose().toPose2d(),
-      //            Utils.getCurrentTimeSeconds(),
-      //            VecBuilder.fill(0.0001, 0.0001, .99999));
-      //      }
+      // if (!DriverStation.isDisabled()) {
+      // super.addVisionMeasurement(
+      // questNav.getRobotPose().toPose2d(),
+      // Utils.getCurrentTimeSeconds(),
+      // VecBuilder.fill(0.0001, 0.0001, .99999));
+      // }
 
     } else {
       a_questNavNotConnected.set(true);
     }
     Logger.recordOutput("QuestNav/connected", questNav.connected());
 
-    //            if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
-    //              if
-    //         (this.getState().Pose.getTranslation().getDistance(Pose2d.kZero.getTranslation()) >1)
+    // if ((!questNavZeroed || DriverStation.isDisabled())&&questNav.connected()) {
+    // if
+    // (this.getState().Pose.getTranslation().getDistance(Pose2d.kZero.getTranslation())
+    // >1)
     // {
-    //                questNav.softReset(new Pose3d(this.getState().Pose));
-    ////                questNavZeroed = true;
-    //              }}
+    // questNav.softReset(new Pose3d(this.getState().Pose));
+    //// questNavZeroed = true;
+    // }}
     LoggedTracer.record(this.getClass().getSimpleName());
   }
 
@@ -449,12 +474,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    //    if (!questNav.connected()) {
-    //    if (DriverStation.isDisabled() || !questNav.connected()) {
+    // if (!questNav.connected()) {
+    // if (DriverStation.isDisabled() || !questNav.connected()) {
     this.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-    //    }
+    // }
 
-    //    }
+    // }
   }
 
   /**

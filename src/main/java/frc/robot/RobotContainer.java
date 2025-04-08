@@ -176,7 +176,7 @@ public class RobotContainer {
   // sets up LEDs & rumble
   private void configureLEDs() {
     leds._animate(IndicatorAnimation.Default);
-    //    leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default).ignoringDisable(true));
+    // leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default).ignoringDisable(true));
     superstructure
         .coralBeamBreak()
         .whileTrue(leds.animate(IndicatorAnimation.CoralIntaken).ignoringDisable(true));
@@ -325,7 +325,19 @@ public class RobotContainer {
     }
 
     // m_driverController.povUp().whileTrue(drivetrain.wheelRadiusCharacterization(1));
-
+    m_driverController
+        .a()
+        .whileTrue(
+            drivetrain.pidXLocked(
+                () -> {
+                  return 7.75;
+                },
+                () -> {
+                  return -m_driverController.getLeftX() * MaxSpeed;
+                },
+                () -> {
+                  return -m_driverController.getTriggerAxes() * MaxAngularRate;
+                }));
     m_driverController
         .leftBumper()
         .whileTrue(
@@ -415,127 +427,127 @@ public class RobotContainer {
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     //
-    //    new Trigger(
-    //            () ->
-    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // new Trigger(
+    // () ->
+    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
     // 0.1)
-    //                    && (Math.atan2(m_driverController.getRightY(),
+    // && (Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        < 1.523 + 0.0872665) // upper
-    //                    // bound
-    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // < 1.523 + 0.0872665) // upper
+    // // bound
+    // && ((Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        > 1.523 - 0.0872665)))) // lower
-    //        // bound
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withTargetDirection(reefAB))
-    //                .withTimeout(aziTimeout));
+    // > 1.523 - 0.0872665)))) // lower
+    // // bound
+    // .onTrue(
+    // drivetrain
+    // .applyRequest(
+    // () ->
+    // azimuth
+    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    // .withTargetDirection(reefAB))
+    // .withTimeout(aziTimeout));
     //
-    //    new Trigger(
-    //            () ->
-    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // new Trigger(
+    // () ->
+    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
     // 0.1)
-    //                    && (Math.atan2(m_driverController.getRightY(),
+    // && (Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        < 0.483 + 0.0872665)
-    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // < 0.483 + 0.0872665)
+    // && ((Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        > 0.483 - 0.0872665))))
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withTargetDirection(reefCD))
-    //                .withTimeout(aziTimeout));
+    // > 0.483 - 0.0872665))))
+    // .onTrue(
+    // drivetrain
+    // .applyRequest(
+    // () ->
+    // azimuth
+    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    // .withTargetDirection(reefCD))
+    // .withTimeout(aziTimeout));
     //
-    //    new Trigger(
-    //            () ->
-    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // new Trigger(
+    // () ->
+    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
     // 0.1)
-    //                    && (Math.atan2(m_driverController.getRightY(),
+    // && (Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        < -0.612 + 0.0872665)
-    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // < -0.612 + 0.0872665)
+    // && ((Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        > -0.612 - 0.0872665))))
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withTargetDirection(reefEF))
-    //                .withTimeout(aziTimeout));
+    // > -0.612 - 0.0872665))))
+    // .onTrue(
+    // drivetrain
+    // .applyRequest(
+    // () ->
+    // azimuth
+    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    // .withTargetDirection(reefEF))
+    // .withTimeout(aziTimeout));
     //
-    //    new Trigger(
-    //            () ->
-    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // new Trigger(
+    // () ->
+    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
     // 0.1)
-    //                    && (Math.atan2(m_driverController.getRightY(),
+    // && (Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        < -1.534 + 0.0872665)
-    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // < -1.534 + 0.0872665)
+    // && ((Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        > -1.534 - 0.0872665))))
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withTargetDirection(reefGH))
-    //                .withTimeout(aziTimeout));
+    // > -1.534 - 0.0872665))))
+    // .onTrue(
+    // drivetrain
+    // .applyRequest(
+    // () ->
+    // azimuth
+    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    // .withTargetDirection(reefGH))
+    // .withTimeout(aziTimeout));
     //
-    //    new Trigger(
-    //            () ->
-    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // new Trigger(
+    // () ->
+    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
     // 0.1)
-    //                    && (Math.atan2(m_driverController.getRightY(),
+    // && (Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        < -2.437 + 0.0872665)
-    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // < -2.437 + 0.0872665)
+    // && ((Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        > -2.437 - 0.0872665))))
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withTargetDirection(reefIJ))
-    //                .withTimeout(aziTimeout));
+    // > -2.437 - 0.0872665))))
+    // .onTrue(
+    // drivetrain
+    // .applyRequest(
+    // () ->
+    // azimuth
+    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    // .withTargetDirection(reefIJ))
+    // .withTimeout(aziTimeout));
     //
-    //    new Trigger(
-    //            () ->
-    //                ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
+    // new Trigger(
+    // () ->
+    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
     // 0.1)
-    //                    && (Math.atan2(m_driverController.getRightY(),
+    // && (Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        < 2.793 + 0.0872665)
-    //                    && ((Math.atan2(m_driverController.getRightY(),
+    // < 2.793 + 0.0872665)
+    // && ((Math.atan2(m_driverController.getRightY(),
     // m_driverController.getRightX())
-    //                        > 2.793 - 0.0872665))))
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withTargetDirection(reefKL))
-    //                .withTimeout(aziTimeout));
+    // > 2.793 - 0.0872665))))
+    // .onTrue(
+    // drivetrain
+    // .applyRequest(
+    // () ->
+    // azimuth
+    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    // .withTargetDirection(reefKL))
+    // .withTimeout(aziTimeout));
     //
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
