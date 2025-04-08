@@ -325,19 +325,7 @@ public class RobotContainer {
     }
 
     // m_driverController.povUp().whileTrue(drivetrain.wheelRadiusCharacterization(1));
-    m_driverController
-        .a()
-        .whileTrue(
-            drivetrain.pidXLocked(
-                () -> {
-                  return 7.75;
-                },
-                () -> {
-                  return -m_driverController.getLeftX() * MaxSpeed;
-                },
-                () -> {
-                  return -m_driverController.getTriggerAxes() * MaxAngularRate;
-                }));
+
     m_driverController
         .leftBumper()
         .whileTrue(
@@ -389,18 +377,18 @@ public class RobotContainer {
                             .withTargetDirection(sourceRight2))
                 .withTimeout(aziTimeout2));
 
-//
-//    m_driverController
-//        .rightBumper()
-//        .onTrue(
-//            drivetrain
-//                .applyRequest(
-//                    () ->
-//                        azimuth
-//                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-//                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-//                            .withTargetDirection(barge))
-//                .withTimeout(aziTimeout2));
+    //
+    //    m_driverController
+    //        .rightBumper()
+    //        .onTrue(
+    //            drivetrain
+    //                .applyRequest(
+    //                    () ->
+    //                        azimuth
+    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+    //                            .withTargetDirection(barge))
+    //                .withTimeout(aziTimeout2));
 
     m_driverController
         .povUp()
@@ -425,6 +413,20 @@ public class RobotContainer {
                             .withTargetDirection(
                                 processorFar)) // double as climb from opposite side facing DS
                 .withTimeout(aziTimeout2));
+
+    m_driverController
+        .a()
+        .whileTrue(
+            drivetrain.pidXLocked(
+                () -> {
+                  return 7.75;
+                },
+                () -> {
+                  return -m_driverController.getLeftX() * MaxSpeed;
+                },
+                () -> {
+                  return -m_driverController.getTriggerAxes() * MaxAngularRate;
+                }));
 
     new Trigger(() -> (m_driverController.getRightY() > 0.3))
         .onTrue(
