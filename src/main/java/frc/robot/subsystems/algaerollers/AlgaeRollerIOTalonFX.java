@@ -45,10 +45,10 @@ public class AlgaeRollerIOTalonFX implements AlgaeRollerIO {
   public void updateInputs(AlgaeRollerIOInputs inputs) {
     BaseStatusSignal.refreshAll(
         algaeMotorVoltage, algaeMotorVelocity, algaeMotorStatorCurrent, algaeMotorSupplyCurrent);
-    inputs.algaeMotorVoltage = algaeMotorVoltage.getValue();
-    inputs.algaeMotorVelocity = algaeMotorVelocity.getValue();
-    inputs.algaeMotorStatorCurrent = algaeMotorStatorCurrent.getValue();
-    inputs.algaeMotorSupplyCurrent = algaeMotorSupplyCurrent.getValue();
+    inputs.algaeMotorVoltage = algaeMotorVoltage.getValueAsDouble();
+    inputs.algaeMotorVelocity = algaeMotorVelocity.getValueAsDouble();
+    inputs.algaeMotorStatorCurrent = algaeMotorStatorCurrent.getValueAsDouble();
+    inputs.algaeMotorSupplyCurrent = algaeMotorSupplyCurrent.getValueAsDouble();
   }
 
   @Override

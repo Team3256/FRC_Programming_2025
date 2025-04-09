@@ -93,14 +93,14 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         coralMotorSupplyCurrent,
         coralBeamBreak,
         algaeBeamBreak);
-    inputs.algaeMotorVoltage = algaeMotorVoltage.getValue();
-    inputs.algaeMotorVelocity = algaeMotorVelocity.getValue();
-    inputs.algaeMotorStatorCurrent = algaeMotorStatorCurrent.getValue();
-    inputs.algaeMotorSupplyCurrent = algaeMotorSupplyCurrent.getValue();
-    inputs.coralMotorVoltage = coralMotorVoltage.getValue();
-    inputs.coralMotorVelocity = coralMotorVelocity.getValue();
-    inputs.coralMotorStatorCurrent = coralMotorStatorCurrent.getValue();
-    inputs.coralMotorSupplyCurrent = coralMotorSupplyCurrent.getValue();
+    inputs.algaeMotorVoltage = algaeMotorVoltage.getValueAsDouble();
+    inputs.algaeMotorVelocity = algaeMotorVelocity.getValueAsDouble();
+    inputs.algaeMotorStatorCurrent = algaeMotorStatorCurrent.getValueAsDouble();
+    inputs.algaeMotorSupplyCurrent = algaeMotorSupplyCurrent.getValueAsDouble();
+    inputs.coralMotorVoltage = coralMotorVoltage.getValueAsDouble();
+    inputs.coralMotorVelocity = coralMotorVelocity.getValueAsDouble();
+    inputs.coralMotorStatorCurrent = coralMotorStatorCurrent.getValueAsDouble();
+    inputs.coralMotorSupplyCurrent = coralMotorSupplyCurrent.getValueAsDouble();
 
     inputs.coralBeamBreak = coralBeamBreak.getValue();
     inputs.algaeBeamBreak = algaeBeamBreak.getValue();

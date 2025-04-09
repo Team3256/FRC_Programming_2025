@@ -11,11 +11,8 @@ import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.arm.AlgaeArmIO;
-import frc.robot.subsystems.arm.AlgaeArmIOInputsAutoLogged;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.LoggedTracer;
 import frc.robot.utils.Util;
@@ -38,15 +35,12 @@ public class AlgaeArm extends DisableSubsystem {
 
     this.algaeArmIO = armIO;
     algaeArmIO.resetPosition(Rotations.of(.25));
-    //    armIO.resetPosition(Rotations.of(.25));
   }
 
   @Override
   public void periodic() {
     super.periodic();
-    //    Logger.recordOutput(
-    //        this.getClass().getSimpleName() + "/requestedPosition",
-    // requestedPosition.in(Rotations));
+    Logger.recordOutput("AlgaeArm" + "/requestedPosition", requestedPosition.in(Rotations));
     algaeArmIO.updateInputs(algaeArmIOInputsAutoLogged);
     Logger.processInputs("AlgaeArm", algaeArmIOInputsAutoLogged);
 
@@ -65,14 +59,14 @@ public class AlgaeArm extends DisableSubsystem {
     return setPosition(() -> position);
   }
 
-  public Command setVoltage(Voltage voltage) {
+  public Command setVoltage(double voltage) {
     return this.run(() -> algaeArmIO.setVoltage(voltage));
   }
 
   @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(
-        algaeArmIOInputsAutoLogged.armMotorPosition, requestedPosition.in(Rotations), 0.05);
+        algaeArmIOInputsAutoLogged.algaeArmMotorPosition, requestedPosition.in(Rotations), 0.05);
   }
 
   public Command toHome() {

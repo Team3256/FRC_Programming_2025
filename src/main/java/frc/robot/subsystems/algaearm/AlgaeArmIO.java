@@ -5,45 +5,30 @@
 // license that can be found in the LICENSE file at
 // the root directory of this project.
 
-package frc.robot.subsystems.arm;
+package frc.robot.subsystems.algaearm;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface AlgaeArmIO {
   @AutoLog
   public static class AlgaeArmIOInputs {
-    public double armMotorVoltage = 0.0;
-    public double armMotorVelocity = 0.0;
-    public double armMotorPosition = 0.0;
-    public double armMotorStatorCurrent = 0.0;
-    public double armMotorSupplyCurrent = 0.0;
-
-    public double armEncoderAbsolutePosition = 0.0;
-    public double armEncoderPosition = 0.0;
-    public double armEncoderVelocity = 0.0;
+    public double algaeArmMotorVoltage = 0.0;
+    public double algaeArmMotorVelocity = 0.0;
+    public double algaeArmMotorPosition = 0.0;
+    public double algaeArmMotorStatorCurrent = 0.0;
+    public double algaeArmMotorSupplyCurrent = 0.0;
   }
 
   public default void updateInputs(AlgaeArmIOInputs inputs) {}
 
-  public default void setPosition(Angle position, AngularVelocity velocity) {}
-
   public default void setPosition(Angle position) {}
 
-  public default void setPosition(double position) {}
-
-  public default void setVoltage(Voltage voltage) {}
+  public default void setVoltage(double voltage) {}
 
   public default TalonFX getMotor() {
     return new TalonFX(0);
-  }
-
-  public default CANcoder getEncoder() {
-    return new CANcoder(0);
   }
 
   public default void resetPosition(Angle angle) {}

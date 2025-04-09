@@ -12,22 +12,20 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Voltage;
 import org.littletonrobotics.junction.AutoLog;
 
 public interface EndEffectorIO {
   @AutoLog
   public static class EndEffectorIOInputs {
-    public Voltage algaeMotorVoltage = Volts.of(0);
-    public AngularVelocity algaeMotorVelocity = RotationsPerSecond.of(0);
-    public Current algaeMotorStatorCurrent = Amps.of(0);
-    public Current algaeMotorSupplyCurrent = Amps.of(0);
+    public double algaeMotorVoltage = 0;
+    public double algaeMotorVelocity = 0;
+    public double algaeMotorStatorCurrent = 0;
+    public double algaeMotorSupplyCurrent = 0;
 
-    public Voltage coralMotorVoltage = Volts.of(0);
-    public AngularVelocity coralMotorVelocity = RotationsPerSecond.of(0);
-    public Current coralMotorStatorCurrent = Amps.of(0);
-    public Current coralMotorSupplyCurrent = Amps.of(0);
+    public double coralMotorVoltage = 0;
+    public double coralMotorVelocity = 0;
+    public double coralMotorStatorCurrent = 0;
+    public double coralMotorSupplyCurrent = 0;
 
     public boolean coralBeamBreak = false;
     public boolean algaeBeamBreak = false;
