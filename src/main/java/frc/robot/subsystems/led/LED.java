@@ -10,7 +10,6 @@ package frc.robot.subsystems.led;
 import com.ctre.phoenix.led.CANdle;
 import com.ctre.phoenix.led.CANdleConfiguration;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LED extends SubsystemBase {
@@ -33,18 +32,39 @@ public class LED extends SubsystemBase {
     this.animate(IndicatorAnimation.Default);
   }
 
+  public Command setAligned() {
+    return this.runOnce(
+            () -> {
+              candle.setLEDs(0, 255, 0);
+            })
+        .andThen(this.run(() -> {}));
+  }
+
+  public Command setTranslationAligned() {
+    return this.runOnce(
+            () -> {
+              candle.setLEDs(0, 0, 255);
+            })
+        .andThen(this.run(() -> {}));
+  }
+
+  public Command setNotAligned() {
+    return this.runOnce(
+            () -> {
+              candle.setLEDs(255, 0, 0);
+            })
+        .andThen(this.run(() -> {}));
+  }
+
   public void _animate(IndicatorAnimation animation) {
     candle.animate(animation.getAnimation(), 0);
   }
 
   public Command animate(IndicatorAnimation animation) {
-    System.out.println("LED Animation: " + animation);
-    return Commands.none();
-    //    return this.runOnce(
-    //            () -> {
-    //              this._animate(animation);
-    //            })
-    //        .andThen(
-    //            this.run(()->{}));
+    return this.runOnce(
+            () -> {
+              this._animate(animation);
+            })
+        .andThen(this.run(() -> {}));
   }
 }

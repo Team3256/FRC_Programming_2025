@@ -11,8 +11,11 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 
 import choreo.auto.AutoChooser;
+import choreo.util.ChoreoAllianceFlipUtil;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -56,6 +59,7 @@ import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
 import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
+import java.util.List;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -175,6 +179,63 @@ public class RobotContainer {
 
   // sets up LEDs & rumble
   private void configureLEDs() {
+    RobotModeTriggers.disabled()
+        .and(
+            () ->
+                drivetrain
+                        .getState()
+                        .Pose
+                        .getTranslation()
+                        .getDistance(getClosestAlignment().getTranslation())
+                    < .3)
+        .and(
+            () ->
+                !(drivetrain
+                        .getState()
+                        .Pose
+                        .getRotation()
+                        .minus(getClosestAlignment().getRotation())
+                        .getDegrees()
+                    < 10))
+        .whileTrue(leds.setTranslationAligned());
+    RobotModeTriggers.disabled()
+        .and(
+            () ->
+                drivetrain
+                        .getState()
+                        .Pose
+                        .getTranslation()
+                        .getDistance(getClosestAlignment().getTranslation())
+                    < .3)
+        .and(
+            () ->
+                (drivetrain
+                        .getState()
+                        .Pose
+                        .getRotation()
+                        .minus(getClosestAlignment().getRotation())
+                        .getDegrees()
+                    < 10))
+        .whileTrue(leds.setAligned());
+    RobotModeTriggers.disabled()
+        .and(
+            () ->
+                drivetrain
+                        .getState()
+                        .Pose
+                        .getTranslation()
+                        .getDistance(getClosestAlignment().getTranslation())
+                    > .3)
+        .and(
+            () ->
+                (drivetrain
+                        .getState()
+                        .Pose
+                        .getRotation()
+                        .minus(getClosestAlignment().getRotation())
+                        .getDegrees()
+                    > 10))
+        .whileTrue(leds.setNotAligned());
     leds._animate(IndicatorAnimation.Default);
     // leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default).ignoringDisable(true));
     superstructure
@@ -192,6 +253,21 @@ public class RobotContainer {
     autoAlignTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned));
     // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
 
+  }
+
+  private Pose2d getClosestAlignment() {
+    return drivetrain
+        .getState()
+        .Pose
+        .nearest(
+            List.of(
+                new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270)),
+                ChoreoAllianceFlipUtil.flip(
+                    new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270))),
+                new Pose2d(7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)),
+                ChoreoAllianceFlipUtil.flip(
+                    new Pose2d(
+                        7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)))));
   }
 
   private void configureOperatorBinds() {
