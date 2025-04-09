@@ -206,7 +206,10 @@ public class Superstructure {
         .onTrue(this.setState(StructureState.PREHOME));
     ;
 
-    stateTriggers.get(StructureState.SCORE_ALGAE).onTrue(endEffector.setAlgaeOuttakeVoltage());
+    stateTriggers
+        .get(StructureState.SCORE_ALGAE)
+        .onTrue(endEffector.setAlgaeOuttakeVoltage())
+        .onTrue(algaeRoller.setProcessorVoltage());
 
     // Turn coral motor off (helpful for transitioning from SCORE_CORAL), do not turn algae motor
     // off since you might be holding one

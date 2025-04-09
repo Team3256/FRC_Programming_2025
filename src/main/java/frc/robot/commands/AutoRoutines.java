@@ -88,7 +88,7 @@ public class AutoRoutines {
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () -> preloadH.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
-                .andThen(m_autoCommands.home()));
+                .andThen(m_autoCommands.home().asProxy()));
     //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     //    l4Preload
     //        .done()
@@ -124,7 +124,7 @@ public class AutoRoutines {
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () -> preloadG.getFinalPose().orElse(CoralTargets.BLUE_G.location)))
-                .andThen(m_autoCommands.home()));
+                .andThen(m_autoCommands.home().asProxy()));
     //    l4Preload.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     //    l4Preload
     //        .done()
@@ -293,6 +293,7 @@ public class AutoRoutines {
                 .andThen(
                     m_autoCommands
                         .goToSource()
+                        .asProxy()
                         .alongWith(Commands.waitSeconds(.5).andThen(FtoSource.spawnCmd()))));
 
     FtoSource.atTimeBeforeEnd(.5)
@@ -318,6 +319,7 @@ public class AutoRoutines {
                 .andThen(
                     m_autoCommands
                         .goToSource()
+                        .asProxy()
                         .alongWith(Commands.waitSeconds(.5).andThen(CToSource.spawnCmd()))));
 
     CToSource.atTimeBeforeEnd(.5)
@@ -340,7 +342,7 @@ public class AutoRoutines {
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () -> SourceToD.getFinalPose().orElse(CoralTargets.BLUE_D.location)))
-                .andThen(m_autoCommands.goToSource()));
+                .andThen(m_autoCommands.goToSource().asProxy()));
 
     return routine;
   }
@@ -451,7 +453,7 @@ public class AutoRoutines {
       return m_elevator
           .toReefLevel(3)
           .alongWith(
-              Commands.waitUntil(new Trigger(() -> m_elevator.getPosition() > 2.6))
+              Commands.waitUntil(new Trigger(() -> m_elevator.getPosition() > 3.5))
                   .withTimeout(.3)
                   .andThen(m_arm.toReefLevel(2, () -> true)));
     }
