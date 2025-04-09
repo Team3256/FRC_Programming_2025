@@ -47,8 +47,8 @@ public class EndEffectorIOSim extends EndEffectorIOTalonFX {
   private final SendableChooser<Boolean> s1Closed =
       new SendableChooser<>() {
         {
-          addOption("Coral Inside", true);
-          addOption("No Coral", false);
+          addOption("Algae Inside", true);
+          addOption("No Algae", false);
         }
       };
   private final SendableChooser<Boolean> s2Closed =
@@ -64,16 +64,15 @@ public class EndEffectorIOSim extends EndEffectorIOTalonFX {
     algaeMotorSim = super.getAlgaeMotor().getSimState();
     coralMotorSim = super.getCoralMotor().getSimState();
     candiSim = super.getCandi().getSimState();
-    SmartDashboard.putData("S1", s1Closed);
     s1Closed.onChange(this::updateCandiS1);
-    s1Closed.setDefaultOption("No Coral", false);
-    SmartDashboard.putData("S2", s2Closed);
+    s1Closed.setDefaultOption("No Algae", false);
+    SmartDashboard.putData("S1", s1Closed);
     s2Closed.onChange(this::updateCandiS2);
     s2Closed.setDefaultOption("No Coral", false);
+    SmartDashboard.putData("S2", s2Closed);
   }
 
   private void updateCandiS1(boolean beamBroken) {
-    System.out.println("Updating S1");
     candiSim.setS1State(beamBroken ? S1StateValue.Floating : S1StateValue.Low);
   }
 
