@@ -185,7 +185,7 @@ public class AutoRoutines {
             m_autoCommands
                 .goToSource()
                 .until(m_endEffector.coralBeamBreak)
-                .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
+                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
@@ -231,7 +231,7 @@ public class AutoRoutines {
                         () ->
                             HtoSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
-                .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
+                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
@@ -256,7 +256,7 @@ public class AutoRoutines {
                         () ->
                             CToSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
-                .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
+                .andThen(m_autoCommands.home().alongWith(SourceToD.spawnCmd())));
     SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
         .onTrue(
@@ -306,7 +306,7 @@ public class AutoRoutines {
                         () ->
                             FtoSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
-                .andThen(m_autoCommands.homeSource().alongWith(SourceToC.spawnCmd())));
+                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
     SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
@@ -332,7 +332,7 @@ public class AutoRoutines {
                         () ->
                             CToSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
-                .andThen(m_autoCommands.homeSource().alongWith(SourceToD.spawnCmd())));
+                .andThen(m_autoCommands.home().alongWith(SourceToD.spawnCmd())));
     SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
         .onTrue(
@@ -367,7 +367,7 @@ public class AutoRoutines {
                         () -> MidToGH.getFinalPose().orElse(CoralTargets.BLUE_G.location)))
                 .andThen(
                     m_autoCommands
-                        .home()
+                        .homeDealgae()
                         .asProxy()
                         .alongWith(Commands.waitSeconds(.5).andThen(GHToBarge3.spawnCmd()))));
     GHToBarge3.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToBarge());
@@ -401,7 +401,7 @@ public class AutoRoutines {
                         () -> Barge3ToIJ.getFinalPose().orElse(CoralTargets.BLUE_I.location)))
                 .andThen(
                     m_autoCommands
-                        .home()
+                        .homeDealgae()
                         .asProxy()
                         .alongWith(Commands.waitSeconds(.5).andThen(IJToBarge2.spawnCmd()))));
     IJToBarge2.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToBarge());
@@ -492,23 +492,14 @@ public class AutoRoutines {
     }
 
     public Command home() {
-      return m_elevator
-          .toArmSafePosition()
-          .alongWith(m_endEffector.coralOff())
-          .until(m_elevator.isSafeForArm)
-          .andThen(m_arm.toHome())
-          .until(m_arm.isSafePosition)
-          .andThen(m_elevator.toHome());
+      return m_elevator.toHome().alongWith(m_endEffector.coralOff()).alongWith(m_arm.toHome());
     }
 
-    public Command homeSource() {
-      return m_elevator
-          .toArmSafePosition()
-          .alongWith(m_endEffector.coralOff())
-          .until(m_elevator.isSafeForArm)
-          .andThen(m_arm.toHome(() -> false))
-          .until(m_arm.isSafePosition)
-          .andThen(m_elevator.toHome());
+    public Command homeDealgae() {
+      return m_arm
+          .toHome()
+          .alongWith(Commands.waitUntil(m_arm.isSafePosition).andThen(m_elevator.toHome()))
+          .alongWith(m_endEffector.coralOff());
     }
   }
 }

@@ -220,19 +220,6 @@ public class Superstructure {
 
     stateTriggers
         .get(StructureState.PREHOME)
-        .and(prevStateTriggers.get(StructureState.DEALGAE_L2))
-        .onTrue(arm.toHome())
-        .and(arm.isSafePosition)
-        .onTrue(this.setState(StructureState.HOME));
-    stateTriggers
-        .get(StructureState.PREHOME)
-        .and(prevStateTriggers.get(StructureState.DEALGAE_L3))
-        .onTrue(arm.toHome())
-        .and(arm.isSafePosition)
-        .onTrue(this.setState(StructureState.HOME));
-
-    stateTriggers
-        .get(StructureState.PREHOME)
         .and(prevStateTriggers.get(StructureState.SCORE_ALGAE))
         .onTrue(endEffector.algaeOff());
 
@@ -248,8 +235,6 @@ public class Superstructure {
     // assume that moving the arm towards home is safe and that you don't need to move the elevator.
     stateTriggers
         .get(StructureState.PREHOME)
-        .and(prevStateTriggers.get(StructureState.DEALGAE_L2).negate())
-        .and(prevStateTriggers.get(StructureState.DEALGAE_L3).negate())
         .and(prevStateTriggers.get(StructureState.SCORE_CORAL).negate())
         .onTrue(arm.toHome())
         .and(arm.isSafePosition)
@@ -272,9 +257,9 @@ public class Superstructure {
         .and(prevStateTriggers.get(StructureState.PREHOME))
         .onTrue(elevator.toHome())
         .onTrue(arm.toHome())
+        .onTrue(algaeRoller.off())
         .and(arm.reachedPosition)
         .onTrue(algaeArm.toHome())
-        .onTrue(algaeRoller.off())
         .and(algaeArm.reachedPosition)
         .and(elevator.reachedPosition)
         .onTrue(this.setState(StructureState.IDLE));
