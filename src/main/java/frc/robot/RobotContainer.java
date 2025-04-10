@@ -355,8 +355,7 @@ public class RobotContainer {
                         .withVelocityX(-m_driverController.getLeftY() * SlowMaxSpeed)
                         .withVelocityY(-m_driverController.getLeftX() * SlowMaxSpeed)
                         .withRotationalRate(
-                            -m_driverController.getTriggerAxes() * SlowMaxAngular)
-                ));
+                            -m_driverController.getTriggerAxes() * SlowMaxAngular)));
 
     m_driverController
         .x()
