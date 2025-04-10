@@ -160,10 +160,45 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_robotContainer.getLed().reset();
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    if (m_robotContainer
+            .getPose()
+            .getTranslation()
+            .getDistance(m_robotContainer.getClosestAlignment().getTranslation())
+        < .1) {
+      if (m_robotContainer
+              .getPose()
+              .getRotation()
+              .minus(m_robotContainer.getClosestAlignment().getRotation())
+              .getDegrees()
+          >= 5) {
+        m_robotContainer.getLed().setTranslationAligned();
+      } else {
+        m_robotContainer.getLed().setAligned();
+      }
+    } else {
+      if (!(m_robotContainer
+          .getPose()
+          .getMeasureX()
+          .isNear(m_robotContainer.getClosestAlignment().getMeasureX(), .07))) {
+        if (m_robotContainer
+            .getPose()
+            .getMeasureY()
+            .isNear(m_robotContainer.getClosestAlignment().getMeasureY(), .07)) {
+          m_robotContainer.getLed().setYAligned();
+        } else {
+          m_robotContainer.getLed().setNotAligned();
+        }
+      } else {
+        m_robotContainer.getLed().setXAligned();
+      }
+    }
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
