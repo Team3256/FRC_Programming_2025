@@ -488,11 +488,25 @@ public class RobotContainer {
                 .withTimeout(aziTimeout2));
 
     m_driverController
-        .a()
+        .rightBumper()
         .whileTrue(
             drivetrain.pidXLocked(
                 () -> {
                   return 7.75;
+                },
+                () -> {
+                  return -m_driverController.getLeftX() * MaxSpeed;
+                },
+                () -> {
+                  return -m_driverController.getTriggerAxes() * MaxAngularRate;
+                }));
+
+    m_driverController
+        .a()
+        .whileTrue(
+            drivetrain.pidXLocked(
+                () -> {
+                  return 7.75 + 2.5;
                 },
                 () -> {
                   return -m_driverController.getLeftX() * MaxSpeed;
