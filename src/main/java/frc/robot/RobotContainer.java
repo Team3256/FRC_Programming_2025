@@ -406,6 +406,28 @@ public class RobotContainer {
                                 processorFar)) // doubles as climb from opposite side facing DS
                 .withTimeout(aziTimeout2));
 
+    new Trigger(() -> (m_driverController.getRightY() < -0.3))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(bargeClose))
+                .withTimeout(aziTimeout2));
+
+    new Trigger(() -> (m_driverController.getRightY() > 0.3))
+        .onTrue(
+            drivetrain
+                .applyRequest(
+                    () ->
+                        azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                            .withTargetDirection(bargeFar))
+                .withTimeout(aziTimeout2));
+
     m_driverController
         .rightBumper()
         .whileTrue(
@@ -433,28 +455,6 @@ public class RobotContainer {
                 () -> {
                   return -m_driverController.getTriggerAxes() * MaxAngularRate;
                 }));
-
-    new Trigger(() -> (m_driverController.getRightY() < -0.3))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(bargeClose))
-                .withTimeout(aziTimeout2));
-
-    new Trigger(() -> (m_driverController.getRightY() > 0.3))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(bargeFar))
-                .withTimeout(aziTimeout2));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
