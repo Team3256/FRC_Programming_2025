@@ -24,11 +24,10 @@ public class LED extends SubsystemBase {
     config.brightnessScalar = 1;
     config.statusLedOffWhenActive = true;
     candle.configAllSettings(config);
-    candle.clearAnimation(0);
   }
 
-  public Command reset() {
-    return this.runOnce(() -> candle.clearAnimation(0));
+  public void reset() {
+    this.runOnce(() -> candle.clearAnimation(0));
   }
 
   private void _reset() {
@@ -36,25 +35,29 @@ public class LED extends SubsystemBase {
     this.animate(IndicatorAnimation.Default);
   }
 
-  public Command setAligned() {
-    return this.run(
-        () -> {
-          candle.setLEDs(0, 255, 0);
-        });
+  public void setAligned() {
+
+    candle.setLEDs(0, 255, 0);
   }
 
-  public Command setTranslationAligned() {
-    return this.run(
-        () -> {
-          candle.setLEDs(0, 0, 255);
-        });
+  public void setTranslationAligned() {
+
+    candle.setLEDs(0, 0, 255);
   }
 
-  public Command setNotAligned() {
-    return this.run(
-        () -> {
-          candle.setLEDs(255, 0, 0);
-        });
+  public void setXAligned() {
+
+    candle.setLEDs(255, 255, 0);
+  }
+
+  public void setYAligned() {
+
+    candle.setLEDs(255, 0, 255);
+  }
+
+  public void setNotAligned() {
+
+    candle.setLEDs(255, 0, 0);
   }
 
   public void _animate(IndicatorAnimation animation) {

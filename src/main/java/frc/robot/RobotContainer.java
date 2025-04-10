@@ -180,67 +180,16 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
+  public Pose2d getPose() {
+    return drivetrain.getState().Pose;
+  }
+
+  public LED getLed() {
+    return leds;
+  }
 
   // sets up LEDs & rumble
   private void configureLEDs() {
-    RobotModeTriggers.disabled().toggleOnTrue(leds.reset());
-    RobotModeTriggers.disabled()
-        .and(
-            () ->
-                drivetrain
-                        .getState()
-                        .Pose
-                        .getTranslation()
-                        .getDistance(getClosestAlignment().getTranslation())
-                    < .1)
-        .and(
-            () ->
-                !(drivetrain
-                        .getState()
-                        .Pose
-                        .getRotation()
-                        .minus(getClosestAlignment().getRotation())
-                        .getDegrees()
-                    < 5))
-        .whileTrue(leds.setTranslationAligned().ignoringDisable(true));
-    RobotModeTriggers.disabled()
-        .and(
-            () ->
-                drivetrain
-                        .getState()
-                        .Pose
-                        .getTranslation()
-                        .getDistance(getClosestAlignment().getTranslation())
-                    < .1)
-        .and(
-            () ->
-                (drivetrain
-                        .getState()
-                        .Pose
-                        .getRotation()
-                        .minus(getClosestAlignment().getRotation())
-                        .getDegrees()
-                    < 5))
-        .whileTrue(leds.setAligned().ignoringDisable(true));
-    RobotModeTriggers.disabled()
-        .and(
-            () ->
-                drivetrain
-                        .getState()
-                        .Pose
-                        .getTranslation()
-                        .getDistance(getClosestAlignment().getTranslation())
-                    > .1)
-        .and(
-            () ->
-                (drivetrain
-                        .getState()
-                        .Pose
-                        .getRotation()
-                        .minus(getClosestAlignment().getRotation())
-                        .getDegrees()
-                    > 5))
-        .whileTrue(leds.setNotAligned().ignoringDisable(true));
     leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default));
     superstructure
         .coralBeamBreak()
@@ -264,7 +213,7 @@ public class RobotContainer {
 
   }
 
-  private Pose2d getClosestAlignment() {
+  public Pose2d getClosestAlignment() {
     return drivetrain
         .getState()
         .Pose
