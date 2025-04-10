@@ -316,10 +316,6 @@ public class RobotContainer {
             .withDeadband(0.15 * MaxSpeed)
             .withRotationalRate(0.15 * MaxAngularRate);
 
-    SwerveRequest.ApplyRobotSpeeds driveAlt = new SwerveRequest.ApplyRobotSpeeds();
-
-    SwerveRequest.PointWheelsAt lockHoriz = new SwerveRequest.PointWheelsAt();
-
     SwerveRequest.FieldCentricFacingAngle azimuth =
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
@@ -333,10 +329,7 @@ public class RobotContainer {
                   drive
                       .withVelocityX(
                           swerveVelXRateLimiter.calculate(
-                              -m_driverController.getLeftY() * MaxSpeed)) // Drive
-                      // -y
-                      // is
-                      // forward
+                              -m_driverController.getLeftY() * MaxSpeed))
                       .withVelocityY(
                           swerveVelYRateLimiter.calculate(
                               -m_driverController.getLeftX() * MaxSpeed))
@@ -348,17 +341,10 @@ public class RobotContainer {
           drivetrain.applyRequest(
               () ->
                   drive
-                      .withVelocityX(-m_driverController.getLeftY() * MaxSpeed) // Drive
-                      // forward
-                      // with
-                      // negative
-                      // Y
-                      // (forward)
+                      .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                       .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                       .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
     }
-
-    // m_driverController.povUp().whileTrue(drivetrain.wheelRadiusCharacterization(1));
 
     m_driverController
         .leftBumper()
@@ -366,25 +352,10 @@ public class RobotContainer {
             drivetrain.applyRequest(
                 () ->
                     drive
-                        .withVelocityX(-m_driverController.getLeftY() * SlowMaxSpeed) // Drive
-                        // forward
-                        // with
-                        // negative
-                        // Y
-                        // (forward)
-                        .withVelocityY(-m_driverController.getLeftX() * SlowMaxSpeed) // Drive
-                        // left
-                        // with
-                        // negative
-                        // X
-                        // (left)
+                        .withVelocityX(-m_driverController.getLeftY() * SlowMaxSpeed)
+                        .withVelocityY(-m_driverController.getLeftX() * SlowMaxSpeed)
                         .withRotationalRate(
-                            -m_driverController.getTriggerAxes() * SlowMaxAngular) // Drive
-                // counterclockwise
-                // with
-                // negative
-                // X
-                // (left)
+                            -m_driverController.getTriggerAxes() * SlowMaxAngular)
                 ));
 
     m_driverController
@@ -433,7 +404,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(
-                                processorFar)) // double as climb from opposite side facing DS
+                                processorFar)) // doubles as climb from opposite side facing DS
                 .withTimeout(aziTimeout2));
 
     m_driverController
