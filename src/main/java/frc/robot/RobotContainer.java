@@ -458,24 +458,36 @@ public class RobotContainer {
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    //
-    // Auto Align Begin
-    // preferably a check to make sure we're not in ALGAE state....
-
-    m_driverController
-        .povLeft()
+    new Trigger(
+            () ->
+                ((superstructure.getState() != StructureState.GROUND_ALGAE)
+                        && superstructure.getState() != StructureState.PROCESSOR)
+                    && (m_driverController.povLeft().getAsBoolean()))
         .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(
                     () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true))));
 
-    // Same as prev, except find the NOT lefthanded one.
-    m_driverController
-        .povRight()
-        .whileTrue( // Both run AutoAlign & check tolerance
+    new Trigger(
+            () ->
+                ((superstructure.getState() != StructureState.GROUND_ALGAE)
+                        && superstructure.getState() != StructureState.PROCESSOR)
+                    && (m_driverController.povRight().getAsBoolean()))
+        .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(
                     () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false))));
+
+    /* switch for left handed, boolean is true, pov left
+    //    m_driverController
+    //        .povRight()
+    //        .whileTrue(
+    //            Commands.parallel(
+    //                drivetrain.pidToPose(
+    //                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose,
+    // false))));
+    */
+
     m_driverController
         .povLeft()
         .negate()
