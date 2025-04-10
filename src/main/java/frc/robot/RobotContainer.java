@@ -462,19 +462,6 @@ public class RobotContainer {
                             .withTargetDirection(sourceRight2))
                 .withTimeout(aziTimeout2));
 
-    //
-    //    m_driverController
-    //        .rightBumper()
-    //        .onTrue(
-    //            drivetrain
-    //                .applyRequest(
-    //                    () ->
-    //                        azimuth
-    //                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    //                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    //                            .withTargetDirection(barge))
-    //                .withTimeout(aziTimeout2));
-
     m_driverController
         .povUp()
         .onTrue(
@@ -494,6 +481,7 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(
                                 processorFar)) // double as climb from opposite side facing DS
@@ -519,6 +507,7 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(bargeClose))
                 .withTimeout(aziTimeout2));
@@ -529,6 +518,7 @@ public class RobotContainer {
                 .applyRequest(
                     () ->
                         azimuth
+                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(bargeFar))
                 .withTimeout(aziTimeout2));
