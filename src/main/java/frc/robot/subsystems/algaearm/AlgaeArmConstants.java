@@ -29,13 +29,14 @@ public final class AlgaeArmConstants {
 
   public static final Angle homePosition = Rotations.of(.25);
   public static Angle groundAlgaePosition = Rotations.of(.45);
+  public static Angle partialDeploy = Rotations.of(.35);
 
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
           .withSlot0(
               new Slot0Configs()
                   .withKS(.2)
-                  .withKV(1.28428729983)
+                  .withKV(0.95138)
                   .withKP(100)
                   .withKI(0)
                   .withKD(4)
@@ -50,8 +51,8 @@ public final class AlgaeArmConstants {
           .withMotionMagic(
               new MotionMagicConfigs()
                   .withMotionMagicJerk(0)
-                  .withMotionMagicAcceleration(36)
-                  .withMotionMagicCruiseVelocity(6))
+                  .withMotionMagicAcceleration(14)
+                  .withMotionMagicCruiseVelocity(2))
           .withCurrentLimits(
               new CurrentLimitsConfigs()
                   .withStatorCurrentLimitEnable(true)

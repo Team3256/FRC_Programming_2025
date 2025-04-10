@@ -32,13 +32,13 @@ public class AlgaeRollerIOTalonFX implements AlgaeRollerIO {
         algaeRollerMotor,
         AlgaeRollerConstants.algaeRollerMotorConfigs,
         AlgaeRollerConstants.flashConfigRetries);
-    BaseStatusSignal.setUpdateFrequencyForAll(
-        AlgaeRollerConstants.updateFrequency,
-        algaeMotorVoltage,
-        algaeMotorVelocity,
-        algaeMotorStatorCurrent,
-        algaeMotorSupplyCurrent);
-    algaeRollerMotor.optimizeBusUtilization();
+    //    BaseStatusSignal.setUpdateFrequencyForAll(
+    //        AlgaeRollerConstants.updateFrequency,
+    //        algaeMotorVoltage,
+    //        algaeMotorVelocity,
+    //        algaeMotorStatorCurrent,
+    //        algaeMotorSupplyCurrent);
+    //    algaeRollerMotor.optimizeBusUtilization();
   }
 
   @Override

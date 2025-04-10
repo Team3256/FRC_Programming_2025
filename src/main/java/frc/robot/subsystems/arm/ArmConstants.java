@@ -47,14 +47,14 @@ public final class ArmConstants {
   public static final Angle[] dealgaeRightPosition = {Rotations.of(.376), Rotations.of(.361)};
   public static final Angle[] dealgaeLeftPosition = {Rotations.of(.124), Rotations.of(.139)};
 
-  public static final Angle sourcePosition = Rotations.of(.277);
+  public static final Angle sourcePosition = Rotations.of(.285);
 
   public static final Angle bargeLeftPosition = Rotations.of(.17);
   public static final Angle bargeRightPosition = Rotations.of(.33);
 
-  public static final Angle homePosition = Rotations.of(.28);
+  public static final Angle homePosition = Rotations.of(.285);
 
-  public static final Angle climbPosition = Rotations.of(.45);
+  public static final Angle climbPosition = Rotations.of(.4);
 
   public static final double safeRightPosition = .37;
   public static final double safeLeftPosition = .25;

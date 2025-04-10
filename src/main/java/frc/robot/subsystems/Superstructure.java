@@ -145,7 +145,7 @@ public class Superstructure {
         .get(StructureState.DEALGAE_L2)
         .onTrue(elevator.toDealgaeLevel(0))
         .onTrue(arm.toDealgaeLevel(0, () -> true))
-        .onTrue(algaeArm.toGroundAlgae());
+        .onTrue(algaeArm.toPartialDeploy());
 
     stateTriggers
         .get(StructureState.DEALGAE_L3)
@@ -154,7 +154,6 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.DEALGAE_L2)
         .or(stateTriggers.get(StructureState.DEALGAE_L3))
-        .or(stateTriggers.get(StructureState.GROUND_ALGAE))
         .onTrue(endEffector.setAlgaeIntakeVelocity());
 
     // Arm needs to wrap 180, so elevator has to be safe before we fully move
@@ -181,6 +180,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PROCESSOR)
         .onTrue(elevator.toProcessorPosition())
+        .onTrue(algaeArm.toPartialDeploy())
         .and(elevator.reachedPosition)
         .debounce(.04) // wait two loop times
         .onTrue(arm.toProcessorLevel());
@@ -196,13 +196,15 @@ public class Superstructure {
         .get(StructureState.GROUND_ALGAE)
         .onTrue(algaeArm.toGroundAlgae())
         .onTrue(elevator.toGroundAlgaePosition())
+        .onTrue(algaeRoller.setIntakeVoltage())
         .and(elevator.reachedPosition)
         .debounce(.03) // wait two loop times
         .onTrue(arm.toGroundAlgaeLevel())
         .and(arm.reachedPosition)
         .debounce(.05)
-        .onTrue(algaeRoller.setIntakeVoltage())
+        .onTrue(endEffector.setAlgaeIntakeVelocity())
         .and(endEffector.algaeBeamBreak)
+        .debounce(.03)
         .onTrue(this.setState(StructureState.PREHOME));
     ;
 

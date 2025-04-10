@@ -66,7 +66,7 @@ public class AlgaeArm extends DisableSubsystem {
   @AutoLogOutput
   public boolean isAtPosition() {
     return Util.epsilonEquals(
-        algaeArmIOInputsAutoLogged.algaeArmMotorPosition, requestedPosition.in(Rotations), 0.05);
+        algaeArmIOInputsAutoLogged.algaeArmMotorPosition, requestedPosition.in(Rotations), 0.02);
   }
 
   public Command toHome() {
@@ -75,6 +75,12 @@ public class AlgaeArm extends DisableSubsystem {
 
   public Command toGroundAlgae() {
     return this.setPosition(AlgaeArmConstants.groundAlgaePosition)
+        .until(reachedPosition.debounce(.03))
+        .andThen(this.off());
+  }
+
+  public Command toPartialDeploy() {
+    return this.setPosition(AlgaeArmConstants.partialDeploy)
         .until(reachedPosition.debounce(.03))
         .andThen(this.off());
   }

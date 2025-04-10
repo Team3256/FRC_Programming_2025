@@ -20,8 +20,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
@@ -141,11 +143,13 @@ public class RobotContainer {
   private final AutoRoutines m_autoRoutines;
   private AutoChooser autoChooser = new AutoChooser();
 
-  private final Trigger autoAlignTrigger =
+  private final Trigger autoAlignedTrigger =
       new Trigger(
           () -> {
             return AutoAim.isInToleranceCoral(drivetrain.getState().Pose);
           });
+
+  private final InternalButton autoAlignRunning = new InternalButton();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -179,6 +183,7 @@ public class RobotContainer {
 
   // sets up LEDs & rumble
   private void configureLEDs() {
+    RobotModeTriggers.disabled().toggleOnTrue(leds.reset());
     RobotModeTriggers.disabled()
         .and(
             () ->
@@ -187,7 +192,7 @@ public class RobotContainer {
                         .Pose
                         .getTranslation()
                         .getDistance(getClosestAlignment().getTranslation())
-                    < .3)
+                    < .1)
         .and(
             () ->
                 !(drivetrain
@@ -196,8 +201,8 @@ public class RobotContainer {
                         .getRotation()
                         .minus(getClosestAlignment().getRotation())
                         .getDegrees()
-                    < 10))
-        .whileTrue(leds.setTranslationAligned());
+                    < 5))
+        .whileTrue(leds.setTranslationAligned().ignoringDisable(true));
     RobotModeTriggers.disabled()
         .and(
             () ->
@@ -206,7 +211,7 @@ public class RobotContainer {
                         .Pose
                         .getTranslation()
                         .getDistance(getClosestAlignment().getTranslation())
-                    < .3)
+                    < .1)
         .and(
             () ->
                 (drivetrain
@@ -215,8 +220,8 @@ public class RobotContainer {
                         .getRotation()
                         .minus(getClosestAlignment().getRotation())
                         .getDegrees()
-                    < 10))
-        .whileTrue(leds.setAligned());
+                    < 5))
+        .whileTrue(leds.setAligned().ignoringDisable(true));
     RobotModeTriggers.disabled()
         .and(
             () ->
@@ -225,7 +230,7 @@ public class RobotContainer {
                         .Pose
                         .getTranslation()
                         .getDistance(getClosestAlignment().getTranslation())
-                    > .3)
+                    > .1)
         .and(
             () ->
                 (drivetrain
@@ -234,14 +239,15 @@ public class RobotContainer {
                         .getRotation()
                         .minus(getClosestAlignment().getRotation())
                         .getDegrees()
-                    > 10))
-        .whileTrue(leds.setNotAligned());
-    leds._animate(IndicatorAnimation.Default);
-    // leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default).ignoringDisable(true));
+                    > 5))
+        .whileTrue(leds.setNotAligned().ignoringDisable(true));
+    leds.setDefaultCommand(leds.animate(IndicatorAnimation.Default));
     superstructure
         .coralBeamBreak()
-        .whileTrue(leds.animate(IndicatorAnimation.CoralIntaken).ignoringDisable(true));
-    autoAlignTrigger.whileTrue(
+        .and(autoAlignRunning.negate())
+        .and(autoAlignedTrigger.negate())
+        .whileTrue(leds.animate(IndicatorAnimation.CoralIntaken));
+    autoAlignedTrigger.whileTrue(
         Commands.run(
                 () -> {
                   m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 1);
@@ -250,7 +256,10 @@ public class RobotContainer {
                 () -> {
                   m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
                 }));
-    autoAlignTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned));
+    autoAlignedTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned));
+    autoAlignRunning
+        .and(autoAlignedTrigger.negate())
+        .onTrue(leds.animate(IndicatorAnimation.AutoAlignRunning));
     // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
 
   }
@@ -261,13 +270,13 @@ public class RobotContainer {
         .Pose
         .nearest(
             List.of(
-                new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270)),
+                new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(180)),
                 ChoreoAllianceFlipUtil.flip(
-                    new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270))),
-                new Pose2d(7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)),
+                    new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(180))),
+                new Pose2d(7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(180)),
                 ChoreoAllianceFlipUtil.flip(
                     new Pose2d(
-                        7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)))));
+                        7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(180)))));
   }
 
   private void configureOperatorBinds() {
@@ -504,7 +513,7 @@ public class RobotContainer {
                   return -m_driverController.getTriggerAxes() * MaxAngularRate;
                 }));
 
-    new Trigger(() -> (m_driverController.getRightY() > 0.3))
+    new Trigger(() -> (m_driverController.getRightY() < -0.3))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -514,7 +523,7 @@ public class RobotContainer {
                             .withTargetDirection(bargeClose))
                 .withTimeout(aziTimeout2));
 
-    new Trigger(() -> (m_driverController.getRightY() < -0.3))
+    new Trigger(() -> (m_driverController.getRightY() > 0.3))
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -527,128 +536,6 @@ public class RobotContainer {
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     //
-    // new Trigger(
-    // () ->
-    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
-    // 0.1)
-    // && (Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // < 1.523 + 0.0872665) // upper
-    // // bound
-    // && ((Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // > 1.523 - 0.0872665)))) // lower
-    // // bound
-    // .onTrue(
-    // drivetrain
-    // .applyRequest(
-    // () ->
-    // azimuth
-    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    // .withTargetDirection(reefAB))
-    // .withTimeout(aziTimeout));
-    //
-    // new Trigger(
-    // () ->
-    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
-    // 0.1)
-    // && (Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // < 0.483 + 0.0872665)
-    // && ((Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // > 0.483 - 0.0872665))))
-    // .onTrue(
-    // drivetrain
-    // .applyRequest(
-    // () ->
-    // azimuth
-    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    // .withTargetDirection(reefCD))
-    // .withTimeout(aziTimeout));
-    //
-    // new Trigger(
-    // () ->
-    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
-    // 0.1)
-    // && (Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // < -0.612 + 0.0872665)
-    // && ((Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // > -0.612 - 0.0872665))))
-    // .onTrue(
-    // drivetrain
-    // .applyRequest(
-    // () ->
-    // azimuth
-    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    // .withTargetDirection(reefEF))
-    // .withTimeout(aziTimeout));
-    //
-    // new Trigger(
-    // () ->
-    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
-    // 0.1)
-    // && (Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // < -1.534 + 0.0872665)
-    // && ((Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // > -1.534 - 0.0872665))))
-    // .onTrue(
-    // drivetrain
-    // .applyRequest(
-    // () ->
-    // azimuth
-    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    // .withTargetDirection(reefGH))
-    // .withTimeout(aziTimeout));
-    //
-    // new Trigger(
-    // () ->
-    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
-    // 0.1)
-    // && (Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // < -2.437 + 0.0872665)
-    // && ((Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // > -2.437 - 0.0872665))))
-    // .onTrue(
-    // drivetrain
-    // .applyRequest(
-    // () ->
-    // azimuth
-    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    // .withTargetDirection(reefIJ))
-    // .withTimeout(aziTimeout));
-    //
-    // new Trigger(
-    // () ->
-    // ((m_driverController.getRightY() > 0.1 || m_driverController.getRightX() >
-    // 0.1)
-    // && (Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // < 2.793 + 0.0872665)
-    // && ((Math.atan2(m_driverController.getRightY(),
-    // m_driverController.getRightX())
-    // > 2.793 - 0.0872665))))
-    // .onTrue(
-    // drivetrain
-    // .applyRequest(
-    // () ->
-    // azimuth
-    // .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-    // .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-    // .withTargetDirection(reefKL))
-    // .withTimeout(aziTimeout));
-    //
     // Auto Align Begin
     // preferably a check to make sure we're not in ALGAE state....
 
@@ -657,8 +544,7 @@ public class RobotContainer {
         .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(
-                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true)),
-                leds.animate(IndicatorAnimation.AutoAlignRunning)));
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true))));
 
     // Same as prev, except find the NOT lefthanded one.
     m_driverController
@@ -666,8 +552,18 @@ public class RobotContainer {
         .whileTrue( // Both run AutoAlign & check tolerance
             Commands.parallel(
                 drivetrain.pidToPose(
-                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false)),
-                leds.animate(IndicatorAnimation.AutoAlignRunning)));
+                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false))));
+    m_driverController
+        .povLeft()
+        .negate()
+        .and(m_driverController.povRight().negate())
+        .and(m_driverController.a().negate())
+        .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(false)));
+    m_driverController
+        .povRight()
+        .or(m_driverController.povLeft())
+        .or(m_driverController.a())
+        .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(true)));
     // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
   }
