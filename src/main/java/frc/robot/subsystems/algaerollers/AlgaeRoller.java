@@ -8,7 +8,6 @@
 package frc.robot.subsystems.algaerollers;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.utils.DisableSubsystem;
 import frc.robot.utils.LoggedTracer;
 import org.littletonrobotics.junction.Logger;
@@ -34,8 +33,7 @@ public class AlgaeRoller extends DisableSubsystem {
   }
 
   public Command setVoltage(double voltage) {
-    return this.run(() -> algaeRollerIO.setAlgaeVoltage(voltage))
-        .alongWith(Commands.print("hhea").repeatedly());
+    return this.run(() -> algaeRollerIO.setAlgaeVoltage(voltage));
   }
 
   public Command setIntakeVoltage() {

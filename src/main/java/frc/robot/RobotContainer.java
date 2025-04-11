@@ -144,10 +144,7 @@ public class RobotContainer {
   private AutoChooser autoChooser = new AutoChooser();
 
   private final Trigger autoAlignedTrigger =
-      new Trigger(
-          () -> {
-            return AutoAim.isInToleranceCoral(drivetrain.getState().Pose);
-          });
+      new Trigger(() -> AutoAim.isInToleranceCoral(drivetrain.getState().Pose));
 
   private final InternalButton autoAlignRunning = new InternalButton();
 
@@ -161,6 +158,7 @@ public class RobotContainer {
             elevator,
             arm,
             endEffector,
+            algaeArm,
             drivetrain);
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
@@ -219,13 +217,13 @@ public class RobotContainer {
         .Pose
         .nearest(
             List.of(
-                new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(180)),
+                new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270)),
                 ChoreoAllianceFlipUtil.flip(
-                    new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(180))),
-                new Pose2d(7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(180)),
+                    new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270))),
+                new Pose2d(7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)),
                 ChoreoAllianceFlipUtil.flip(
                     new Pose2d(
-                        7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(180)))));
+                        7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)))));
   }
 
   private void configureOperatorBinds() {
@@ -294,8 +292,7 @@ public class RobotContainer {
         "l4CenterPreloadRightSource1", m_autoRoutines::l4CenterPreloadRightSource1);
     autoChooser.addRoutine(
         "l4CenterPreloadRightSource2", m_autoRoutines::l4CenterPreloadRightSource2);
-    autoChooser.addRoutine(
-        "l4RightPreloadRightSource2", m_autoRoutines::l4RightPreloadRightSource2);
+    autoChooser.addRoutine("Right 3L4 FCD", m_autoRoutines::l4RightPreloadRightSource2);
     autoChooser.addRoutine("dealgae2LeftPreloadL4_H", m_autoRoutines::dealgae2LeftPreloadL4H);
 
     SmartDashboard.putData("auto chooser", autoChooser);

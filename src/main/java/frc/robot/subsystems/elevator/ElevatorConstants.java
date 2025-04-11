@@ -108,10 +108,10 @@ public final class ElevatorConstants {
 
   public static final Angle[] kDealgaePositions = {Rotations.of(.55), Rotations.of(2.0)};
 
-  public static final Angle sourcePosition = Rotations.of(.26);
+  public static final Angle sourcePosition = Rotations.of(.2);
   public static final Angle bargePosition = Rotations.of(5);
 
-  public static final Angle homePosition = Rotations.of(.26);
+  public static final Angle homePosition = Rotations.of(.2);
   public static final Angle processorPosition = Rotations.of(2.1); // not real for now
   public static final Angle groundAlgaePosition = Rotations.of(2.4);
 

@@ -27,7 +27,7 @@ public class LED extends SubsystemBase {
   }
 
   public void reset() {
-    this.runOnce(() -> candle.clearAnimation(0));
+    candle.clearAnimation(0);
   }
 
   private void _reset() {

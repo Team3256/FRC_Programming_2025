@@ -16,11 +16,11 @@ import com.ctre.phoenix.led.StrobeAnimation;
 // size = Math.floor((numLEDs) * (6/64))
 
 public enum IndicatorAnimation {
-  Default(new LarsonAnimation(0, 255, 255, 1, 1, 8 + 50, LarsonAnimation.BounceMode.Center, 5)),
+  Default(new LarsonAnimation(0, 255, 255, 1, 1, 300, LarsonAnimation.BounceMode.Center, 5)),
   // Default(new RainbowAnimation(255, 10, 8 + 50)),
-  AutoAlignRunning(new StrobeAnimation(255, 0, 255, 255, 0.1, 64)), // Or, alternatively:
-  AutoAligned(new StrobeAnimation(0, 255, 0, 255, 0.01, 64)),
-  CoralIntaken(new StrobeAnimation(0, 0, 255, 255, 0.1, 64));
+  AutoAlignRunning(new StrobeAnimation(255, 0, 255, 255, 0.1, 300)), // Or, alternatively:
+  AutoAligned(new StrobeAnimation(0, 255, 0, 255, 0.01, 300)),
+  CoralIntaken(new StrobeAnimation(0, 0, 255, 255, 0.1, 300));
 
   private Animation curAnimation;
 

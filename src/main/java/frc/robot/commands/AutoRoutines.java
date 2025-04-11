@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.algaearm.AlgaeArm;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -34,17 +35,20 @@ public class AutoRoutines {
   private final CommandSwerveDrivetrain m_drivetrain;
   private final Arm m_arm;
   private final EndEffector m_endEffector;
+  private final AlgaeArm m_algaeArm;
 
   public AutoRoutines(
       AutoFactory factory,
       Elevator elevator,
       Arm arm,
       EndEffector endEffector,
+      AlgaeArm algaeArm,
       CommandSwerveDrivetrain drivetrain) {
     m_factory = factory;
     m_elevator = elevator;
     m_arm = arm;
     m_drivetrain = drivetrain;
+    m_algaeArm = algaeArm;
     m_endEffector = endEffector;
     m_autoCommands = new AutoCommands(elevator, arm, endEffector);
   }
@@ -272,15 +276,37 @@ public class AutoRoutines {
   }
 
   public AutoRoutine l4RightPreloadRightSource2() {
-    final AutoRoutine routine = m_factory.newRoutine("l4RightPreloadRightSource2");
-    final AutoTrajectory preloadF = routine.trajectory("RIGHT-F");
-    final AutoTrajectory FtoSource = routine.trajectory("F-Source2");
-    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
-    final AutoTrajectory CToSource = routine.trajectory("C-Source2");
-    final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
+    return genericL4RightPreloadRightSource2(
+        "l4RightPreloadRightSource2",
+        "RIGHT-F",
+        "F-Source2",
+        "Source2-C",
+        "C-Source2",
+        "Source2-D");
+  }
+
+  public AutoRoutine l4LeftPreloadLeftSource2() {
+    return genericL4RightPreloadRightSource2(
+        "l4LeftPreloadLeftSource2", "LEFT-F", "F-Source2", "Source2-C", "C-Source2", "Source2-D");
+  }
+
+  private AutoRoutine genericL4RightPreloadRightSource2(
+      String name,
+      String preloadTraj,
+      String preloadToSourceTraj,
+      String sourceToL41Traj,
+      String l41ToSourceTraj,
+      String sourceToL42Traj) {
+    final AutoRoutine routine = m_factory.newRoutine(name);
+    final AutoTrajectory preloadF = routine.trajectory(preloadTraj);
+    final AutoTrajectory FtoSource = routine.trajectory(preloadToSourceTraj);
+    final AutoTrajectory SourceToC = routine.trajectory(sourceToL41Traj);
+    final AutoTrajectory CToSource = routine.trajectory(l41ToSourceTraj);
+    final AutoTrajectory SourceToD = routine.trajectory(sourceToL42Traj);
 
     routine.active().onTrue(preloadF.resetOdometry().andThen(preloadF.cmd()));
-    preloadF.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    preloadF.atTimeBeforeEnd(.7).onTrue(m_algaeArm.toHome());
+    preloadF.atTimeBeforeEnd(.8).onTrue(m_autoCommands.goToL4());
     preloadF
         .done()
         .onTrue(
@@ -307,7 +333,7 @@ public class AutoRoutines {
                             FtoSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
-    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    SourceToC.atTimeBeforeEnd(.8).onTrue(m_autoCommands.goToL4());
     SourceToC.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -333,7 +359,7 @@ public class AutoRoutines {
                             CToSource.getFinalPose()
                                 .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
                 .andThen(m_autoCommands.home().alongWith(SourceToD.spawnCmd())));
-    SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    SourceToD.atTimeBeforeEnd(.8).onTrue(m_autoCommands.goToL4());
     SourceToD.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
@@ -349,22 +375,38 @@ public class AutoRoutines {
 
   public AutoRoutine dealgae2LeftPreloadL4H() {
     final AutoRoutine routine = m_factory.newRoutine("dealgae2LeftPreloadL4H");
-    final AutoTrajectory MidToGH = routine.trajectory("MID-GH");
+    final AutoTrajectory MidToG = routine.trajectory("MID-H");
+    final AutoTrajectory GToGH = routine.trajectory("G-GH");
     final AutoTrajectory GHToBarge3 = routine.trajectory("GH-Barge3");
     final AutoTrajectory Barge3ToIJ = routine.trajectory("Barge3-IJ");
     final AutoTrajectory IJToBarge2 = routine.trajectory("IJ-Barge2");
     final AutoTrajectory Barge2ToH = routine.trajectory("Barge2-H");
 
-    routine.active().onTrue(MidToGH.resetOdometry().andThen(MidToGH.cmd()));
-    MidToGH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL2Dealgae());
-    MidToGH.done()
+    routine.active().onTrue(MidToG.resetOdometry().andThen(MidToG.cmd()));
+
+    MidToG.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
+    MidToG.done()
+        .onTrue(
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+                .andThen(m_autoCommands.scoreL4().asProxy())
+                .until(m_endEffector.coralBeamBreak.negate())
+                .deadlineFor(
+                    m_drivetrain.pidToPose(
+                        () -> MidToG.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
+                .andThen(
+                    m_autoCommands
+                        .home()
+                        .asProxy()
+                        .alongWith(Commands.waitSeconds(.5).andThen(GToGH.spawnCmd()))));
+    GToGH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL2Dealgae());
+    GToGH.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.dealgaeify().asProxy())
                 .until(m_endEffector.algaeBeamBreak.debounce(.5))
                 .deadlineFor(
                     m_drivetrain.pidToPose(
-                        () -> MidToGH.getFinalPose().orElse(CoralTargets.BLUE_G.location)))
+                        () -> GToGH.getFinalPose().orElse(CoralTargets.BLUE_G.location)))
                 .andThen(
                     m_autoCommands
                         .homeDealgae()
@@ -424,16 +466,6 @@ public class AutoRoutines {
                         .home()
                         .asProxy()
                         .alongWith(Commands.waitSeconds(.5).andThen(Barge2ToH.spawnCmd()))));
-    Barge2ToH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
-    Barge2ToH.done()
-        .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
-                .andThen(m_autoCommands.scoreL4().asProxy())
-                .until(m_endEffector.coralBeamBreak.negate())
-                .deadlineFor(
-                    m_drivetrain.pidToPose(
-                        () -> Barge2ToH.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
-                .andThen(m_autoCommands.home().asProxy()));
 
     return routine;
   }
@@ -469,7 +501,12 @@ public class AutoRoutines {
     }
 
     public Command goToBarge() {
-      return m_elevator.toBargePosition().alongWith(m_arm.toBargeLevel(() -> false));
+      return m_elevator
+          .toBargePosition()
+          .alongWith(
+              Commands.waitUntil(new Trigger(() -> m_elevator.getPosition() > 3.5))
+                  .withTimeout(.3)
+                  .andThen(m_arm.toBargeLevel(() -> false)));
     }
 
     public Command dealgaeify() {
