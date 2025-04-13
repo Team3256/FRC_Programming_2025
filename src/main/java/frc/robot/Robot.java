@@ -7,15 +7,18 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.logging.errors.ErrorHandler;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.LoggedTracer;
 import frc.robot.utils.NT4PublisherNoFMS;
+import java.io.File;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -39,6 +42,7 @@ public class Robot extends LoggedRobot {
    */
   public Robot() {
     super();
+    SignalLogger.enableAutoLogging(false);
     RobotController.setBrownoutVoltage(4.75);
     // Instantiate our RobotContainer. This will perform all our button bindings,
     // and put our
@@ -50,6 +54,10 @@ public class Robot extends LoggedRobot {
     if (Constants.FeatureFlags.kEpilogueEnabled) {
       configureEpilogue();
     }
+
+    Runtime.getRuntime()
+        .gc(); // gc is a blocking call; robot constructor will not initialize until this is
+    // finished. this will cause "No Robot Code" until gc is finished.
   }
 
   private void configureEpilogue() {
@@ -80,7 +88,14 @@ public class Robot extends LoggedRobot {
         // the roboRIO USB ports.
         Logger.addDataReceiver(new WPILOGWriter("/U/wpilogs"));
       } else {
-        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/logs"));
+        File usbLoc = new File("/home/lvuser/wpilogs");
+        if (!usbLoc.exists()) {
+          usbLoc.mkdirs();
+          System.out.println("USB directory created at " + usbLoc.getAbsolutePath());
+        }
+        Logger.addDataReceiver(
+            new WPILOGWriter("/home/lvuser/wpilogs")); // ensure this directory exists
+        // advantage kit should be created before driverStationConnected()
       }
       Logger.addDataReceiver(new NT4PublisherNoFMS()); // Publish data to NetworkTables
       // Enables power distribution logging
@@ -200,13 +215,34 @@ public class Robot extends LoggedRobot {
     }
   }
 
+  @Override
+  public void driverStationConnected() {
+    if (DriverStation.isFMSAttached()) {
+      SignalLogger.start();
+      SignalLogger.writeString("MatchStatus", "MatchNotStarted");
+      SignalLogger.writeString("MatchType", DriverStation.getMatchType().toString());
+      SignalLogger.writeString("MatchNumber", String.valueOf(DriverStation.getMatchNumber()));
+      SignalLogger.writeString("EventName", DriverStation.getEventName());
+      SignalLogger.writeString("ReplayNum", ((Integer) DriverStation.getReplayNumber()).toString());
+    }
+  }
+
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    // no auto command, uses trigger
+    SignalLogger.writeString("MatchStatus", "Auto");
+  }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {}
+
+  @Override
+  public void autonomousExit() {
+    super.autonomousExit();
+    SignalLogger.writeString("MatchStatus", "AutoEnded");
+  }
 
   @Override
   public void teleopInit() {
@@ -214,11 +250,13 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    SignalLogger.writeString("MatchStatus", "Teleop");
   }
 
   @Override
   public void teleopExit() {
     super.teleopExit();
+    SignalLogger.writeString("MatchStatus", "TeleopEnded");
   }
 
   /** This function is called periodically during operator control. */
