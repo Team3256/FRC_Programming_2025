@@ -102,7 +102,9 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.L1)
         .onTrue(elevator.toReefLevel(0))
-        .onTrue(arm.toReefLevel(0, rightManipulatorSide));
+        .onTrue(arm.toReefLevel(0, () -> true))
+        .onTrue(algaeArm.toL1())
+        .onTrue(algaeRoller.setL1Voltage());
 
     stateTriggers
         .get(StructureState.CLIMB)
@@ -279,6 +281,14 @@ public class Superstructure {
 
   public Trigger coralBeamBreak() {
     return endEffector.coralBeamBreak;
+  }
+
+  public Trigger algaeBeamBreak() {
+    return endEffector.algaeBeamBreak;
+  }
+
+  public Trigger climbState() {
+    return stateTriggers.get(StructureState.CLIMB);
   }
 
   // call manually

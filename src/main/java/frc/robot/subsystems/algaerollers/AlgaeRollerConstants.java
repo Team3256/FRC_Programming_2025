@@ -15,6 +15,8 @@ public final class AlgaeRollerConstants {
   public static final int algaeMotorID = 35;
 
   public static final double intakeVoltage = 8;
+
+  public static final double l1Voltage = 2;
   public static final double processorVoltage = -3;
 
   // algae first then coral

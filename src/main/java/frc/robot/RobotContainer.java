@@ -194,6 +194,13 @@ public class RobotContainer {
         .and(autoAlignRunning.negate())
         .and(autoAlignedTrigger.negate())
         .whileTrue(leds.animate(IndicatorAnimation.CoralIntaken));
+    superstructure
+        .algaeBeamBreak()
+        .and(superstructure.coralBeamBreak().negate())
+        .and(autoAlignedTrigger.negate())
+        .and(autoAlignRunning.negate())
+        .whileTrue(leds.animate(IndicatorAnimation.AlgaeIntaken));
+    superstructure.climbState().whileTrue(leds.animate(IndicatorAnimation.Climb));
     autoAlignedTrigger.whileTrue(
         Commands.run(
                 () -> {
@@ -240,9 +247,7 @@ public class RobotContainer {
     m_operatorController.povUp("L4 Preset").onTrue(superstructure.setState(StructureState.L4));
     m_operatorController.povRight("L3 Preset").onTrue(superstructure.setState(StructureState.L3));
     m_operatorController.povDown("L2 Preset").onTrue(superstructure.setState(StructureState.L2));
-    m_operatorController
-        .povLeft("Ground Algae")
-        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
+    m_operatorController.povLeft("L1 Preset").onTrue(superstructure.setState(StructureState.L1));
     m_operatorController
         .rightBumper("Manipulator Side Right")
         .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
@@ -264,6 +269,8 @@ public class RobotContainer {
 
     new Trigger(() -> m_operatorController.getLeftX() > .5)
         .onTrue(superstructure.setState(StructureState.CLIMB));
+    new Trigger(() -> m_operatorController.getLeftX() < -.5)
+        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
 
     new Trigger(() -> m_operatorController.getRightX() > .5)
         .onTrue(climb.setVoltage(ClimbConstants.kUpVoltage))
@@ -293,6 +300,8 @@ public class RobotContainer {
     autoChooser.addRoutine(
         "l4CenterPreloadRightSource2", m_autoRoutines::l4CenterPreloadRightSource2);
     autoChooser.addRoutine("Right 3L4 FCD", m_autoRoutines::l4RightPreloadRightSource2);
+
+    autoChooser.addRoutine("Left 3L4 IKL", m_autoRoutines::l4LeftPreloadLeftSource1);
     autoChooser.addRoutine("dealgae2LeftPreloadL4_H", m_autoRoutines::dealgae2LeftPreloadL4H);
 
     SmartDashboard.putData("auto chooser", autoChooser);

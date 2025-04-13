@@ -44,6 +44,10 @@ public class AlgaeRoller extends DisableSubsystem {
     return setVoltage(AlgaeRollerConstants.processorVoltage);
   }
 
+  public Command setL1Voltage() {
+    return setVoltage(AlgaeRollerConstants.l1Voltage);
+  }
+
   public Command off() {
     return this.runOnce(algaeRollerIO::algaeOff);
   }

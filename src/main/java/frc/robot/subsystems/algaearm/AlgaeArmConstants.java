@@ -31,6 +31,8 @@ public final class AlgaeArmConstants {
   public static Angle groundAlgaePosition = Rotations.of(.45);
   public static Angle partialDeploy = Rotations.of(.35);
 
+  public static Angle l1Position = Rotations.of(.32);
+
   public static final TalonFXConfiguration motorConfigs =
       new TalonFXConfiguration()
           .withSlot0(

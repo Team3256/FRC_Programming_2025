@@ -285,9 +285,9 @@ public class AutoRoutines {
         "Source2-D");
   }
 
-  public AutoRoutine l4LeftPreloadLeftSource2() {
+  public AutoRoutine l4LeftPreloadLeftSource1() {
     return genericL4RightPreloadRightSource2(
-        "l4LeftPreloadLeftSource2", "LEFT-F", "F-Source2", "Source2-C", "C-Source2", "Source2-D");
+        "l4LeftPreloadLeftSource2", "LEFT-I", "I-Source1", "Source1-K", "K-Source1", "Source1-L");
   }
 
   private AutoRoutine genericL4RightPreloadRightSource2(
@@ -383,6 +383,7 @@ public class AutoRoutines {
     final AutoTrajectory Barge2ToH = routine.trajectory("Barge2-H");
 
     routine.active().onTrue(MidToG.resetOdometry().andThen(MidToG.cmd()));
+    MidToG.atTimeBeforeEnd(.7).onTrue(m_algaeArm.toHome());
 
     MidToG.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     MidToG.done()
@@ -397,13 +398,14 @@ public class AutoRoutines {
                     m_autoCommands
                         .home()
                         .asProxy()
-                        .alongWith(Commands.waitSeconds(.5).andThen(GToGH.spawnCmd()))));
-    GToGH.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL2Dealgae());
+                        .alongWith(Commands.waitSeconds(.2).andThen(GToGH.spawnCmd()))));
+    GToGH.atTimeBeforeEnd(.7)
+        .onTrue(m_autoCommands.goToL2Dealgae().alongWith(m_autoCommands.dealgaeify()));
     GToGH.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.dealgaeify().asProxy())
-                .until(m_endEffector.algaeBeamBreak.debounce(.5))
+                .until(m_endEffector.algaeBeamBreak.debounce(.1))
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () -> GToGH.getFinalPose().orElse(CoralTargets.BLUE_G.location)))
@@ -411,13 +413,13 @@ public class AutoRoutines {
                     m_autoCommands
                         .homeDealgae()
                         .asProxy()
-                        .alongWith(Commands.waitSeconds(.5).andThen(GHToBarge3.spawnCmd()))));
+                        .alongWith(Commands.waitSeconds(.1).andThen(GHToBarge3.spawnCmd()))));
     GHToBarge3.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToBarge());
     GHToBarge3.done()
         .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.15))
                 .andThen(m_autoCommands.scoreBarge().asProxy())
-                .until(m_endEffector.algaeBeamBreak.negate().debounce(.8))
+                .until(m_endEffector.algaeBeamBreak.negate().debounce(.1))
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () ->
@@ -431,13 +433,14 @@ public class AutoRoutines {
                     m_autoCommands
                         .home()
                         .asProxy()
-                        .alongWith(Commands.waitSeconds(.5).andThen(Barge3ToIJ.spawnCmd()))));
-    Barge3ToIJ.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToL3Dealgae());
+                        .alongWith(Commands.waitSeconds(.1).andThen(Barge3ToIJ.spawnCmd()))));
+    Barge3ToIJ.atTimeBeforeEnd(1)
+        .onTrue(m_autoCommands.goToL3Dealgae().alongWith(m_autoCommands.dealgaeify()));
     Barge3ToIJ.done()
         .onTrue(
             Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
                 .andThen(m_autoCommands.dealgaeify().asProxy())
-                .until(m_endEffector.algaeBeamBreak.debounce(.5))
+                .until(m_endEffector.algaeBeamBreak.debounce(.1))
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () -> Barge3ToIJ.getFinalPose().orElse(CoralTargets.BLUE_I.location)))
@@ -446,12 +449,12 @@ public class AutoRoutines {
                         .homeDealgae()
                         .asProxy()
                         .alongWith(Commands.waitSeconds(.5).andThen(IJToBarge2.spawnCmd()))));
-    IJToBarge2.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToBarge());
+    IJToBarge2.atTimeBeforeEnd(.7).onTrue(m_autoCommands.goToBarge());
     IJToBarge2.done()
         .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
+            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.15))
                 .andThen(m_autoCommands.scoreBarge().asProxy())
-                .until(m_endEffector.algaeBeamBreak.negate().debounce(.8))
+                .until(m_endEffector.algaeBeamBreak.negate().debounce(.1))
                 .deadlineFor(
                     m_drivetrain.pidToPose(
                         () ->
@@ -487,8 +490,8 @@ public class AutoRoutines {
       return m_elevator
           .toReefLevel(3)
           .alongWith(
-              Commands.waitUntil(new Trigger(() -> m_elevator.getPosition() > 3.5))
-                  .withTimeout(.3)
+              Commands.waitUntil(new Trigger(() -> m_elevator.getPosition() > 4))
+                  .withTimeout(.5)
                   .andThen(m_arm.toReefLevel(2, () -> true)));
     }
 

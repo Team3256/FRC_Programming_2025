@@ -10,17 +10,20 @@ package frc.robot.subsystems.led;
 import com.ctre.phoenix.led.Animation;
 import com.ctre.phoenix.led.LarsonAnimation;
 // import com.ctre.phoenix.led.RainbowAnimation;
+import com.ctre.phoenix.led.RainbowAnimation;
 import com.ctre.phoenix.led.StrobeAnimation;
 
 // size calculation for LarsonAnimation:
 // size = Math.floor((numLEDs) * (6/64))
 
 public enum IndicatorAnimation {
-  Default(new LarsonAnimation(0, 255, 255, 1, 1, 300, LarsonAnimation.BounceMode.Center, 5)),
+  Default(new LarsonAnimation(0, 255, 255, 1, 1, 300, LarsonAnimation.BounceMode.Center, 40)),
   // Default(new RainbowAnimation(255, 10, 8 + 50)),
-  AutoAlignRunning(new StrobeAnimation(255, 0, 255, 255, 0.1, 300)), // Or, alternatively:
-  AutoAligned(new StrobeAnimation(0, 255, 0, 255, 0.01, 300)),
-  CoralIntaken(new StrobeAnimation(0, 0, 255, 255, 0.1, 300));
+  AutoAlignRunning(new StrobeAnimation(255, 0, 255, 255, 0.05, 300)), // Or, alternatively:
+  AutoAligned(new StrobeAnimation(0, 255, 0, 255, .2, 300)),
+  CoralIntaken(new StrobeAnimation(0, 0, 255, 255, .2, 300)),
+  AlgaeIntaken(new StrobeAnimation(255, 0, 0, 255, .2, 300)),
+  Climb(new RainbowAnimation(255, 10, 300));
 
   private Animation curAnimation;
 

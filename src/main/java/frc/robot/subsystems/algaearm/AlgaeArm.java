@@ -85,6 +85,10 @@ public class AlgaeArm extends DisableSubsystem {
         .andThen(this.off());
   }
 
+  public Command toL1() {
+    return this.setPosition(AlgaeArmConstants.l1Position);
+  }
+
   public Command off() {
     return this.runOnce(algaeArmIO::off);
   }
