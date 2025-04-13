@@ -48,7 +48,7 @@ public class AlgaeArmTalonFX implements AlgaeArmIO {
         armMotorStatorCurrent,
         armMotorSupplyCurrent);
 
-    algaeArmMotor.optimizeBusUtilization();
+    algaeArmMotor.optimizeBusUtilization(4, 0.100);
   }
 
   @Override

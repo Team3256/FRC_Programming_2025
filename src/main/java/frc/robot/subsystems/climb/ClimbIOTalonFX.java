@@ -42,7 +42,7 @@ public class ClimbIOTalonFX implements ClimbIO {
         climbMotorPosition,
         climbMotorSupplyCurrent,
         climbMotorStatorCurrent);
-    climbMotor.optimizeBusUtilization();
+    climbMotor.optimizeBusUtilization(4, 0.100);
   }
 
   @Override

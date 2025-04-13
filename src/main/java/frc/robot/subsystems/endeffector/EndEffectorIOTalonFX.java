@@ -76,8 +76,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
         coralMotorSupplyCurrent,
         coralBeamBreak,
         algaeBeamBreak);
-    algaeMotor.optimizeBusUtilization();
-    coralMotor.optimizeBusUtilization();
+    algaeMotor.optimizeBusUtilization(4, 0.100);
+    coralMotor.optimizeBusUtilization(4, 0.100);
   }
 
   @Override
