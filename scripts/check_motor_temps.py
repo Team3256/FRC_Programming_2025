@@ -145,6 +145,7 @@ def main():
         final_data.append({
             "Device": device["Name"],
             "Temp": latest_data,
+            "Flag": latest_data > 70
            # "Average Data": sum([point["Signals"]["2038"] for point in plot[-10:]]) / 10
         })
         time.sleep(0.1)
