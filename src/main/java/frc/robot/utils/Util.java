@@ -7,11 +7,8 @@
 
 package frc.robot.utils;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.subsystems.Superstructure;
 import java.util.List;
 
 /** Contains basic functions that are used often. */
@@ -128,18 +125,5 @@ public class Util {
     }
     // If the serial number is not recognized, assume it is a competition robot
     return Constants.RobotType.COMPETITION;
-  }
-
-  public static void registerAntitip(
-      Pigeon2 pigeon, Superstructure superstructure, double tipAngle) {
-    // Unsure if you can just do
-    new Trigger(
-            () ->
-                Math.max(
-                        // Check for roll and pitch, respectively
-                        Math.abs(pigeon.getRotation3d().getX()),
-                        Math.abs(pigeon.getRotation3d().getY()))
-                    >= tipAngle)
-        .onTrue(superstructure.setState(Superstructure.StructureState.PREHOME));
   }
 }

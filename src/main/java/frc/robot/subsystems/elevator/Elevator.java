@@ -9,7 +9,6 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Rotations;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
@@ -76,31 +75,28 @@ public class Elevator extends DisableSubsystem {
 
   // Level must be between 0 to 3
   public Command toReefLevel(int level) {
-    return this.setPosition(ElevatorConstants.kReefPositions[level].in(Rotations));
+    return this.setPosition(ElevatorConstants.kReefPositions[level].in(Rotations))
+        .withName("toReefLevel" + level);
   }
 
   public Command toDealgaeLevel(int level) {
-    return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations));
-  }
-
-  public Command toDealgaePrehomeLevel(int level) {
-    return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations) + .6);
+    return this.setPosition(ElevatorConstants.kDealgaePositions[level].in(Rotations))
+        .withName("toDealgaeLevel" + level);
   }
 
   public Command toBargePosition() {
-    return this.setPosition(ElevatorConstants.bargePosition.in(Rotations));
+    return this.setPosition(ElevatorConstants.bargePosition.in(Rotations))
+        .withName("toBargePosition");
   }
 
   public Command toProcessorPosition() {
-    return this.setPosition(ElevatorConstants.processorPosition.in(Rotations));
+    return this.setPosition(ElevatorConstants.processorPosition.in(Rotations))
+        .withName("toProcessorPosition");
   }
 
   public Command toGroundAlgaePosition() {
-    return this.setPosition(ElevatorConstants.groundAlgaePosition.in(Rotations));
-  }
-
-  public Command toArmSafePosition() {
-    return this.setPosition(ElevatorConstants.armSafePosition.in(Rotations));
+    return this.setPosition(ElevatorConstants.groundAlgaePosition.in(Rotations))
+        .withName("toGroundAlgaePosition");
   }
 
   @AutoLogOutput
@@ -114,14 +110,6 @@ public class Elevator extends DisableSubsystem {
   }
 
   public Command toHome() {
-    return this.setPosition(ElevatorConstants.homePosition.in(Rotations));
+    return this.setPosition(ElevatorConstants.homePosition.in(Rotations)).withName("toHome");
   }
-
-  // Careful!
-  public TalonFX getMotor() {
-    return motorIO.getMotor();
-  }
-
-  // TODO: Grab coral level from NT/selector
-
 }

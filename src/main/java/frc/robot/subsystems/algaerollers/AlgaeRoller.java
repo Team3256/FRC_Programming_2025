@@ -37,18 +37,18 @@ public class AlgaeRoller extends DisableSubsystem {
   }
 
   public Command setIntakeVoltage() {
-    return setVoltage(AlgaeRollerConstants.intakeVoltage);
+    return setVoltage(AlgaeRollerConstants.intakeVoltage).withName("setIntakeVoltage");
   }
 
   public Command setProcessorVoltage() {
-    return setVoltage(AlgaeRollerConstants.processorVoltage);
+    return setVoltage(AlgaeRollerConstants.processorVoltage).withName("setProcessorVoltage");
   }
 
   public Command setL1Voltage() {
-    return setVoltage(AlgaeRollerConstants.l1Voltage);
+    return setVoltage(AlgaeRollerConstants.l1Voltage).withName("setL1Voltage");
   }
 
   public Command off() {
-    return this.runOnce(algaeRollerIO::algaeOff);
+    return this.runOnce(algaeRollerIO::algaeOff).withName("off");
   }
 }

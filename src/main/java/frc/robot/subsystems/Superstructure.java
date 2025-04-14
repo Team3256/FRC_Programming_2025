@@ -182,7 +182,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PROCESSOR)
         .onTrue(elevator.toProcessorPosition())
-        .onTrue(algaeArm.toPartialDeploy())
+        .onTrue(algaeArm.toGroundAlgae())
         .and(elevator.reachedPosition)
         .debounce(.04) // wait two loop times
         .onTrue(arm.toProcessorLevel());

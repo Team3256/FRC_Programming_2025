@@ -61,7 +61,7 @@ public class Climb extends DisableSubsystem {
   }
 
   public Command setVoltage(double voltage) {
-    return this.run(() -> climbIO.setVoltage(voltage));
+    return this.run(() -> climbIO.setVoltage(voltage)).withName("setVoltage_" + voltage);
   }
 
   public Command off() {

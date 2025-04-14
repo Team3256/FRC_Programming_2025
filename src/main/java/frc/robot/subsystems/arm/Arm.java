@@ -88,30 +88,33 @@ public class Arm extends DisableSubsystem {
 
   public Command toReefLevel(int level, BooleanSupplier rightSide) {
     return setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.reefRightPositions[level]
-                : ArmConstants.reefLeftPositions[level],
-        true,
-        () -> 0);
+            () ->
+                rightSide.getAsBoolean()
+                    ? ArmConstants.reefRightPositions[level]
+                    : ArmConstants.reefLeftPositions[level],
+            true,
+            () -> 0)
+        .withName("toReefLevel_" + level);
   }
 
   public Command toDealgaeLevel(int level, BooleanSupplier rightSide) {
     return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.dealgaeRightPosition[level]
-                : ArmConstants.dealgaeLeftPosition[level],
-        true,
-        () -> 0);
+            () ->
+                rightSide.getAsBoolean()
+                    ? ArmConstants.dealgaeRightPosition[level]
+                    : ArmConstants.dealgaeLeftPosition[level],
+            true,
+            () -> 0)
+        .withName("toDealgaeLevel_" + level);
   }
 
   public Command toClimb() {
-    return this.setPosition(() -> ArmConstants.climbPosition, true, () -> 0);
+    return this.setPosition(() -> ArmConstants.climbPosition, true, () -> 0).withName("toClimb");
   }
 
   public Command toProcessorLevel() {
-    return this.setPosition(() -> ArmConstants.processorRightPosition, true, () -> 0);
+    return this.setPosition(() -> ArmConstants.processorRightPosition, true, () -> 0)
+        .withName("toProcessorLevel");
   }
 
   @AutoLogOutput
@@ -121,21 +124,24 @@ public class Arm extends DisableSubsystem {
   }
 
   public Command toSourceLevel() {
-    return this.setPosition(() -> ArmConstants.sourcePosition, true, () -> 0);
+    return this.setPosition(() -> ArmConstants.sourcePosition, true, () -> 0)
+        .withName("toSourceLevel");
   }
 
   public Command toBargeLevel(BooleanSupplier rightSide) {
     return this.setPosition(
-        () ->
-            rightSide.getAsBoolean()
-                ? ArmConstants.bargeRightPosition
-                : ArmConstants.bargeLeftPosition,
-        true,
-        () -> 0);
+            () ->
+                rightSide.getAsBoolean()
+                    ? ArmConstants.bargeRightPosition
+                    : ArmConstants.bargeLeftPosition,
+            true,
+            () -> 0)
+        .withName("toBargeLevel");
   }
 
   public Command toGroundAlgaeLevel() {
-    return this.setPosition(() -> ArmConstants.groundAlgaeRightPosition, true, () -> 0);
+    return this.setPosition(() -> ArmConstants.groundAlgaeRightPosition, true, () -> 0)
+        .withName("toGroundAlgaeLevel");
   }
 
   @AutoLogOutput
@@ -145,16 +151,11 @@ public class Arm extends DisableSubsystem {
   }
 
   public Command toHome() {
-    return this.setPosition(ArmConstants.homePosition, true, 0);
-  }
-
-  public Command toHome(BooleanSupplier preferRightSide) {
-    return this.setPosition(
-        () -> ArmConstants.homePosition, true, () -> preferRightSide.getAsBoolean() ? -1 : 1);
+    return this.setPosition(ArmConstants.homePosition, true, 0).withName("toHome");
   }
 
   public Command off() {
-    return this.runOnce(armIO::off);
+    return this.runOnce(armIO::off).withName("off");
   }
 
   public Angle continuousWrapAtHome(Angle angle, int direction) {

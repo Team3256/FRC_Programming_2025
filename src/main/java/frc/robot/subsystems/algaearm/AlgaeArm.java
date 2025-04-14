@@ -70,23 +70,25 @@ public class AlgaeArm extends DisableSubsystem {
   }
 
   public Command toHome() {
-    return this.setPosition(AlgaeArmConstants.homePosition);
+    return this.setPosition(AlgaeArmConstants.homePosition).withName("toHome");
   }
 
   public Command toGroundAlgae() {
     return this.setPosition(AlgaeArmConstants.groundAlgaePosition)
         .until(reachedPosition.debounce(.03))
-        .andThen(this.off());
+        .andThen(this.off())
+        .withName("toGroundAlgae");
   }
 
   public Command toPartialDeploy() {
     return this.setPosition(AlgaeArmConstants.partialDeploy)
         .until(reachedPosition.debounce(.03))
-        .andThen(this.off());
+        .andThen(this.off())
+        .withName("toPartialDeploy");
   }
 
   public Command toL1() {
-    return this.setPosition(AlgaeArmConstants.l1Position);
+    return this.setPosition(AlgaeArmConstants.l1Position).withName("toL1");
   }
 
   public Command off() {
