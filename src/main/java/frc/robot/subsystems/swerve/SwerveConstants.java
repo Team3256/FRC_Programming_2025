@@ -29,19 +29,10 @@ public final class SwerveConstants {
   public static final Rotation2d processorFar = new Rotation2d(Math.PI);
 
   // barge
-  public static final Rotation2d bargeClose = new Rotation2d((Math.PI / 2) + 0);
+  public static final Rotation2d bargeClose = new Rotation2d((Math.PI / 2));
   public static final Rotation2d bargeFar = new Rotation2d(((Math.PI / 2) + Math.PI));
 
-  // angle backups
-  public static final Rotation2d reefAB = Rotation2d.fromDegrees(90 - 5);
-  public static final Rotation2d reefCD = Rotation2d.fromDegrees(149 - 5);
-  public static final Rotation2d reefEF = Rotation2d.fromDegrees(-150 - 5);
-  public static final Rotation2d reefGH = Rotation2d.fromDegrees(-90 - 5);
-  public static final Rotation2d reefIJ = Rotation2d.fromDegrees(-30 - 5);
-  public static final Rotation2d reefKL = Rotation2d.fromDegrees(30 - 5);
-
-  public static final double aziTimeout = 1;
-  public static final double aziTimeout2 = 1.2;
+  public static final double aziTimeout = 1.2;
 
   public static final Mass robotMass = Pounds.of(120);
   public static final MomentOfInertia robotMOI = KilogramSquareMeters.of(36);

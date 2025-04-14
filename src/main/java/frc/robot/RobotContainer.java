@@ -340,7 +340,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceLeft1))
-                .withTimeout(aziTimeout2));
+                .withTimeout(aziTimeout));
 
     m_driverController
         .b()
@@ -352,7 +352,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(sourceRight2))
-                .withTimeout(aziTimeout2));
+                .withTimeout(aziTimeout));
 
     m_driverController
         .povUp()
@@ -364,7 +364,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(processorClose)) // doubles as climb facing cage
-                .withTimeout(aziTimeout2));
+                .withTimeout(aziTimeout));
 
     m_driverController
         .povDown()
@@ -377,7 +377,7 @@ public class RobotContainer {
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(
                                 processorFar)) // doubles as climb from opposite side facing DS
-                .withTimeout(aziTimeout2));
+                .withTimeout(aziTimeout));
 
     new Trigger(() -> (m_driverController.getRightY() < -0.3))
         .onTrue(
@@ -388,7 +388,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(bargeClose))
-                .withTimeout(aziTimeout2));
+                .withTimeout(aziTimeout));
 
     new Trigger(() -> (m_driverController.getRightY() > 0.3))
         .onTrue(
@@ -399,7 +399,7 @@ public class RobotContainer {
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                             .withTargetDirection(bargeFar))
-                .withTimeout(aziTimeout2));
+                .withTimeout(aziTimeout));
 
     m_driverController
         .rightBumper()
