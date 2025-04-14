@@ -1,5 +1,5 @@
 {
- "name":"Source1-K",
+ "name":"SourceLeft-K",
  "version":1,
  "snapshot":{
   "waypoints":[
@@ -17,9 +17,9 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"Source1.x", "val":1.554587960243225}, "y":{"exp":"Source1.y", "val":7.353943824768066}, "heading":{"exp":"0.6211165744975969 rad", "val":0.6211165744975969}, "intervals":33, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"SourceLeft.x", "val":1.554587960243225}, "y":{"exp":"SourceLeft.y", "val":7.353943824768066}, "heading":{"exp":"SourceLeft.heading", "val":0.6211165744975969}, "intervals":33, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"3.7741193771362305 m", "val":3.7741193771362305}, "y":{"exp":"5.738690376281738 m", "val":5.738690376281738}, "heading":{"exp":"0.5235987755982988 rad", "val":0.5235987755982988}, "intervals":14, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
-    {"x":{"exp":"K.x", "val":4.03}, "y":{"exp":"K.y", "val":5.22}, "heading":{"exp":"0.5235987755982988 rad", "val":0.5235987755982988}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"K.x", "val":4.03}, "y":{"exp":"K.y", "val":5.22}, "heading":{"exp":"K.heading", "val":0.5235987755982988}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},

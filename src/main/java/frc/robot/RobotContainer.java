@@ -293,15 +293,12 @@ public class RobotContainer {
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
     autoChooser.addRoutine("l4CenterPreload_H", m_autoRoutines::l4PreloadH);
     autoChooser.addRoutine("l4CenterPreload_G", m_autoRoutines::l4PreloadG);
-    autoChooser.addRoutine("mobilityTop", m_autoRoutines::mobilityTop);
-    autoChooser.addRoutine("mobilityBottom", m_autoRoutines::mobilityBottom);
-    autoChooser.addRoutine(
-        "l4CenterPreloadRightSource1", m_autoRoutines::l4CenterPreloadRightSource1);
-    autoChooser.addRoutine(
-        "l4CenterPreloadRightSource2", m_autoRoutines::l4CenterPreloadRightSource2);
-    autoChooser.addRoutine("Right 3L4 FCD", m_autoRoutines::l4RightPreloadRightSource2);
+    autoChooser.addRoutine("Mobility Left", m_autoRoutines::mobilityLeft);
+    autoChooser.addRoutine("Mobility Right", m_autoRoutines::mobilityRight);
+    autoChooser.addRoutine("Center 3L4 GCD", m_autoRoutines::l4CenterPreloadRightSourceRight);
+    autoChooser.addRoutine("Right 3L4 FCD", m_autoRoutines::l4RightPreloadRightSourceRight);
 
-    autoChooser.addRoutine("Left 3L4 IKL", m_autoRoutines::l4LeftPreloadLeftSource1);
+    autoChooser.addRoutine("Left 3L4 IKL", m_autoRoutines::l4LeftPreloadLeftSourceLeft);
     autoChooser.addRoutine("dealgae2LeftPreloadL4_H", m_autoRoutines::dealgae2LeftPreloadL4H);
 
     SmartDashboard.putData("auto chooser", autoChooser);

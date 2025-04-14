@@ -53,23 +53,15 @@ public class AutoRoutines {
     m_autoCommands = new AutoCommands(elevator, arm, endEffector);
   }
 
-  public AutoRoutine simplePathAuto() {
-    final AutoRoutine routine = m_factory.newRoutine("funny");
-    final AutoTrajectory simplePath = routine.trajectory("funny");
-
-    routine.active().onTrue(simplePath.resetOdometry().andThen(simplePath.cmd()));
-    return routine;
-  }
-
-  public AutoRoutine mobilityTop() {
-    final AutoRoutine routine = m_factory.newRoutine("mobilityTop");
+  public AutoRoutine mobilityLeft() {
+    final AutoRoutine routine = m_factory.newRoutine("mobilityLeft");
     final AutoTrajectory mobilityTop = routine.trajectory("MobilityTop");
     routine.active().onTrue(mobilityTop.resetOdometry().andThen(mobilityTop.cmd()));
     return routine;
   }
 
-  public AutoRoutine mobilityBottom() {
-    final AutoRoutine routine = m_factory.newRoutine("mobilityBottom");
+  public AutoRoutine mobilityRight() {
+    final AutoRoutine routine = m_factory.newRoutine("mobilityRight");
     final AutoTrajectory mobilityBottom = routine.trajectory("MobilityBottom");
     routine.active().onTrue(mobilityBottom.resetOdometry().andThen(mobilityBottom.cmd()));
     return routine;
@@ -148,12 +140,12 @@ public class AutoRoutines {
   }
 
   public AutoRoutine test() {
-    final AutoRoutine routine = m_factory.newRoutine("l4CenterPreloadRightSource2");
+    final AutoRoutine routine = m_factory.newRoutine("l4CenterPreloadRightSourceRight");
     final AutoTrajectory preloadH = routine.trajectory("MID-H");
-    final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
-    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
-    final AutoTrajectory CtoSource = routine.trajectory("C-Source2");
-    final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
+    final AutoTrajectory HtoSource = routine.trajectory("H-SourceRight");
+    final AutoTrajectory SourceToC = routine.trajectory("SourceRight-C");
+    final AutoTrajectory CtoSource = routine.trajectory("C-SourceRight");
+    final AutoTrajectory SourceToD = routine.trajectory("SourceRight-D");
 
     routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
     preloadH.done().onTrue(HtoSource.spawnCmd());
@@ -165,132 +157,37 @@ public class AutoRoutines {
     return routine;
   }
 
-  public AutoRoutine l4CenterPreloadRightSource1() {
-    final AutoRoutine routine = m_factory.newRoutine("l4CenterPreloadRightSource1");
-    final AutoTrajectory preloadH = routine.trajectory("MID-H");
-    final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
-    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
-
-    routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
-    preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
-    preloadH
-        .done()
-        .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
-                .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
-                .andThen(
-                    m_autoCommands
-                        .home()
-                        .alongWith(Commands.waitSeconds(.5).andThen(HtoSource.spawnCmd()))));
-
-    HtoSource.atTimeBeforeEnd(.5)
-        .onTrue(
-            m_autoCommands
-                .goToSource()
-                .until(m_endEffector.coralBeamBreak)
-                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
-    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
-    SourceToC.done()
-        .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
-                .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
-                .andThen(m_autoCommands.home()));
-
-    return routine;
+  public AutoRoutine l4CenterPreloadRightSourceRight() {
+    return genericL4RightPreloadRightSourceRight(
+        "l4CenterPreloadRightSourceRight",
+        "MID-G",
+        "G-SourceRight",
+        "SourceRight-C",
+        "C-SourceRight",
+        "SourceRight-D");
   }
 
-  public AutoRoutine l4CenterPreloadRightSource2() {
-    final AutoRoutine routine = m_factory.newRoutine("l4CenterPreloadRightSource2");
-    final AutoTrajectory preloadH = routine.trajectory("MID-H");
-    final AutoTrajectory HtoSource = routine.trajectory("H-Source2");
-    final AutoTrajectory SourceToC = routine.trajectory("Source2-C");
-    final AutoTrajectory CToSource = routine.trajectory("C-Source2");
-    final AutoTrajectory SourceToD = routine.trajectory("Source2-D");
-
-    routine.active().onTrue(preloadH.resetOdometry().andThen(preloadH.cmd()));
-    preloadH.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
-    preloadH
-        .done()
-        .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
-                .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
-                .deadlineFor(
-                    m_drivetrain.pidToPose(
-                        () -> preloadH.getFinalPose().orElse(CoralTargets.BLUE_H.location)))
-                .andThen(
-                    m_autoCommands
-                        .home()
-                        .alongWith(Commands.waitSeconds(.5).andThen(HtoSource.spawnCmd()))));
-
-    HtoSource.atTimeBeforeEnd(.5)
-        .onTrue(
-            m_autoCommands
-                .goToSource()
-                .until(m_endEffector.coralBeamBreak)
-                .deadlineFor(
-                    m_drivetrain.pidToPose(
-                        () ->
-                            HtoSource.getFinalPose()
-                                .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
-                .andThen(m_autoCommands.home().alongWith(SourceToC.spawnCmd())));
-    SourceToC.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
-    SourceToC.done()
-        .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
-                .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
-                .deadlineFor(
-                    m_drivetrain.pidToPose(
-                        () -> SourceToC.getFinalPose().orElse(CoralTargets.BLUE_C.location)))
-                .andThen(
-                    m_autoCommands
-                        .home()
-                        .alongWith(Commands.waitSeconds(.5).andThen(CToSource.spawnCmd()))));
-
-    CToSource.atTimeBeforeEnd(.5)
-        .onTrue(
-            m_autoCommands
-                .goToSource()
-                .until(m_endEffector.coralBeamBreak)
-                .deadlineFor(
-                    m_drivetrain.pidToPose(
-                        () ->
-                            CToSource.getFinalPose()
-                                .orElse(SourceIntakeTargets.SOURCE_R_BLUE.location)))
-                .andThen(m_autoCommands.home().alongWith(SourceToD.spawnCmd())));
-    SourceToD.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
-    SourceToD.done()
-        .onTrue(
-            Commands.waitUntil(m_arm.reachedPosition.and(m_elevator.reachedPosition).debounce(.1))
-                .andThen(m_autoCommands.scoreL4())
-                .until(m_endEffector.coralBeamBreak.negate())
-                .deadlineFor(
-                    m_drivetrain.pidToPose(
-                        () -> SourceToD.getFinalPose().orElse(CoralTargets.BLUE_D.location)))
-                .andThen(m_autoCommands.home()));
-
-    return routine;
-  }
-
-  public AutoRoutine l4RightPreloadRightSource2() {
-    return genericL4RightPreloadRightSource2(
-        "l4RightPreloadRightSource2",
+  public AutoRoutine l4RightPreloadRightSourceRight() {
+    return genericL4RightPreloadRightSourceRight(
+        "l4RightPreloadRightSourceRight",
         "RIGHT-F",
-        "F-Source2",
-        "Source2-C",
-        "C-Source2",
-        "Source2-D");
+        "F-SourceRight",
+        "SourceRight-C",
+        "C-SourceRight",
+        "SourceRight-D");
   }
 
-  public AutoRoutine l4LeftPreloadLeftSource1() {
-    return genericL4RightPreloadRightSource2(
-        "l4LeftPreloadLeftSource2", "LEFT-I", "I-Source1", "Source1-K", "K-Source1", "Source1-L");
+  public AutoRoutine l4LeftPreloadLeftSourceLeft() {
+    return genericL4RightPreloadRightSourceRight(
+        "l4LeftPreloadLeftSourceRight",
+        "LEFT-I",
+        "I-SourceLeft",
+        "SourceLeft-K",
+        "K-SourceLeft",
+        "SourceLeft-L");
   }
 
-  private AutoRoutine genericL4RightPreloadRightSource2(
+  private AutoRoutine genericL4RightPreloadRightSourceRight(
       String name,
       String preloadTraj,
       String preloadToSourceTraj,
