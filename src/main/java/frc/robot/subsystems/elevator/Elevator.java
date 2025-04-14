@@ -10,8 +10,6 @@ package frc.robot.subsystems.elevator;
 import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.utils.DisableSubsystem;
@@ -91,17 +89,6 @@ public class Elevator extends DisableSubsystem {
 
   public Command toBargePosition() {
     return this.setPosition(ElevatorConstants.bargePosition.in(Rotations));
-  }
-
-  public Angle getModulusPosition() {
-    return Rotations.of(
-        MathUtil.inputModulus(
-                (motorIOAutoLogged.encoderAAbsolutePosition
-                    - motorIOAutoLogged.encoderBAbsolutePosition),
-                0,
-                1)
-            * ((double) ElevatorConstants.kEncoderBTeethCount
-                / (ElevatorConstants.kEncoderBTeethCount - ElevatorConstants.kEncoderATeethCount)));
   }
 
   public Command toProcessorPosition() {

@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.button.InternalButton;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.FeatureFlags;
 import frc.robot.commands.AutoRoutines;
 import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
@@ -60,7 +59,6 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.utils.MappedXboxController;
 import frc.robot.utils.autoaim.AutoAim;
 import frc.robot.utils.autoaim.CoralTargets;
-import frc.robot.utils.ratelimiter.AdaptiveSlewRateLimiter;
 import java.util.List;
 
 /**
@@ -126,19 +124,6 @@ public class RobotContainer {
                   () -> drivetrain.getState().Pose)
               : new VisionIOPhotonVision(
                   VisionConstants.frontCam, VisionConstants.robotToFrontCam));
-  /* Swerve Rate Limiting */
-  private final AdaptiveSlewRateLimiter swerveVelXRateLimiter =
-      new AdaptiveSlewRateLimiter(
-          ControllerConstants.DriverConstants.kSwerveVelXAccelRateLimit,
-          ControllerConstants.DriverConstants.kSwerveVelXDecelRateLimit);
-  private final AdaptiveSlewRateLimiter swerveVelYRateLimiter =
-      new AdaptiveSlewRateLimiter(
-          ControllerConstants.DriverConstants.kSwerveVelYAccelRateLimit,
-          ControllerConstants.DriverConstants.kSwerveVelYDecelRateLimit);
-  private final AdaptiveSlewRateLimiter swerveAngVelRateLimiter =
-      new AdaptiveSlewRateLimiter(
-          ControllerConstants.DriverConstants.kSwerveAngVelAccelRateLimit,
-          ControllerConstants.DriverConstants.kSwerveAngVelDecelRateLimit);
 
   private final AutoRoutines m_autoRoutines;
   private AutoChooser autoChooser = new AutoChooser();
@@ -291,15 +276,15 @@ public class RobotContainer {
 
     // Add options to the chooser
     autoChooser.addCmd("Wheel Radius Change", () -> drivetrain.wheelRadiusCharacterization(1));
-    autoChooser.addRoutine("l4CenterPreload_H", m_autoRoutines::l4PreloadH);
-    autoChooser.addRoutine("l4CenterPreload_G", m_autoRoutines::l4PreloadG);
+    autoChooser.addRoutine("Center 1L4-H Preload", m_autoRoutines::l4PreloadH);
+    autoChooser.addRoutine("Center 1L4-G Preload", m_autoRoutines::l4PreloadG);
     autoChooser.addRoutine("Mobility Left", m_autoRoutines::mobilityLeft);
     autoChooser.addRoutine("Mobility Right", m_autoRoutines::mobilityRight);
-    autoChooser.addRoutine("Center 3L4 GCD", m_autoRoutines::l4CenterPreloadRightSourceRight);
-    autoChooser.addRoutine("Right 3L4 FCD", m_autoRoutines::l4RightPreloadRightSourceRight);
+    autoChooser.addRoutine("Center 3L4-GCD", m_autoRoutines::l4CenterPreloadRightSourceRight);
+    autoChooser.addRoutine("Right 3L4-FCD", m_autoRoutines::l4RightPreloadRightSourceRight);
 
-    autoChooser.addRoutine("Left 3L4 IKL", m_autoRoutines::l4LeftPreloadLeftSourceLeft);
-    autoChooser.addRoutine("dealgae2LeftPreloadL4_H", m_autoRoutines::dealgae2LeftPreloadL4H);
+    autoChooser.addRoutine("Left 3L4-IKL", m_autoRoutines::l4LeftPreloadLeftSourceLeft);
+    autoChooser.addRoutine("Center 1L4-H 2Barge-GH_IJ", m_autoRoutines::dealgae2LeftPreloadL4H);
 
     SmartDashboard.putData("auto chooser", autoChooser);
 
@@ -325,29 +310,14 @@ public class RobotContainer {
     azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
     azimuth.HeadingController.setPID(6, 0, 0);
 
-    if (FeatureFlags.kSwerveAccelerationLimitingEnabled) {
-      drivetrain.setDefaultCommand(
-          drivetrain.applyRequest(
-              () ->
-                  drive
-                      .withVelocityX(
-                          swerveVelXRateLimiter.calculate(
-                              -m_driverController.getLeftY() * MaxSpeed))
-                      .withVelocityY(
-                          swerveVelYRateLimiter.calculate(
-                              -m_driverController.getLeftX() * MaxSpeed))
-                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
-
-    } else {
-      drivetrain.setDefaultCommand(
-          // Drivetrain will execute this command periodically
-          drivetrain.applyRequest(
-              () ->
-                  drive
-                      .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                      .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                      .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
-    }
+    drivetrain.setDefaultCommand(
+        // Drivetrain will execute this command periodically
+        drivetrain.applyRequest(
+            () ->
+                drive
+                    .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
+                    .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
 
     m_driverController
         .leftBumper()
@@ -435,29 +405,17 @@ public class RobotContainer {
         .rightBumper()
         .whileTrue(
             drivetrain.pidXLocked(
-                () -> {
-                  return 7.75;
-                },
-                () -> {
-                  return -m_driverController.getLeftX() * MaxSpeed;
-                },
-                () -> {
-                  return -m_driverController.getTriggerAxes() * MaxAngularRate;
-                }));
+                () -> 7.75,
+                () -> -m_driverController.getLeftX() * MaxSpeed,
+                () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
     m_driverController
         .a()
         .whileTrue(
             drivetrain.pidXLocked(
-                () -> {
-                  return 7.75 + 2.5;
-                },
-                () -> {
-                  return -m_driverController.getLeftX() * MaxSpeed;
-                },
-                () -> {
-                  return -m_driverController.getTriggerAxes() * MaxAngularRate;
-                }));
+                () -> 7.75 + 2.5,
+                () -> -m_driverController.getLeftX() * MaxSpeed,
+                () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
     m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 

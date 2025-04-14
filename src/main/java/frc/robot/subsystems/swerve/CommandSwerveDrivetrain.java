@@ -326,11 +326,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         () -> this.getState().Pose, this::resetPose, this::followPath, true, this, trajLogger);
   }
 
-  public void resetOdometryAndPose(Pose2d pose) {
-    super.resetPose(pose);
-    this.questNav.resetPose(new Pose3d(pose));
-  }
-
   /**
    * Returns a command that applies the specified control request to this swerve drivetrain.
    *
@@ -407,15 +402,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   public Command sysIdTranslationDynamic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineTranslation.dynamic(direction);
-  }
-
-  public Command driveVelocityFieldRelative(Supplier<ChassisSpeeds> speeds) {
-    return this.applyRequest(m_pathApplyFieldSpeeds.withSpeeds(speeds.get()))
-        .alongWith(Commands.print(speeds.get().toString()));
-  }
-
-  public ChassisSpeeds getVelocityFieldRelative() {
-    return this.getState().Speeds;
   }
 
   @Override

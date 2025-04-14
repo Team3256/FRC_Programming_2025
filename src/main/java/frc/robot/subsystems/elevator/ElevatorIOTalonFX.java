@@ -31,35 +31,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final StatusSignal<Current> motorStatorCurrent = motor.getStatorCurrent();
   private final StatusSignal<Current> motorSupplyCurrent = motor.getSupplyCurrent();
 
-  // private final CANcoder encoderA = new
-  // CANcoder(ElevatorConstants.kEncoderAID);
-  // private final CANcoder encoderB = new
-  // CANcoder(ElevatorConstants.kEncoderBID);
-  //
-  // private final StatusSignal<Angle> encoderARawPosition =
-  // encoderA.getPosition();
-  // private final StatusSignal<Angle> encoderAAbsolutePosition =
-  // encoderA.getAbsolutePosition();
-  // private final StatusSignal<AngularVelocity> encoderAVelocity =
-  // encoderA.getVelocity();
-  //
-  // private final StatusSignal<Angle> encoderBRawPosition =
-  // encoderB.getPosition();
-  // private final StatusSignal<Angle> encoderBAbsolutePosition =
-  // encoderB.getAbsolutePosition();
-  // private final StatusSignal<AngularVelocity> encoderBVelocity =
-  // encoderB.getVelocity();
-
   public ElevatorIOTalonFX() {
     PhoenixUtil.applyMotorConfigs(
         motor, ElevatorConstants.kMotorConfig, ElevatorConstants.kFlashConfigRetries);
-
-    // PhoenixUtil.applyCancoderConfig(
-    // encoderA, ElevatorConstants.kEncoderAConfig,
-    // ElevatorConstants.kFlashConfigRetries);
-    // PhoenixUtil.applyCancoderConfig(
-    // encoderB, ElevatorConstants.kEncoderBConfig,
-    // ElevatorConstants.kFlashConfigRetries);
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         ElevatorConstants.kStatusSignalUpdateFrequency,

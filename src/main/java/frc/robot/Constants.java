@@ -28,15 +28,6 @@ public final class Constants {
     public static class DriverConstants {
       public static final double kStickDeadband = 0.05;
       public static final double kRotationalDeadband = 0.1;
-
-      public static final double kSwerveVelXAccelRateLimit = 0.5;
-      public static final double kSwerveVelXDecelRateLimit = 0.5;
-
-      public static final double kSwerveVelYAccelRateLimit = 0.5;
-      public static final double kSwerveVelYDecelRateLimit = 0.5;
-
-      public static final double kSwerveAngVelAccelRateLimit = 0.5;
-      public static final double kSwerveAngVelDecelRateLimit = 0.5;
     }
   }
 
@@ -59,14 +50,6 @@ public final class Constants {
     public static final boolean kEpilogueEnabled = true;
     // If true, the LoggedTunableNumber will work and do TunableNumber things
     public static final boolean kTuningModeEnabled = false;
-    // Toggle whether the controller map should dump
-    public static final boolean kControllerMapEnabled = true;
-
-    public static final boolean kSwerveEnabled = true;
-    public static final boolean kVisionEnabled = false;
-    public static final boolean kSwerveAccelerationLimitingEnabled = false;
-    public static final boolean kAutoAlignEnabled = true; // safety switch
-    public static final boolean kAutoAlignPreferRepulsorPF = true;
 
     public static final boolean kPhotonEnabled = false;
   }
