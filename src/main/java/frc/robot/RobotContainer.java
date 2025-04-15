@@ -51,6 +51,7 @@ import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.led.IndicatorAnimation;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -293,11 +294,6 @@ public class RobotContainer {
   }
 
   private void configureSwerve() {
-    // LinearVelocity is a vector, so we need to get the magnitude
-    final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
-    final double MaxAngularRate = 1.5 * Math.PI;
-    final double SlowMaxSpeed = MaxSpeed * 0.3;
-    final double SlowMaxAngular = MaxAngularRate * 0.4;
 
     SwerveRequest.FieldCentric drive =
         new SwerveRequest.FieldCentric()
@@ -311,7 +307,6 @@ public class RobotContainer {
     azimuth.HeadingController.setPID(6, 0, 0);
 
     drivetrain.setDefaultCommand(
-        // Drivetrain will execute this command periodically
         drivetrain.applyRequest(
             () ->
                 drive
@@ -405,7 +400,7 @@ public class RobotContainer {
         .rightBumper()
         .whileTrue(
             drivetrain.pidXLocked(
-                () -> 7.75,
+                () -> bargeCloseX,
                 () -> -m_driverController.getLeftX() * MaxSpeed,
                 () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
@@ -413,7 +408,7 @@ public class RobotContainer {
         .a()
         .whileTrue(
             drivetrain.pidXLocked(
-                () -> 7.75 + 2.5,
+                () -> bargeFarX,
                 () -> -m_driverController.getLeftX() * MaxSpeed,
                 () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
@@ -422,7 +417,8 @@ public class RobotContainer {
     new Trigger(
             () ->
                 ((superstructure.getState() != StructureState.GROUND_ALGAE)
-                        && superstructure.getState() != StructureState.PROCESSOR)
+                        && (superstructure.getState() != StructureState.PROCESSOR)
+                        && (superstructure.getState()) != StructureState.BARGE)
                     && (m_driverController.povLeft().getAsBoolean()))
         .whileTrue(
             Commands.parallel(
@@ -432,22 +428,13 @@ public class RobotContainer {
     new Trigger(
             () ->
                 ((superstructure.getState() != StructureState.GROUND_ALGAE)
-                        && superstructure.getState() != StructureState.PROCESSOR)
+                        && (superstructure.getState() != StructureState.PROCESSOR)
+                        && (superstructure.getState()) != StructureState.BARGE)
                     && (m_driverController.povRight().getAsBoolean()))
         .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(
                     () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false))));
-
-    /* switch for left handed, boolean is true, pov left
-    //    m_driverController
-    //        .povRight()
-    //        .whileTrue(
-    //            Commands.parallel(
-    //                drivetrain.pidToPose(
-    //                    () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose,
-    // false))));
-    */
 
     m_driverController
         .povLeft()
@@ -460,7 +447,6 @@ public class RobotContainer {
         .or(m_driverController.povLeft())
         .or(m_driverController.a())
         .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(true)));
-    // Auto Align end
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 

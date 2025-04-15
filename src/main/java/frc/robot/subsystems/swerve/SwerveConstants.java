@@ -16,27 +16,34 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 
 public final class SwerveConstants {
+  // LinearVelocity is a vector, so we need to get the magnitude
+  public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
+  public static final double MaxAngularRate = 1.5 * Math.PI;
+  public static final double SlowMaxSpeed = MaxSpeed * 0.3;
+  public static final double SlowMaxAngular = MaxAngularRate * 0.4;
 
-  // source 1, 5 degree overshoot for weight drag from elevator // + (2 * Math.PI)
+  // source 1, 5 degree overshoot for weight drag from elevator
   // overshoot if weight concentrated = (0.0872665)
   public static final Rotation2d sourceLeft1 = new Rotation2d(0.696);
-
-  // source 2, 5 degree overshoot
   public static final Rotation2d sourceRight2 = new Rotation2d(2.527);
 
   // climb and processor - close preset doubles as climb target facing cage, same for far presets
   public static final Rotation2d processorClose = new Rotation2d(0);
   public static final Rotation2d processorFar = new Rotation2d(Math.PI);
 
-  // barge
+  // barge targets
   public static final Rotation2d bargeClose = new Rotation2d((Math.PI / 2));
   public static final Rotation2d bargeFar = new Rotation2d(((Math.PI / 2) + Math.PI));
+  public static final double bargeCloseX = 7.66;
+  public static final double bargeFarX = 9.88;
 
   public static final double aziTimeout = 1.2;
 
+  // Physics constants
   public static final Mass robotMass = Pounds.of(120);
   public static final MomentOfInertia robotMOI = KilogramSquareMeters.of(36);
 
+  // Module Locations
   public static final Translation2d frontLeft =
       new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY);
   public static final Translation2d frontRight =
