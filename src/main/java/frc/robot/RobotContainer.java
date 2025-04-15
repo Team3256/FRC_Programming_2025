@@ -305,6 +305,7 @@ public class RobotContainer {
     azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
     azimuth.HeadingController.setPID(6, 0, 0);
 
+    // Default Swerve Command, run periodically
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(
             () ->
@@ -314,7 +315,7 @@ public class RobotContainer {
                     .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
 
     m_driverController
-        .leftBumper()
+        .leftBumper("Brake / Slow Mode")
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
@@ -325,7 +326,7 @@ public class RobotContainer {
                             -m_driverController.getTriggerAxes() * SlowMaxAngular)));
 
     m_driverController
-        .x()
+        .x("Azimuth Left Source")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -337,7 +338,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .b()
+        .b("Azimuth Right Source")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -349,7 +350,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .povUp()
+        .povUp("Processor Close, Climb Facing cage")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -361,7 +362,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .povDown()
+        .povDown("Processor Far, Climb Facing DS")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -373,6 +374,7 @@ public class RobotContainer {
                                 processorFar)) // doubles as climb from opposite side facing DS
                 .withTimeout(aziTimeout));
 
+    // Azimuth Barge Close
     new Trigger(() -> (m_driverController.getRightY() < -0.3))
         .onTrue(
             drivetrain
@@ -384,6 +386,7 @@ public class RobotContainer {
                             .withTargetDirection(bargeClose))
                 .withTimeout(aziTimeout));
 
+    // Azimuth Barge Far
     new Trigger(() -> (m_driverController.getRightY() > 0.3))
         .onTrue(
             drivetrain
@@ -396,7 +399,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .rightBumper()
+        .rightBumper("Auto Align Barge Close")
         .whileTrue(
             drivetrain.pidXLocked(
                 () -> bargeCloseX,
@@ -404,15 +407,18 @@ public class RobotContainer {
                 () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
     m_driverController
-        .a()
+        .a("Auto Align Barge Far")
         .whileTrue(
             drivetrain.pidXLocked(
                 () -> bargeFarX,
                 () -> -m_driverController.getLeftX() * MaxSpeed,
                 () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
-    m_driverController.y("reset heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    m_driverController
+        .y("Reset Heading To Current")
+        .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+    // Auto Align Reef, Left Handed Target (Absolute)
     new Trigger(
             () ->
                 ((superstructure.getState() != StructureState.GROUND_ALGAE)
@@ -424,6 +430,7 @@ public class RobotContainer {
                 drivetrain.pidToPose(
                     () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true))));
 
+    // Auto Align Reef, Right Handed Target (Absolute)
     new Trigger(
             () ->
                 ((superstructure.getState() != StructureState.GROUND_ALGAE)
@@ -435,17 +442,21 @@ public class RobotContainer {
                 drivetrain.pidToPose(
                     () -> CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false))));
 
+    // Run LEDs simultaneously with Auto Align
     m_driverController
         .povLeft()
         .negate()
         .and(m_driverController.povRight().negate())
         .and(m_driverController.a().negate())
+        .and(m_driverController.rightBumper().negate())
         .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(false)));
     m_driverController
         .povRight()
         .or(m_driverController.povLeft())
         .or(m_driverController.a())
+        .or(m_driverController.rightBumper())
         .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(true)));
+
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 
