@@ -51,7 +51,6 @@ import frc.robot.subsystems.endeffector.EndEffectorIOTalonFX;
 import frc.robot.subsystems.led.IndicatorAnimation;
 import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
-import frc.robot.subsystems.swerve.SwerveConstants;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
