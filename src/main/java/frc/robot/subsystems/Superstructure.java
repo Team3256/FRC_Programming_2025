@@ -110,7 +110,7 @@ public class Superstructure {
         .get(StructureState.CLIMB)
         .onTrue(elevator.toHome())
         .onTrue(arm.toClimb())
-        .onTrue(algaeArm.toGroundAlgae());
+        .onTrue(algaeArm.toGroundAlgaeCoast());
 
     // L2 and L3 are same arm position so they are put together, once again no safety limits
     stateTriggers.get(StructureState.L2).onTrue(elevator.toReefLevel(1));
@@ -182,7 +182,7 @@ public class Superstructure {
     stateTriggers
         .get(StructureState.PROCESSOR)
         .onTrue(elevator.toProcessorPosition())
-        .onTrue(algaeArm.toGroundAlgae())
+        .onTrue(algaeArm.toGroundAlgaeCoast())
         .and(elevator.reachedPosition)
         .debounce(.04) // wait two loop times
         .onTrue(arm.toProcessorLevel());

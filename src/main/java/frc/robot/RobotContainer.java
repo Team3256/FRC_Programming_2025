@@ -209,13 +209,16 @@ public class RobotContainer {
         .Pose
         .nearest(
             List.of(
+                new Pose2d(7.197261810302734, 2.482149600982666, Rotation2d.fromDegrees(270)),
+                ChoreoAllianceFlipUtil.flip(
+                    new Pose2d(7.197261810302734, 2.482149600982666, Rotation2d.fromDegrees(270))),
                 new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270)),
                 ChoreoAllianceFlipUtil.flip(
                     new Pose2d(7.228638648986816, 4.02569580078125, Rotation2d.fromDegrees(270))),
-                new Pose2d(7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)),
+                new Pose2d(7.197261810302734, 5.6082072257995605, Rotation2d.fromDegrees(270)),
                 ChoreoAllianceFlipUtil.flip(
                     new Pose2d(
-                        7.076416492462158, 2.649582624435425, Rotation2d.fromDegrees(270)))));
+                        7.197261810302734, 5.6082072257995605, Rotation2d.fromDegrees(270)))));
   }
 
   private void configureOperatorBinds() {

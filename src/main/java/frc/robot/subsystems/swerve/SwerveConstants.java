@@ -20,12 +20,12 @@ public final class SwerveConstants {
   public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.magnitude();
   public static final double MaxAngularRate = 1.5 * Math.PI;
   public static final double SlowMaxSpeed = MaxSpeed * 0.3;
-  public static final double SlowMaxAngular = MaxAngularRate * 0.4;
+  public static final double SlowMaxAngular = MaxAngularRate * 0.3;
 
   // source 1, 5 degree overshoot for weight drag from elevator
   // overshoot if weight concentrated = (0.0872665)
-  public static final Rotation2d sourceLeft1 = new Rotation2d(0.696);
-  public static final Rotation2d sourceRight2 = new Rotation2d(2.527);
+  public static final Rotation2d sourceLeft1 = new Rotation2d(0.559); // 0.696 ccr
+  public static final Rotation2d sourceRight2 = new Rotation2d(2.46091); // 2.527 ccr
 
   // climb and processor - close preset doubles as climb target facing cage, same for far presets
   public static final Rotation2d processorClose = new Rotation2d(0);
@@ -34,8 +34,8 @@ public final class SwerveConstants {
   // barge targets
   public static final Rotation2d bargeClose = new Rotation2d((Math.PI / 2));
   public static final Rotation2d bargeFar = new Rotation2d(((Math.PI / 2) + Math.PI));
-  public static final double bargeCloseX = 7.66;
-  public static final double bargeFarX = 9.88;
+  public static final double bargeCloseX = 7.41; // 7.66 ccr
+  public static final double bargeFarX = 10.07; // 9.88 ccr
 
   public static final double aziTimeout = 1.2;
 
