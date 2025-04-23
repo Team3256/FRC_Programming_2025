@@ -444,9 +444,7 @@ public class RobotContainer {
                 () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
     // sets the heading to wherever the robot is facing
-    m_driverController
-        .y("Zero Heading")
-        .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    m_driverController.y("Zero Heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     // Auto Align Reef, Left Handed Target (Absolute)
     new Trigger(
