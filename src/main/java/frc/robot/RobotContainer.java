@@ -223,19 +223,27 @@ public class RobotContainer {
 
   private void configureOperatorBinds() {
 
+    // source
     m_operatorController
         .x("Preset for source")
         .onTrue(superstructure.setState(StructureState.PRESOURCE));
+
+    // stow everything
     m_operatorController
         .b("Home everything")
         .onTrue(superstructure.setState(StructureState.PREHOME));
+
+    // dealgae states
     m_operatorController.a("Dealgae L2").onTrue(superstructure.setState(StructureState.DEALGAE_L2));
     m_operatorController.y("Dealgae L3").onTrue(superstructure.setState(StructureState.DEALGAE_L3));
 
+    // reef states
     m_operatorController.povUp("L4 Preset").onTrue(superstructure.setState(StructureState.L4));
     m_operatorController.povRight("L3 Preset").onTrue(superstructure.setState(StructureState.L3));
     m_operatorController.povDown("L2 Preset").onTrue(superstructure.setState(StructureState.L2));
     m_operatorController.povLeft("L1 Preset").onTrue(superstructure.setState(StructureState.L1));
+
+    // change end effector side
     m_operatorController
         .rightBumper("Manipulator Side Right")
         .onTrue(superstructure.setManipulatorSide(ManipulatorSide.RIGHT));
@@ -243,33 +251,48 @@ public class RobotContainer {
         .leftBumper("Manipulator Side Left")
         .onTrue(superstructure.setManipulatorSide(ManipulatorSide.LEFT));
 
+    // outtake coral
     m_operatorController
         .rightTrigger("Score Coral")
         .onTrue(superstructure.setState(StructureState.SCORE_CORAL));
+
+    // outtake algae
     m_operatorController
         .leftTrigger("Score Algae")
         .onTrue(superstructure.setState(StructureState.SCORE_ALGAE));
 
+    // set state BARGE
     new Trigger(() -> -m_operatorController.getLeftY() > .5)
         .onTrue(superstructure.setState(StructureState.BARGE));
+
+    // set state PROCESSOR
     new Trigger(() -> -m_operatorController.getLeftY() < -.5)
         .onTrue(superstructure.setState(StructureState.PROCESSOR));
 
+    // set state CLIMB
     new Trigger(() -> m_operatorController.getLeftX() > .5)
         .onTrue(superstructure.setState(StructureState.CLIMB));
+
+    // set state GROUND ALGAE
     new Trigger(() -> m_operatorController.getLeftX() < -.5)
         .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
 
+    // climb out
     new Trigger(() -> m_operatorController.getRightX() > .5)
         .onTrue(climb.setVoltage(ClimbConstants.kUpVoltage))
         .or(new Trigger(() -> m_operatorController.getRightX() < -.5))
         .onFalse(climb.setVoltage(0));
+
+    // pull climb in
     new Trigger(() -> m_operatorController.getRightX() < -.5)
         .onTrue(climb.setVoltage(ClimbConstants.kDownVoltage));
 
+    // elevator manual up
     new Trigger(() -> -m_operatorController.getRightY() > .5)
         .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() + .1)))
         .toggleOnFalse(elevator.setPosition(elevator::getPosition));
+
+    // elevator manual down
     new Trigger(() -> -m_operatorController.getRightY() < -.5)
         .whileTrue(new ScheduleCommand(elevator.setPosition(() -> elevator.getPosition() - .1)))
         .toggleOnFalse(elevator.setPosition(elevator::getPosition));
@@ -285,7 +308,6 @@ public class RobotContainer {
     autoChooser.addRoutine("Mobility Right", m_autoRoutines::mobilityRight);
     autoChooser.addRoutine("Center 3L4-GCD", m_autoRoutines::l4CenterPreloadRightSourceRight);
     autoChooser.addRoutine("Right 3L4-FCD", m_autoRoutines::l4RightPreloadRightSourceRight);
-
     autoChooser.addRoutine("Left 3L4-IKL", m_autoRoutines::l4LeftPreloadLeftSourceLeft);
     autoChooser.addRoutine("Center 1L4-H 2Barge-GH_IJ", m_autoRoutines::dealgae2LeftPreloadL4H);
 
@@ -297,18 +319,21 @@ public class RobotContainer {
 
   private void configureSwerve() {
 
+    // Request to drive normally using input for both translation and rotation
     SwerveRequest.FieldCentric drive =
         new SwerveRequest.FieldCentric()
             .withDeadband(0.15 * MaxSpeed)
             .withRotationalRate(0.15 * MaxAngularRate);
 
+    // Request to control translation, with rotation being controlled by a heading controller
     SwerveRequest.FieldCentricFacingAngle azimuth =
         new SwerveRequest.FieldCentricFacingAngle().withDeadband(0.15 * MaxSpeed);
 
+    // Heading controller to control azimuth rotations
     azimuth.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
     azimuth.HeadingController.setPID(6, 0, 0);
 
-    // Default Swerve Command, run periodically
+    // Default Swerve Command, run periodically every 20ms
     drivetrain.setDefaultCommand(
         drivetrain.applyRequest(
             () ->
@@ -401,6 +426,7 @@ public class RobotContainer {
                             .withTargetDirection(bargeFar))
                 .withTimeout(aziTimeout));
 
+    // barge auto align - don't use
     m_driverController
         .rightBumper("Auto Align Barge Close")
         .whileTrue(
@@ -417,8 +443,9 @@ public class RobotContainer {
                 () -> -m_driverController.getLeftX() * MaxSpeed,
                 () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
 
+    // sets the heading to wherever the robot is facing
     m_driverController
-        .y("Reset Heading To Current")
+        .y("Zero Heading")
         .onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
     // Auto Align Reef, Left Handed Target (Absolute)
@@ -464,6 +491,7 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    /*
     // Logger.recordOutput(
     // "Stick Angle Radians",
     // Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
@@ -505,6 +533,7 @@ public class RobotContainer {
     // Logger.recordOutput(
     // "AutoAim/AlgaeIntakeTarget",
     // AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
+    */
     superstructure.periodic();
   }
 }
