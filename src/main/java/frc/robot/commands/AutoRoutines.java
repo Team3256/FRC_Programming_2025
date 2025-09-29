@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.algaearm.AlgaeArm;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -35,20 +34,17 @@ public class AutoRoutines {
   private final CommandSwerveDrivetrain m_drivetrain;
   private final Arm m_arm;
   private final EndEffector m_endEffector;
-  private final AlgaeArm m_algaeArm;
 
   public AutoRoutines(
       AutoFactory factory,
       Elevator elevator,
       Arm arm,
       EndEffector endEffector,
-      AlgaeArm algaeArm,
       CommandSwerveDrivetrain drivetrain) {
     m_factory = factory;
     m_elevator = elevator;
     m_arm = arm;
     m_drivetrain = drivetrain;
-    m_algaeArm = algaeArm;
     m_endEffector = endEffector;
     m_autoCommands = new AutoCommands(elevator, arm, endEffector);
   }
@@ -202,7 +198,6 @@ public class AutoRoutines {
     final AutoTrajectory SourceToD = routine.trajectory(sourceToL42Traj);
 
     routine.active().onTrue(preloadF.resetOdometry().andThen(preloadF.cmd()));
-    preloadF.atTimeBeforeEnd(.7).onTrue(m_algaeArm.toHome());
     preloadF.atTimeBeforeEnd(.8).onTrue(m_autoCommands.goToL4());
     preloadF
         .done()
@@ -280,7 +275,6 @@ public class AutoRoutines {
     final AutoTrajectory Barge2ToH = routine.trajectory("Barge2-H");
 
     routine.active().onTrue(MidToG.resetOdometry().andThen(MidToG.cmd()));
-    MidToG.atTimeBeforeEnd(.7).onTrue(m_algaeArm.toHome());
 
     MidToG.atTimeBeforeEnd(.5).onTrue(m_autoCommands.goToL4());
     MidToG.done()
