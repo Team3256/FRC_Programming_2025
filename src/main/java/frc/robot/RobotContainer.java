@@ -193,8 +193,6 @@ public class RobotContainer {
     autoAlignRunning
         .and(autoAlignedTrigger.negate())
         .onTrue(leds.animate(IndicatorAnimation.AutoAlignRunning));
-    // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
-
   }
 
   public Pose2d getClosestAlignment() {
