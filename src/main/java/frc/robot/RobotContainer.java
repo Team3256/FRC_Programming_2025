@@ -32,10 +32,6 @@ import frc.robot.sim.SimMechs;
 import frc.robot.subsystems.Superstructure;
 import frc.robot.subsystems.Superstructure.ManipulatorSide;
 import frc.robot.subsystems.Superstructure.StructureState;
-import frc.robot.subsystems.algaearm.AlgaeArm;
-import frc.robot.subsystems.algaearm.AlgaeArmTalonFX;
-import frc.robot.subsystems.algaerollers.AlgaeRoller;
-import frc.robot.subsystems.algaerollers.AlgaeRollerIOTalonFX;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.arm.ArmIOTalonFX;
@@ -85,15 +81,12 @@ public class RobotContainer {
       new Elevator(true, Utils.isSimulation() ? new ElevatorIOSim() : new ElevatorIOTalonFX());
 
   private final Arm arm = new Arm(true, Utils.isSimulation() ? new ArmIOSim() : new ArmIOTalonFX());
-  private final AlgaeRoller algaeRoller = new AlgaeRoller(true, new AlgaeRollerIOTalonFX());
   private final EndEffector endEffector =
       new EndEffector(
           true, Utils.isSimulation() ? new EndEffectorIOSim() : new EndEffectorIOTalonFX());
 
   private final Climb climb = new Climb(true, new ClimbIOTalonFX());
-  private final AlgaeArm algaeArm = new AlgaeArm(true, new AlgaeArmTalonFX());
-  private final Superstructure superstructure =
-      new Superstructure(elevator, endEffector, arm, algaeArm, algaeRoller);
+  private final Superstructure superstructure = new Superstructure(elevator, endEffector, arm);
   private final LED leds = new LED();
 
   private final Vision vision =
@@ -143,7 +136,6 @@ public class RobotContainer {
             elevator,
             arm,
             endEffector,
-            algaeArm,
             drivetrain);
     configureChoreoAutoChooser();
     CommandScheduler.getInstance().registerSubsystem(drivetrain);
@@ -272,10 +264,6 @@ public class RobotContainer {
     // set state CLIMB
     new Trigger(() -> m_operatorController.getLeftX() > .5)
         .onTrue(superstructure.setState(StructureState.CLIMB));
-
-    // set state GROUND ALGAE
-    new Trigger(() -> m_operatorController.getLeftX() < -.5)
-        .onTrue(superstructure.setState(StructureState.GROUND_ALGAE));
 
     // climb out
     new Trigger(() -> m_operatorController.getRightX() > .5)
@@ -433,8 +421,7 @@ public class RobotContainer {
     // Auto Align Reef, Left Handed Target (Absolute)
     new Trigger(
             () ->
-                ((superstructure.getState() != StructureState.GROUND_ALGAE)
-                        && (superstructure.getState() != StructureState.PROCESSOR)
+                ((superstructure.getState() != StructureState.PROCESSOR)
                         && (superstructure.getState()) != StructureState.BARGE)
                     && (m_driverController.leftTrigger().getAsBoolean()))
         .whileTrue(
@@ -445,8 +432,7 @@ public class RobotContainer {
     // Auto Align Reef, Right Handed Target (Absolute)
     new Trigger(
             () ->
-                ((superstructure.getState() != StructureState.GROUND_ALGAE)
-                        && (superstructure.getState() != StructureState.PROCESSOR)
+                ((superstructure.getState() != StructureState.PROCESSOR)
                         && (superstructure.getState()) != StructureState.BARGE)
                     && (m_driverController.rightTrigger().getAsBoolean()))
         .whileTrue(
