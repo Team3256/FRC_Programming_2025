@@ -34,9 +34,6 @@ public final class SwerveConstants {
   // barge targets
   public static final Rotation2d bargeClose = new Rotation2d((Math.PI / 2));
   public static final Rotation2d bargeFar = new Rotation2d(((Math.PI / 2) + Math.PI));
-  // pidxlock pose target, don't use
-  public static final double bargeCloseX = 7.41;
-  public static final double bargeFarX = 10.07;
 
   // time to force stop the command so we can regain control of rotation
   public static final double aziTimeout = 1.2;

@@ -187,20 +187,12 @@ public class RobotContainer {
         .whileTrue(leds.animate(IndicatorAnimation.AlgaeIntaken));
     superstructure.climbState().whileTrue(leds.animate(IndicatorAnimation.Climb));
     autoAlignedTrigger.whileTrue(
-        Commands.run(
-                () -> {
-                  m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 1);
-                })
-            .finallyDo(
-                () -> {
-                  m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0);
-                }));
+        Commands.run(() -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 1))
+            .finallyDo(() -> m_driverController.setRumble(GenericHID.RumbleType.kBothRumble, 0)));
     autoAlignedTrigger.whileTrue(leds.animate(IndicatorAnimation.AutoAligned));
     autoAlignRunning
         .and(autoAlignedTrigger.negate())
         .onTrue(leds.animate(IndicatorAnimation.AutoAlignRunning));
-    // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
-
   }
 
   public Pose2d getClosestAlignment() {
@@ -222,7 +214,6 @@ public class RobotContainer {
   }
 
   private void configureOperatorBinds() {
-
     // source
     m_operatorController
         .x("Preset for source")
@@ -426,23 +417,6 @@ public class RobotContainer {
                             .withTargetDirection(bargeFar))
                 .withTimeout(aziTimeout));
 
-    // barge auto align - don't use
-    m_driverController
-        .rightBumper("Auto Align Barge Close")
-        .whileTrue(
-            drivetrain.pidXLocked(
-                () -> bargeCloseX,
-                () -> -m_driverController.getLeftX() * MaxSpeed,
-                () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
-
-    m_driverController
-        .a("Auto Align Barge Far")
-        .whileTrue(
-            drivetrain.pidXLocked(
-                () -> bargeFarX,
-                () -> -m_driverController.getLeftX() * MaxSpeed,
-                () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
-
     // sets the heading to wherever the robot is facing
     // do this with the elevator side of the robot facing YOU
     m_driverController.y("Zero Heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -492,14 +466,11 @@ public class RobotContainer {
   public void periodic() {
     /*
     // Logger.recordOutput(
-    // "Stick Angle Radians",
-    // Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
-    // Logger.recordOutput(
     // "AutoAim/Targets/Coral",
     // Stream.of(CoralTargets.values())
     // .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
     // .toArray(Pose2d[]::new));
-    // // Log locations of all autoaim targets
+    // // Log locations of all auto aim targets
     // Logger.recordOutput(
     // "AutoAim/Targets/Algae",
     // Stream.of(AlgaeIntakeTargets.values())

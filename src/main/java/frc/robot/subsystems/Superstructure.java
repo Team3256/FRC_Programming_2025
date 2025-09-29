@@ -25,7 +25,7 @@ import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 public class Superstructure {
-  public static enum StructureState {
+  public enum StructureState {
     IDLE,
     L4,
     L3,
@@ -249,13 +249,6 @@ public class Superstructure {
     // As a safety feature, the HOME state is only valid if the previous state was PREHOME ensuring
     // that you don't skip steps.
 
-    //    stateTriggers
-    //        .get(StructureState.IDLE)
-    //        .or(stateTriggers.get(StructureState.HOME))
-    //        .and(endEffector.algaeBeamBreak.negate())
-    //            .debounce(.025)
-    //        .onTrue(endEffector.off());
-
     stateTriggers
         .get(StructureState.HOME)
         .and(prevStateTriggers.get(StructureState.PREHOME))
@@ -274,9 +267,6 @@ public class Superstructure {
         .onTrue(arm.off())
         .onTrue(endEffector.algaeOff())
         .onTrue(endEffector.coralOff());
-
-    //    RobotModeTriggers.teleop().toggleOnTrue(this.setState(StructureState.IDLE));
-    //    RobotModeTriggers.autonomous().whileTrue(this.setState(StructureState.AUTO));
   }
 
   public Trigger coralBeamBreak() {
