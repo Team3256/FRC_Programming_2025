@@ -23,7 +23,7 @@ import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 public class Superstructure {
-  public static enum StructureState {
+  public enum StructureState {
     IDLE,
     L4,
     L3,
