@@ -340,10 +340,10 @@ public class RobotContainer {
                 drive
                     .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                     .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
+                    .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate)));
 
     m_driverController
-        .leftBumper("Brake / Slow Mode")
+        .a("Brake / Slow Mode")
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
@@ -354,7 +354,7 @@ public class RobotContainer {
                             -m_driverController.getTriggerAxes() * SlowMaxAngular)));
 
     m_driverController
-        .x("Azimuth Left Source")
+        .leftBumper("Azimuth Left Source")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -366,7 +366,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .b("Azimuth Right Source")
+        .rightBumper("Azimuth Right Source")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -426,23 +426,6 @@ public class RobotContainer {
                             .withTargetDirection(bargeFar))
                 .withTimeout(aziTimeout));
 
-    // barge auto align - don't use
-    m_driverController
-        .rightBumper("Auto Align Barge Close")
-        .whileTrue(
-            drivetrain.pidXLocked(
-                () -> bargeCloseX,
-                () -> -m_driverController.getLeftX() * MaxSpeed,
-                () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
-
-    m_driverController
-        .a("Auto Align Barge Far")
-        .whileTrue(
-            drivetrain.pidXLocked(
-                () -> bargeFarX,
-                () -> -m_driverController.getLeftX() * MaxSpeed,
-                () -> -m_driverController.getTriggerAxes() * MaxAngularRate));
-
     // sets the heading to wherever the robot is facing
     // do this with the elevator side of the robot facing YOU
     m_driverController.y("Zero Heading").onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -453,7 +436,7 @@ public class RobotContainer {
                 ((superstructure.getState() != StructureState.GROUND_ALGAE)
                         && (superstructure.getState() != StructureState.PROCESSOR)
                         && (superstructure.getState()) != StructureState.BARGE)
-                    && (m_driverController.povLeft().getAsBoolean()))
+                    && (m_driverController.leftTrigger().getAsBoolean()))
         .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(
@@ -465,7 +448,7 @@ public class RobotContainer {
                 ((superstructure.getState() != StructureState.GROUND_ALGAE)
                         && (superstructure.getState() != StructureState.PROCESSOR)
                         && (superstructure.getState()) != StructureState.BARGE)
-                    && (m_driverController.povRight().getAsBoolean()))
+                    && (m_driverController.rightTrigger().getAsBoolean()))
         .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(
@@ -473,14 +456,14 @@ public class RobotContainer {
 
     // Run LEDs simultaneously with Auto Align
     m_driverController
-        .povLeft()
+        .leftTrigger()
         .negate()
         .and(m_driverController.povRight().negate())
         .and(m_driverController.a().negate())
         .and(m_driverController.rightBumper().negate())
         .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(false)));
     m_driverController
-        .povRight()
+        .rightTrigger()
         .or(m_driverController.povLeft())
         .or(m_driverController.a())
         .or(m_driverController.rightBumper())
@@ -490,49 +473,6 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    /*
-    // Logger.recordOutput(
-    // "Stick Angle Radians",
-    // Math.atan2(m_driverController.getRightY(), m_driverController.getRightX()));
-    // Logger.recordOutput(
-    // "AutoAim/Targets/Coral",
-    // Stream.of(CoralTargets.values())
-    // .map((target) -> CoralTargets.getRobotTargetLocation(target.location))
-    // .toArray(Pose2d[]::new));
-    // // Log locations of all autoaim targets
-    // Logger.recordOutput(
-    // "AutoAim/Targets/Algae",
-    // Stream.of(AlgaeIntakeTargets.values())
-    // .map((target) -> AlgaeIntakeTargets.getRobotTargetLocation(target.location))
-    // .toArray(Pose2d[]::new));
-    //
-    // Logger.recordOutput(
-    // "AutoAim/Targets/SourceIntakes",
-    // Stream.of(SourceIntakeTargets.values())
-    // .map((target) -> SourceIntakeTargets.getRobotTargetLocation(target.location))
-    // .toArray(Pose2d[]::new));
-    //
-    // Logger.recordOutput(
-    // "AutoAim/CoralTarget",
-    // CoralTargets.getClosestTarget(drivetrain.getState().Pose));
-    // Logger.recordOutput(
-    // "AutoAim/LeftHandedCoralTarget",
-    // CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, true));
-    // Logger.recordOutput(
-    // "AutoAim/RightHandedCoralTarget",
-    // CoralTargets.getHandedClosestTarget(drivetrain.getState().Pose, false));
-    // Logger.recordOutput(
-    // "AutoAim/NameOfLHCoralTarget",
-    // CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose,
-    // true).name());
-    // Logger.recordOutput(
-    // "AutoAim/NameOfRHCoralTarget",
-    // CoralTargets.getHandedClosestTargetE(drivetrain.getState().Pose,
-    // false).name());
-    // Logger.recordOutput(
-    // "AutoAim/AlgaeIntakeTarget",
-    // AlgaeIntakeTargets.getClosestTarget(drivetrain.getState().Pose));
-    */
     superstructure.periodic();
   }
 }
