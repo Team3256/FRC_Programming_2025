@@ -193,6 +193,8 @@ public class RobotContainer {
     autoAlignRunning
         .and(autoAlignedTrigger.negate())
         .onTrue(leds.animate(IndicatorAnimation.AutoAlignRunning));
+    // autoAlignTrigger.whileTrue(new PrintCommand("AA TRIGGER!!!!").repeatedly());
+
   }
 
   public Pose2d getClosestAlignment() {
@@ -214,6 +216,7 @@ public class RobotContainer {
   }
 
   private void configureOperatorBinds() {
+
     // source
     m_operatorController
         .x("Preset for source")
@@ -427,7 +430,7 @@ public class RobotContainer {
                 ((superstructure.getState() != StructureState.GROUND_ALGAE)
                         && (superstructure.getState() != StructureState.PROCESSOR)
                         && (superstructure.getState()) != StructureState.BARGE)
-                    && (m_driverController.povLeft().getAsBoolean()))
+                    && (m_driverController.leftTrigger().getAsBoolean()))
         .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(
@@ -447,14 +450,14 @@ public class RobotContainer {
 
     // Run LEDs simultaneously with Auto Align
     m_driverController
-        .povLeft()
+        .leftTrigger()
         .negate()
         .and(m_driverController.povRight().negate())
         .and(m_driverController.a().negate())
         .and(m_driverController.rightBumper().negate())
         .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(false)));
     m_driverController
-        .povRight()
+        .rightTrigger()
         .or(m_driverController.povLeft())
         .or(m_driverController.a())
         .or(m_driverController.rightBumper())
