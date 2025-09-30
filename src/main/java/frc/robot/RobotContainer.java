@@ -214,7 +214,7 @@ public class RobotContainer {
 
     // stow everything
     m_operatorController
-        .b("Home everything")
+        .b("Stow everything")
         .onTrue(superstructure.setState(StructureState.PREHOME));
 
     // dealgae states
@@ -366,7 +366,7 @@ public class RobotContainer {
                         azimuth
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(processorClose)) // doubles as climb facing cage
+                            .withTargetDirection(processorClose))
                 .withTimeout(aziTimeout));
 
     m_driverController
@@ -378,8 +378,7 @@ public class RobotContainer {
                         azimuth
                             .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
                             .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(
-                                processorFar)) // doubles as climb from opposite side facing DS
+                            .withTargetDirection(processorFar))
                 .withTimeout(aziTimeout));
 
     // Azimuth Barge Close
@@ -436,15 +435,9 @@ public class RobotContainer {
     m_driverController
         .leftTrigger()
         .negate()
-        .and(m_driverController.povRight().negate())
-        .and(m_driverController.a().negate())
-        .and(m_driverController.rightBumper().negate())
         .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(false)));
     m_driverController
         .rightTrigger()
-        .or(m_driverController.povLeft())
-        .or(m_driverController.a())
-        .or(m_driverController.rightBumper())
         .onTrue(new InstantCommand(() -> autoAlignRunning.setPressed(true)));
 
     drivetrain.registerTelemetry(logger::telemeterize);
