@@ -320,10 +320,10 @@ public class RobotContainer {
                 drive
                     .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
                     .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                    .withRotationalRate(-m_driverController.getTriggerAxes() * MaxAngularRate)));
+                    .withRotationalRate(-m_driverController.getRightX() * MaxAngularRate)));
 
     m_driverController
-        .leftBumper("Brake / Slow Mode")
+        .a("Brake / Slow Mode")
         .whileTrue(
             drivetrain.applyRequest(
                 () ->
@@ -331,10 +331,10 @@ public class RobotContainer {
                         .withVelocityX(-m_driverController.getLeftY() * SlowMaxSpeed)
                         .withVelocityY(-m_driverController.getLeftX() * SlowMaxSpeed)
                         .withRotationalRate(
-                            -m_driverController.getTriggerAxes() * SlowMaxAngular)));
+                            -m_driverController.getRightX() * SlowMaxAngular)));
 
     m_driverController
-        .x("Azimuth Left Source")
+        .leftBumper("Azimuth Left Source")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -346,7 +346,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     m_driverController
-        .b("Azimuth Right Source")
+        .rightBumper("Azimuth Right Source")
         .onTrue(
             drivetrain
                 .applyRequest(
@@ -382,28 +382,7 @@ public class RobotContainer {
                 .withTimeout(aziTimeout));
 
     // Azimuth Barge Close
-    new Trigger(() -> (m_driverController.getRightY() < -0.3))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(bargeClose))
-                .withTimeout(aziTimeout));
 
-    // Azimuth Barge Far
-    new Trigger(() -> (m_driverController.getRightY() > 0.3))
-        .onTrue(
-            drivetrain
-                .applyRequest(
-                    () ->
-                        azimuth
-                            .withVelocityY(-m_driverController.getLeftX() * MaxSpeed)
-                            .withVelocityX(-m_driverController.getLeftY() * MaxSpeed)
-                            .withTargetDirection(bargeFar))
-                .withTimeout(aziTimeout));
 
     // sets the heading to wherever the robot is facing
     // do this with the elevator side of the robot facing YOU
@@ -425,7 +404,7 @@ public class RobotContainer {
             () ->
                 ((superstructure.getState() != StructureState.PROCESSOR)
                         && (superstructure.getState()) != StructureState.BARGE)
-                    && (m_driverController.povRight().getAsBoolean()))
+                    && (m_driverController.rightTrigger().getAsBoolean()))
         .whileTrue(
             Commands.parallel(
                 drivetrain.pidToPose(

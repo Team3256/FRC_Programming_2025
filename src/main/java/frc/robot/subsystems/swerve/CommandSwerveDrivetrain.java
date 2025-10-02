@@ -257,8 +257,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
       System.out.println("**** pidToPose disabled because of null target");
       return Commands.none();
     }
-    xController.setTolerance(.1);
-    yController.setTolerance(.1);
+    xController.setTolerance(.02);
+    yController.setTolerance(.02);
     headingController.setTolerance(Math.toRadians(.1));
     return run(() -> {
           Logger.recordOutput("AutoAlign/Target", target.get());

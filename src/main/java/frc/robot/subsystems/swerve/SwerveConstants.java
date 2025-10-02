@@ -24,7 +24,7 @@ public final class SwerveConstants {
 
   // source 1, 5 degree overshoot for weight drag from elevator
   // overshoot if weight concentrated = (0.0872665)
-  public static final Rotation2d sourceLeft1 = new Rotation2d(0.559);
+  public static final Rotation2d sourceLeft1 = new Rotation2d(0.559 + (3 * 0.0872665));
   public static final Rotation2d sourceRight2 = new Rotation2d(2.46091);
 
   // climb and processor - close preset doubles as climb target facing cage, same for far presets
