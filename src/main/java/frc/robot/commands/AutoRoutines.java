@@ -198,7 +198,7 @@ public class AutoRoutines {
     final AutoTrajectory SourceToD = routine.trajectory(sourceToL42Traj);
 
     routine.active().onTrue(preloadF.resetOdometry().andThen(preloadF.cmd()));
-    preloadF.atTimeBeforeEnd(.8).onTrue(m_autoCommands.goToL4());
+    preloadF.atTimeBeforeEnd(.4).onTrue(m_autoCommands.goToL4());
     preloadF
         .done()
         .onTrue(
